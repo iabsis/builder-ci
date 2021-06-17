@@ -1,0 +1,10 @@
+debian/.debhelper/
+debian/builder-ci.debhelper.log
+debian/builder-ci.postrm.debhelper
+debian/builder-ci.substvars
+debian/files
+debian/builder-ci/
+debian/tmp/
+*.pyc
+venv
+.vscode/

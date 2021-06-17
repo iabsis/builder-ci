@@ -1,0 +1,11 @@
+[Unit]
+Description=Builder CI Worker
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/usr/share/builder-ci/
+ExecStart=/usr/bin/python3 listener.py
+
+[Install]
+WantedBy=multi-user.target
