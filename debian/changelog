@@ -1,3 +1,9 @@
+builder-ci (1.0.1) buster; urgency=medium
+
+  * Rewrite Docker method with native docker module.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 21 Jun 2021 21:14:57 +0200
+
 builder-ci (1.0.0) buster; urgency=medium
 
   * Initial Release.

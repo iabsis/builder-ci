@@ -15,6 +15,7 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends},
  python3-colorama,
+ python3-docker,
  python3-yaml,
  python3-gunicorn,
  gunicorn3,
