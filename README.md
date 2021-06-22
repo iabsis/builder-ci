@@ -1,14 +1,14 @@
-Builder CI is a automated Build system used to do Continous Integration of any kind of project. I made this software as I wish to configure automated pipeline in much more automated and simple way than product like Jenkins does. This builder as also be made to work with Redmine thanks to a Redmine plugin.
+Builder CI is a automated Build system used to do Continuous Integration of any kind of development. I made this software as I wish to configure pipeline in much more automated way than any other product like Jenkins does. This builder is made to work with Redmine thanks to a Redmine plugin (will be released soon).
 
 ## Features
 
 * Detect automatically what kind of build to do (deb, rpm).
 * Exposed unsecure (yet) API used to trigger builds.
-* Create Debian or Redhat repository automatically.
-* Modulable, create your own builder plugin.
+* Create Debian or Redhat repository automatically after build.
+* Modulable, extend it by creating your own builder plugin.
 * Very lightweight, built with love with python and only few modules.
 * Very easy to install and update all in one command (on Debian Buster).
-* Build on top of Mongo, Flask.
+* Built on top of Mongo and Flask.
 * Use Docker (or not) to have clean environment at each build.
 * Support hooks folder used to prepare your build environment.
 * Build as Code, provide few parameters within builder.yml file.
@@ -27,7 +27,10 @@ Builder CI is a automated Build system used to do Continous Integration of any k
 
 ## To come
 
-* TODO
+* Install several workers and distribute builds.
+* More kind of packages.
+* A much better documentation.
+* Any requests ?
 
 ## How to install (~2 minutes)
 
