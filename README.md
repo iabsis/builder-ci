@@ -1,5 +1,7 @@
 Builder CI is a automated Build system used to do Continuous Integration of any kind of development. I made this software as I wish to configure pipeline in much more automated way than any other product like Jenkins does. This builder is made to work optionnaly with Redmine thanks to a Redmine plugin (will be released soon).
 
+![Redmine Screenshot](https://raw.githubusercontent.com/iabsis/builder-ci/master/doc/redmine_screenshot.png)
+
 ## Features
 
 * Detect automatically what kind of build to do (deb, rpm).
