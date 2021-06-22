@@ -1,4 +1,4 @@
-Builder CI is a automated Build system used to do Continuous Integration of any kind of development. I made this software as I wish to configure pipeline in much more automated way than any other product like Jenkins does. This builder is made to work with Redmine thanks to a Redmine plugin (will be released soon).
+Builder CI is a automated Build system used to do Continuous Integration of any kind of development. I made this software as I wish to configure pipeline in much more automated way than any other product like Jenkins does. This builder is made to work optionnaly with Redmine thanks to a Redmine plugin (will be released soon).
 
 ## Features
 
@@ -68,12 +68,21 @@ curl -X 'POST' \
       "url": "https://projects.iabsis.com/git/builder-ci",
       "branch": "master"
     }
+  },
+  "builder": {
+    "method": "docker",
+    "options": {
+      "image": "builder-bullseye"
+    }
+  },
+  "notify": {
+    "method": "redmine"
   }
 }'
 
 # Check your build and delete it
 builder-ci list
-find /tmp/reprepo && rm -rf /tmp/reprepo
+find /var/lib/repo && rm -rf /var/lib/repo/builder-ci
 ~~~
 
 ## Frequently asked questions
