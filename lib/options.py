@@ -7,10 +7,11 @@ import traceback
 
 class OptionsDb:
 
-    def __init__(self, id, step, method):
+    def __init__(self, id, step, method, idx=0):
         self.id = id
         self.step = step
         self.method = method
+        self.idx = idx
 
     def __getitem__(self, attribute):
         try:
@@ -18,10 +19,12 @@ class OptionsDb:
                 options = db.getBuilds(self.id)[self.step]["options"]
                 return options[attribute]
             if type(db.getBuilds(self.id)[self.step]) == type([]):
+                idx = 0
                 for submethod in db.getBuilds(self.id)[self.step]:
-                    if submethod["method"] == self.method:
+                    if submethod["method"] == self.method and idx == self.idx:
                         options = submethod["options"]
                         return options[attribute]
+                    idx = idx + 1
                 raise KeyError
         except KeyError:
             options = config.getAttribute(self.method, attribute)
@@ -35,11 +38,12 @@ class OptionsDb:
 
 class OptionsYaml:
 
-    def __init__(self, id, step, method, yml_file="builder.yml"):
+    def __init__(self, id, step, method, yml_file="builder.yml", idx=0):
         self.id = id
         self.step = step
         self.method = method
         self.options = {}
+        self.idx = idx
         build_location = config.getSection("default")["build_location"]
         sources_path = os.path.join(build_location, self.id, "sources")
         self.yml_path = os.path.join(sources_path, yml_file)
@@ -61,9 +65,11 @@ class OptionsYaml:
             if type(data) == type({}):
                 self.options = data["options"]
             elif type(data) == type([]):
+                idx = 0
                 for method in data:
-                    if method["method"] == self.method:
+                    if method["method"] == self.method and idx == self.idx:
                         self.options = method["options"]
+                    idx = idx + 1
         except:
             logs.warning("Yaml file doesn't contain any options: " + self.step)
 

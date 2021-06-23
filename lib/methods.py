@@ -71,7 +71,7 @@ class MethodsDb:
                     log = None
                     continue
             self.methods.remove("auto")
-            self.delDuplicates()
+#            self.delDuplicates()
 
 class MethodsYaml(MethodsDb):
     def __init__(self, id, step, meta, yml_file="builder.yml"):

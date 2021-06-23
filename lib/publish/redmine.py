@@ -80,9 +80,4 @@ def getMeta(id, options, meta):
     return None
 
 def detect(id, options, meta):
-    binary_path = os.path.join(build_location, id, "binary")
-    if options["files_glob"]:
-        files = glob.glob(binary_path + options["files_glob"])
-
-    if files:
-        return True
+    return False

@@ -109,15 +109,17 @@ class Worker:
 
         results = []
 
+        idx = 0
         for method in methods.all:
             self.meta[step] = method
             if methods.methodFrom == "db":
-                options = OptionsDb(self.id, step, method)
+                options = OptionsDb(self.id, step, method, idx=idx)
             else:
-                options = OptionsYaml(self.id, step, method)
+                options = OptionsYaml(self.id, step, method, idx=idx)
             logdb = logs.Log(self.id, step, method)
             result = self.__runMethod(step, method, options, logdb, force)
             results.append(result)
+            idx = idx + 1
 
         if True in results:
             logs.debug("At least one method (" + step + ") worked, continuing")
