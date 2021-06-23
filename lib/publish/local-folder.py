@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Publish any files into a folder on your build server
+"""
+
 import os
 import io
 import re

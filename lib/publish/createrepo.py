@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Create Redhat/Centos repository
+"""
+
 import subprocess
 import os
 import io

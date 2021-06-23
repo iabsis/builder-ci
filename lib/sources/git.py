@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Get source files from git
+"""
+
 import subprocess
 import os
 import tarfile

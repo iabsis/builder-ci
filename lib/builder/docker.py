@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Build any kind of packages
+"""
+
 import docker
 import os
 import tarfile

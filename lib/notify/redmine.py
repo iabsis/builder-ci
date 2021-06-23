@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Send build notification to Redmine by using Redmine Builder CI plugin.
+"""
+
 import requests
 import logs
 from bson.json_util import dumps

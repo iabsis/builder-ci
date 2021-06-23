@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Build native Redhat/Centos package (not advised for binary build, prefer docker otherwise)
+"""
+
 import subprocess
 import os
 import tarfile

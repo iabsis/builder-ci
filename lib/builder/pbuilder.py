@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Build native Debian/Ubuntu package
+"""
+
 import subprocess
 import os
 import tarfile
