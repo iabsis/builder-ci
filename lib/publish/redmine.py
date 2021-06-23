@@ -47,6 +47,10 @@ def runAction(id, options, meta):
     extension = os.path.splitext(file)[1]
     filename = rootname + "_" + meta["version"] + extension
     fullpath_filename = os.path.join(pwd, binary_path, file)
+    if options["override_name"]:
+        name = options["override_name"]
+    else:
+        name = meta["name"]
 
     url = options["url"] + "/uploads.json?filename=" + filename
     with open(fullpath_filename, 'rb') as f:
@@ -60,7 +64,7 @@ def runAction(id, options, meta):
             'X-Redmine-Api-Key': options["key"]
         }
 
-        url = options["url"] + "/projects/" + meta["name"] + "/" + "files.json"
+        url = options["url"] + "/projects/" + name + "/" + "files.json"
 
         file_json = {
             "file": {
