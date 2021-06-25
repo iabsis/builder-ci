@@ -28,7 +28,7 @@ install:
 	cp -a docker helpers $(DESTDIR)$(STATIC)/doc/$(PROJECT)/
 
 	## Generate documentation
-	python3 gen_doc.py > api-call.json
+	python3 gen_doc.py > ../binary/api-call.json
 
 clean:
 	echo "Nothing to clean"
