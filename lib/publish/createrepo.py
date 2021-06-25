@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Create Redhat/Centos repository
+Create Redhat/Centos repository thanks to createrepo.
 """
 
 import subprocess
