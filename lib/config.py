@@ -6,7 +6,7 @@ config.read("config.ini")
 hard_coded_config = {
     "optional_steps": ["patcher"],
     "default_steps_order": ["sources", "patcher", "builder", "publish"],
-    "optional_steps": ["patcher"],
+    "optional_steps": ["patcher", "notify"],
     "default_step_end_with": ["notify"],
     "running_step_every_loop": ["notify"],
     "duplicates_meta": ["builder", "version"],
