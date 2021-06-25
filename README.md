@@ -64,7 +64,7 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] 
 apt update && apt install docker-ce
 
 # Install Builder CI
-echo "deb [trusted=yes] https://projects.iabsis.com/repository/api-auto-builder/debian buster main" \
+echo "deb [trusted=yes] https://projects.iabsis.com/repository/builder-ci/debian buster main" \
     > /etc/apt/sources.list.d/iabsis.list
 apt update && apt install builder-ci 
 
