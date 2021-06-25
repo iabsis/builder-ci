@@ -1,4 +1,4 @@
-Builder CI is an automated Build system used to do Continuous Integration of any kind of development project. I made this software as I wish to configure the build pipeline in a much more automated way than any other product does, for example Jenkins. This builder is made to work optionaly with [Redmine](https://www.redmine.org/) thanks to a Redmine plugin that will be released soon.
+Builder CI is an automated Build system used to do Continuous Integration of any kind of development project. I made this software as I wish to configure the build pipeline in a much more automated way than any other product does, for example Jenkins. This builder is made to work optionaly with [Redmine](https://www.redmine.org/) thanks to a [Redmine plugin](https://github.com/iabsis/redmine-builder-ci) that will be released soon.
 
 ![Redmine Screenshot](https://raw.githubusercontent.com/iabsis/builder-ci/master/doc/redmine_screenshot.png)
 
@@ -44,7 +44,18 @@ curl -s https://www.mongodb.org/static/pgp/server-${VERSION}.asc | apt-key add -
 echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" \
     > /etc/apt/sources.list.d/mongo.list
 apt update && apt install mongodb-server
+echo -e "replication:\n   replSetName: \"rs0\"" >> /etc/mongod.conf
 systemctl enable --now mongod
+mongo
+rs.initiate({
+   _id: "rs0",
+   members:[
+      {
+         _id: 0,
+         host: "localhost:27017"
+      }
+   ]
+})
 
 # Install Docker (Optional)
 curl -s https://download.docker.com/linux/debian/gpg | apt-key add -
@@ -76,9 +87,6 @@ curl -X 'POST' \
     "options": {
       "image": "builder-bullseye"
     }
-  },
-  "notify": {
-    "method": "redmine"
   }
 }'
 
