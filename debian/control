@@ -2,7 +2,7 @@ Source: builder-ci
 Section: unknown
 Priority: optional
 Maintainer: Olivier Bitsch <olivier.b@iabsis.com>
-Build-Depends: debhelper-compat (= 11)
+Build-Depends: debhelper-compat (= 11), python3
 Standards-Version: 4.5.1
 Homepage: https://projects.iabsis.com/projects/api-auto-builder
 #Vcs-Browser: https://salsa.debian.org/debian/builder-ci
