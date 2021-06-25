@@ -27,7 +27,8 @@ install:
 	mkdir -p $(DESTDIR)$(STATIC)/doc/$(PROJECT)/
 	cp -a docker helpers $(DESTDIR)$(STATIC)/doc/$(PROJECT)/
 
+	## Generate documentation
+	python3 gen_doc.py > api-call.json
+
 clean:
 	echo "Nothing to clean"
-
-
