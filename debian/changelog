@@ -1,3 +1,13 @@
+builder-ci (1.0.2) buster; urgency=medium
+
+  * New Docker for Fedora 34.
+  * Updated mandatory steps.
+  * Updated README.md (Thanks @James S.)
+  * Updated comment to generate json doc.
+  * Now able to run same methods several time in a build.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 25 Jun 2021 12:08:01 +0200
+
 builder-ci (1.0.1) buster; urgency=medium
 
   * Rewrite Docker method with native docker module.
