@@ -18,7 +18,7 @@ Depends:
  python3-docker,
  python3-yaml,
  python3-gunicorn,
- gunicorn3,
+ gunicorn3 | gunicorn,
  python3-pymongo,
  python3-flask
 Description: Automated Source Code Builder
