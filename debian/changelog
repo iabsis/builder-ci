@@ -1,3 +1,9 @@
+builder-ci (1.0.4) buster; urgency=medium
+
+  * Rebuild to provide more easy install out the box config.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 29 Jun 2021 13:21:34 +0200
+
 builder-ci (1.0.3) buster; urgency=medium
 
   * Rebuild for dependancy fix with Ubuntu Focal.
