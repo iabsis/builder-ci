@@ -10,9 +10,9 @@ repository = os.getenv("GL_REPO")
 if not repository:
     print("Error, GL_REPO is not defined, you have to run this script inside gitolite ")
 
-builder_url = "http://contious-int:5000/build"
+builder_url = "https://contious-int:5000/build"
 project = repository.split("/")[0]
-git_url = "http://redmine-staging.oniabsis.com"
+git_url = "https://redmine-staging.oniabsis.com"
 git_project = git_url + "/" + repository + ".git"
 
 

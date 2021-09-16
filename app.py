@@ -14,6 +14,8 @@ import config
 import db
 
 app = Flask(__name__)
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 @app.route("/build", methods = ['POST'])
 def add_build():

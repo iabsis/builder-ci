@@ -8,9 +8,9 @@ import requests
 
 repository = os.getcwd()
 
-builder_url = "http://contious-int:5000/build"
+builder_url = "https://contious-int:5000/build"
 project = repository.split("/")[-1]
-git_url = "http://redmine-staging.oniabsis.com"
+git_url = "https://redmine-staging.oniabsis.com"
 git_project = git_url + "/git/" + project
 
 
