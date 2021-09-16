@@ -63,8 +63,8 @@ def getMeta(id, options, meta):
         returncode = 1
         log_err = "Container image not found" + options["image"]
     
-    meta = log_out.decode()
-    return json.loads(meta)
+    data = log_out.decode()
+    return json.loads(data)
 
 
 def detect(id, options, meta):

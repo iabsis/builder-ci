@@ -98,8 +98,8 @@ def getMeta(id, options, meta):
     version = f[2]
     dist = f[4]
     arch = options["processor"]
-    meta = {"dist": dist, "version": version, "arch": arch}
-    return meta
+    data = {"dist": dist, "version": version, "arch": arch}
+    return data
 
 
 def detect(id, options, meta):
