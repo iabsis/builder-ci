@@ -34,7 +34,7 @@ def runAction(id, options, meta):
     
     returncode = 0
     try:
-        log_out = client.containers.run(image=options["image"], volumes=volume, remove=True, environment=options["env"])
+        log_out = client.containers.run(image=options["image"], volumes=volume, remove=True, environment=options["env"], stderr=True)
     except:
         log_err = "Error with image: " + options["image"]
         returncode = 1

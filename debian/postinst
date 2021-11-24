@@ -7,7 +7,8 @@ set -e
 
 case "$1" in
     configure)
-        (cd /usr/share/doc/builder-ci/docker && . ./gen-all-docker.sh)
+        ## (cd /usr/share/doc/builder-ci/docker && . ./gen-all-docker.sh)
+        echo "Consider running the following command to build all dockers: cd /usr/share/doc/builder-ci/docker && . ./gen-all-docker.sh "
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
