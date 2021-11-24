@@ -1,3 +1,11 @@
+builder-ci (1.0.5) buster; urgency=medium
+
+  * Fix override variable declared into function attribute
+  * Fix CSRF and helper URL
+  * Add stderr to docker logs
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 24 Nov 2021 13:08:09 +0100
+
 builder-ci (1.0.4) buster; urgency=medium
 
   * Rebuild to provide more easy install out the box config.
