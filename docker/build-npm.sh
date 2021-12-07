@@ -10,7 +10,10 @@ arg=$1
 case $arg in
     meta)
 
-        version=$(grep "version" package.json | head -n 1 | cut -d\" -f4)
+        version=$(make version)
+        if [ -z "$version" ] ; then
+            version=$(cat package.json | jq ".version" | sed 's/\"//g')
+        fi
         echo "{\"version\": \"$version\"}"
     ;;
     *)
@@ -21,8 +24,12 @@ case $arg in
             done
         fi
 
-        npm run build
-        npm pack
+        if [ -f Makefile ] ; then
+            make
+        else
+            npm run build
+            npm pack
+        fi
         mv *.tgz /build/binary/
     
     ;;
