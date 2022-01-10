@@ -63,3 +63,12 @@ def del_build(id):
         return dumps({'error'})
     else:
         return dumps({'success'})
+
+@app.route("/watcher", methods = ['POST'])
+def add_watcher():
+    data = json.loads(request.data)
+    try:
+        db.addWatcher(data)
+    except KeyError as e:
+        return dumps({'error': f"The following key is missing: {e}"})
+    return dumps({'success'})

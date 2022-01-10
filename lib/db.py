@@ -19,12 +19,7 @@ def addBuild(data):
     db.build.insert_one(data)
 
 def getBuilds(id=None):
-    if id:
-        builds = db.build.find_one({"_id": ObjectId(id)})
-        return builds
-    else:
-        builds = db.build.find()
-        return builds
+    return db.build.find_one({"_id": ObjectId(id)}) if id else db.build.find()
 
 def reqBuild(request):
     r = db.build.find(request)
@@ -32,10 +27,7 @@ def reqBuild(request):
 
 def isExistBuild(request):
     r = db.build.find(request).count()
-    if r > 0:
-        return True
-    else:
-        return False
+    return r > 0
 
 def delBuild(id):
     db.build.delete_one({"_id": ObjectId(id)})
@@ -62,3 +54,10 @@ def getLogs(id):
 
 def setMeta(id, meta):
     db.build.update_one({"_id": ObjectId(id)}, {"$set": {"meta": meta}} )
+
+def addWatcher(data):
+    if data["project"] and data["watch"]:
+        db.watcher.insert_one(data)
+    
+def getWatches(id=None):
+    return db.watcher.find_one({"_id": ObjectId(id)}) if id else db.watcher.find()
