@@ -1,3 +1,10 @@
+builder-ci (0.1.0.7~beta) buster; urgency=medium
+
+  * This release is adding new watcher service used to monitoring external release endpoint and trigger automatically new build.
+  * New patcher method useful to automatically adjust debian version as options.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 11 Jan 2022 11:33:15 +0100
+
 builder-ci (1.0.6) buster; urgency=medium
 
   * Remove CSRFProtect
