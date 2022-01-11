@@ -7,15 +7,29 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 import json
 
+
 import sys
 sys.path.append('lib')
 
 import config
 import db
+import logs
 
 app = Flask(__name__)
 #csrf = CSRFProtect()
 #csrf.init_app(app)
+
+def isBuildValid(data):
+    steps = [ "project" ] + \
+        config.getAttribute("default", "default_steps_order") + \
+        config.getAttribute("default", "default_step_end_with") + \
+        config.getAttribute("default", "running_step_every_loop")
+
+    for key in data:
+        if key not in steps:
+            logs.error(f"The following key is not valid {key}")
+            return False
+    return True
 
 @app.route("/build", methods = ['POST'])
 def add_build():
@@ -67,6 +81,10 @@ def del_build(id):
 @app.route("/watcher", methods = ['POST'])
 def add_watcher():
     data = json.loads(request.data)
+    
+    if not isBuildValid(data["build"]):
+        return dumps({'error': "Key invalid"})
+
     try:
         db.addWatcher(data)
     except KeyError as e:
