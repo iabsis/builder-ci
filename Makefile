@@ -10,7 +10,7 @@ install:
 	
 	## Copy static files
 	mkdir -p $(DESTDIR)$(STATIC)/$(PROJECT)/
-	cp -R listener.py app.py wsgi.py lib $(DESTDIR)$(STATIC)/$(PROJECT)/
+	cp -R listener.py app.py wsgi.py watcher.py lib $(DESTDIR)$(STATIC)/$(PROJECT)/
 
 	## Copy executable
 	mkdir $(DESTDIR)/usr/bin/

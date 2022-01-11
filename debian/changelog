@@ -1,4 +1,4 @@
-builder-ci (0.1.0.7~beta) buster; urgency=medium
+builder-ci (0.1.0.7~beta2) buster; urgency=medium
 
   * This release is adding new watcher service used to monitoring external release endpoint and trigger automatically new build.
   * New patcher method useful to automatically adjust debian version as options.
