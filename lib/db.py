@@ -16,7 +16,8 @@ db = mongo.builder
 
 def addBuild(data):
     data["status"] = "new"
-    db.build.insert_one(data)
+    item = db.build.insert_one(data)
+    return item.inserted_id
 
 def getBuilds(id=None):
     return db.build.find_one({"_id": ObjectId(id)}) if id else db.build.find()
