@@ -27,8 +27,10 @@
 override_dh_installinit:
 	dh_installinit --name=builder-ci-api
 	dh_installinit --name=builder-ci-worker
+	dh_installinit --name=builder-ci-watcher
 	dh_installinit
 
 override_dh_installsystemd:
 	dh_installsystemd --name=builder-ci-api
 	dh_installsystemd --name=builder-ci-worker
+	dh_installsystemd --name=builder-ci-watcher
