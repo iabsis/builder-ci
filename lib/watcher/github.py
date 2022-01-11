@@ -10,7 +10,8 @@ def getLastVersion(id, options):
 
     if options["build_on_new"] == "release":
          
-        url = f"https://github.com/{owner}/{repo}/releases"
+        url = f"https://api.github.com/repos/{owner}/{repo}/releases"
         
         r = requests.get(url=url)
-        print(r.text)
+        for release in r.json():
+            return {"version": release["tag_name"]}
