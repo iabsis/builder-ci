@@ -6,6 +6,8 @@ After=network.target
 User=root
 WorkingDirectory=/usr/share/builder-ci/
 ExecStart=/usr/bin/python3 listener.py
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
