@@ -32,13 +32,16 @@ def isBuildValid(data):
     return True
 
 def addAuto(data):
-    newdata = data
-    for key in data:
-        if key == "builder":
-            return data
     
-    newdata["builder"] = {"method": "auto"}
-    return newdata
+    all_keys = []
+    for key in data:
+        all_keys.append(key)
+    
+    for mandatory_steps in config.getAttribute("default", "mandatory_steps"):
+        if not mandatory_steps in all_keys:
+            data[mandatory_steps] = {"method": "auto"}
+    
+    return data
         
 
 @app.route("/build", methods = ['POST'])

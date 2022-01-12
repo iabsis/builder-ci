@@ -20,7 +20,12 @@ def addBuild(data):
     return item.inserted_id
 
 def getBuilds(id=None):
-    return db.build.find_one({"_id": ObjectId(id)}) if id else db.build.find()
+    if id:
+        builds = db.build.find_one({"_id": ObjectId(id)})
+        return builds
+    else:
+        builds = db.build.find()
+        return builds
 
 def reqBuild(request):
     r = db.build.find(request)

@@ -34,6 +34,7 @@ def runAction(id, options, meta):
     
     logs.debug(sources_path)
     
+    
     cmd = [
         cmdpath,
         "-v",
@@ -63,6 +64,8 @@ def cleanupAction(id, options=None):
     
 def getMeta(id, options, meta):
 
+    if meta["old_version"]:
+        return None
     build_path = os.path.join(build_location + id, "sources")
     with open(build_path + "/debian/changelog", "r") as f:
         firstline = f.readline()
