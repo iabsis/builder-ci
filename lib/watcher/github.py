@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import re
 
 def getLastVersion(id, options):
 
@@ -13,5 +14,7 @@ def getLastVersion(id, options):
         url = f"https://api.github.com/repos/{owner}/{repo}/releases"
         
         r = requests.get(url=url)
+        
         for release in r.json():
-            return {"version": release["tag_name"]}
+            release = re.sub('[a-zA-Z_]+', '', release["tag_name"])
+            return {"version": release}
