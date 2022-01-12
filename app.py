@@ -31,6 +31,16 @@ def isBuildValid(data):
             return False
     return True
 
+def addAuto(data):
+    newdata = data
+    for key in data:
+        if key == "builder":
+            return data
+    
+    newdata["builder"] = {"method": "auto"}
+    return newdata
+        
+
 @app.route("/build", methods = ['POST'])
 def add_build():
 
@@ -84,6 +94,8 @@ def add_watcher():
     
     if not isBuildValid(data["build"]):
         return dumps({'error': "Key invalid"})
+
+    data["build"] = addAuto(data["build"])
 
     try:
         db.addWatcher(data)
