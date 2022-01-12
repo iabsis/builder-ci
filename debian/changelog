@@ -1,3 +1,9 @@
+builder-ci (0.1.0.7~beta4) buster; urgency=medium
+
+  * Add auto method in watcher if not specified
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 12 Jan 2022 14:04:53 +0100
+
 builder-ci (0.1.0.7~beta3) buster; urgency=medium
 
   * This release is adding new watcher service used to monitoring external release endpoint and trigger automatically new build.
