@@ -4,6 +4,7 @@ set +e
 
 arg=$1
 
+apt update
 
 case $arg in
     meta)
