@@ -1,3 +1,16 @@
+builder-ci (1.0.7) buster; urgency=medium
+
+  * Fix npm builder
+  * New ENV for Android build
+  * Force full apt update to avoid 404 on build
+  * Force apt update on each build to avoid any 404 error
+  * Move from centos to rocky linux
+  * Adding equiv dependancy
+  * Restrict ftp archive command to only dist build
+  * Adding new debian version
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 26 Jan 2023 15:42:41 +0100
+
 builder-ci (1.0.6) buster; urgency=medium
 
   * Remove CSRFProtect
