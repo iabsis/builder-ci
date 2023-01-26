@@ -58,7 +58,7 @@ def runAction(id, options, meta):
         logs.debug("Moving file: " + file)
         shutil.move(file, base_target)
 
-    opts = '-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
+    opts = f'-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
 
     cmd = f'{bin_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {bin_path} release dists/{dist} > {sub_repository}/Release'
 
