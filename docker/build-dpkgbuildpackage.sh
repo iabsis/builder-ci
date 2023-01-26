@@ -22,6 +22,7 @@ case $arg in
             done
         fi
 
+	    apt-get update
         mk-build-deps -r -i -t "apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends"
         rm -f *build-deps*
         dpkg-buildpackage
