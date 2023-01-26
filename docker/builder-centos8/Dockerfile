@@ -1,4 +1,4 @@
-FROM centos:centos8
+FROM rockylinux:8
 MAINTAINER olivier.b@iabsis.com
 RUN mkdir /build
 RUN yum -y install rpm-build make gcc yum-utils
