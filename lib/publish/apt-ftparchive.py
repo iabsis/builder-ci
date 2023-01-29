@@ -56,7 +56,14 @@ def runAction(id, options, meta):
 
     for file in glob.glob(binary_path + "/*.deb"):
         logs.debug("Moving file: " + file)
-        shutil.move(file, base_target)
+        try:
+            shutil.move(file, base_target)
+        except Exception as e:
+            if options["ignore-existing"] == "True":
+                continue
+            else:
+                raise Exception(f"Error while moving file: {e}")
+
 
     opts = f'-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
 
