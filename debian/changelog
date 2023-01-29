@@ -1,3 +1,9 @@
+builder-ci (1.0.8) buster; urgency=medium
+
+  * New option to ignore error if file exist
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sun, 29 Jan 2023 16:58:55 +0100
+
 builder-ci (1.0.7) buster; urgency=medium
 
   * Fix npm builder
