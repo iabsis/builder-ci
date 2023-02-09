@@ -59,7 +59,7 @@ def runAction(id, options, meta):
         try:
             shutil.move(file, base_target)
         except Exception as e:
-            if options["ignore-existing"] == "True":
+            if options["ignore-existing"]:
                 continue
             else:
                 raise Exception(f"Error while moving file: {e}")
