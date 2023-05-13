@@ -12,8 +12,10 @@ import os
 import json
 import logs
 import config
+from slugify import slugify
 
 build_location = config.getSection("default")["build_location"]
+redmine_config = config.getSection("redmine")
 pwd = os.getcwd()
 
 
@@ -53,7 +55,12 @@ def runAction(id, options, meta):
     else:
         name = meta["name"]
     
-    url = options["url"] + "/projects/" + name + "/" + "wiki/pages.json"
+    page_slug = slugify(page_name)
+
+    if not options["url"]:
+        url = redmine_config["url"] + "/projects/" + name + "/wiki/" + page_slug + ".json"
+    else:
+        url = options["url"] + "/projects/" + name + "/wiki/" + page_slug + ".json"
 
     content = {
         "wiki_page": {
@@ -62,7 +69,7 @@ def runAction(id, options, meta):
         }
         }
     
-    file_response = requests.post(url, headers=headers, json=content)
+    file_response = requests.put(url, headers=headers, json=content)
 
     if not file_response.status_code == 200:
         err = "API returned error code:" + str(file_response.text)
