@@ -1,10 +1,13 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+
 from configparser import ConfigParser
 
 config = ConfigParser()
 config.read("config.ini")
 
 hard_coded_config = {
-    "optional_steps": ["patcher"],
     "default_steps_order": ["sources", "patcher", "builder", "publish"],
     "optional_steps": ["patcher", "notify"],
     "default_step_end_with": ["notify"],

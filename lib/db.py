@@ -16,7 +16,8 @@ db = mongo.builder
 
 def addBuild(data):
     data["status"] = "new"
-    db.build.insert_one(data)
+    item = db.build.insert_one(data)
+    return item.inserted_id
 
 def getBuilds(id=None):
     if id:
@@ -32,10 +33,7 @@ def reqBuild(request):
 
 def isExistBuild(request):
     r = db.build.find(request).count()
-    if r > 0:
-        return True
-    else:
-        return False
+    return r > 0
 
 def delBuild(id):
     db.build.delete_one({"_id": ObjectId(id)})
@@ -62,3 +60,10 @@ def getLogs(id):
 
 def setMeta(id, meta):
     db.build.update_one({"_id": ObjectId(id)}, {"$set": {"meta": meta}} )
+
+def addWatcher(data):
+    if data["project"] and data["watch"]:
+        db.watcher.insert_one(data)
+    
+def getWatches(id=None):
+    return db.watcher.find_one({"_id": ObjectId(id)}) if id else db.watcher.find()

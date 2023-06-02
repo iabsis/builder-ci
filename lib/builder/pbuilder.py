@@ -78,7 +78,7 @@ def runAction(id, options, meta):
         return [False, log_out, log_err]
     else:
         try:
-            os.makedirs(binary_path);
+            os.makedirs(binary_path)
         except FileExistsError:
             pass
         for wildcard in file_to_move:
@@ -100,7 +100,6 @@ def getMeta(id, options, meta):
     arch = options["processor"]
     data = {"dist": dist, "version": version, "arch": arch}
     return data
-
 
 def detect(id, options, meta):
     build_path = os.path.join(build_location, id, "sources")

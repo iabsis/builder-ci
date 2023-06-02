@@ -34,6 +34,26 @@ builder-ci (1.0.7) buster; urgency=medium
   * Adding new debian version
 
  -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 26 Jan 2023 15:42:41 +0100
+builder-ci (0.1.0.7~beta5) buster; urgency=medium
+
+  * Now only keep digit and dot in version
+  * Automatically restart service in case of failure
+  * Fix missing mandatory steps into mongo
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 12 Jan 2022 15:27:44 +0100
+
+builder-ci (0.1.0.7~beta4) buster; urgency=medium
+
+  * Add auto method in watcher if not specified
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 12 Jan 2022 14:04:53 +0100
+
+builder-ci (0.1.0.7~beta3) buster; urgency=medium
+
+  * This release is adding new watcher service used to monitoring external release endpoint and trigger automatically new build.
+  * New patcher method useful to automatically adjust debian version as options.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 11 Jan 2022 11:33:15 +0100
 
 builder-ci (1.0.6) buster; urgency=medium
 

@@ -1,13 +1,11 @@
 [Unit]
-Description=Builder CI Worker
+Description=Builder CI Watcher
 After=network.target
 
 [Service]
 User=root
 WorkingDirectory=/usr/share/builder-ci/
-ExecStart=/usr/bin/python3 listener.py
-Restart=always
-RestartSec=5
+ExecStart=/usr/bin/python3 watcher.py
 
 [Install]
 WantedBy=multi-user.target
