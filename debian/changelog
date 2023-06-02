@@ -1,8 +1,14 @@
+builder-ci (1.0.12) buster; urgency=medium
+
+  * Rebuild since merge.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 02 Jun 2023 13:46:29 +0200
+
 builder-ci (1.0.11) buster; urgency=medium
 
   * Fix put method for redmine Wiki
 
- -- Olivier Bitsch <olivier.b@iabsis.com>  Sat, 13 May 2023 11:41:51 +0200
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 02 Jun 2023 13:45:54 +0200
 
 builder-ci (1.0.10) buster; urgency=medium
 
