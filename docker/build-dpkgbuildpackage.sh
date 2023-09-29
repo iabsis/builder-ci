@@ -25,7 +25,7 @@ case $arg in
 	    apt-get update
         mk-build-deps -r -i -t "apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends"
         rm -f *build-deps*
-        dpkg-buildpackage
+        dpkg-buildpackage -b
 
         mkdir -p /build/binary/
         find ../ -type f -maxdepth 1 | while read file; do
