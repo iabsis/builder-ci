@@ -50,6 +50,7 @@ class OptionsYaml:
         self.method = method
         self.options = {}
         self.idx = idx
+        self.config = Config(method)
         build_location = default_config["build_location"]
         sources_path = os.path.join(build_location, self.id, "sources")
         self.yml_path = os.path.join(sources_path, yml_file)
