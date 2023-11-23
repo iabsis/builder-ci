@@ -1,6 +1,9 @@
 
+import subprocess
 import os
+import errno
 from lib.config import Config
+import lib.logs as logs
 
 config = Config("default")
 
@@ -8,6 +11,7 @@ config = Config("default")
 class Step:
 
     name = "defaultstep"
+    command = None
 
     def __init__(self, id, options, meta) -> None:
 
@@ -24,6 +28,22 @@ class Step:
         self.options = options
         self.meta = meta
         self.id = id
+
+        # Check if a shell command is required
+        # This define a self.command_path with the full path of binary
+        if self.command:
+            process = subprocess.Popen(["which", self.command],
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE)
+
+            stdout, stderr = process.communicate()
+
+            if not stdout:
+                logs.error(f"ERROR: {self.command} is not installed")
+                raise FileNotFoundError(
+                    errno.ENOENT, os.strerror(errno.ENOENT), self.command)
+            else:
+                self.command_path = stdout.splitlines()[0]
 
     def runAction(self):
         pass

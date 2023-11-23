@@ -15,6 +15,7 @@ from lib.step import Step
 class BuildStep(Step):
 
     name = "docker"
+    command = "docker"
 
     def runAction(self):
 

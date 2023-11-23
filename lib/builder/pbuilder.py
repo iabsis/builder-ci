@@ -5,7 +5,7 @@
 Build native Debian/Ubuntu package
 """
 
-import errno
+
 import subprocess
 import os
 import re
@@ -15,25 +15,11 @@ import shutil
 
 from lib.step import Step
 
-process = subprocess.Popen(["which", "pdebuild"],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-
-stdout, stderr = process.communicate()
-
-file_to_move = ["*.deb", "*.dsc", "*.changes", "*.xz", "*.tar.gz", "*.tar.bz2"]
-
-if not stdout:
-    logs.error("ERROR: pbuilder is not installed")
-    raise FileNotFoundError(
-        errno.ENOENT, os.strerror(errno.ENOENT), "pdebuild")
-else:
-    pbuilderpath = stdout.splitlines()[0]
-
 
 class BuildStep(Step):
 
-    name = "pbuilder"
+    name: str = "pbuilder"
+    command: subprocess = "pbuilder"
 
     def runAction(self):
 
@@ -52,7 +38,7 @@ class BuildStep(Step):
         basetgz = self.options["basetgz"] + dist + "-" + processor + ".tgz"
 
         cmd = [
-            pbuilderpath,
+            self.command_path,
             "--use-pdebuild-internal",
             "--",
             "--hookdir",
@@ -78,6 +64,9 @@ class BuildStep(Step):
                 os.makedirs(self.binary_path)
             except FileExistsError:
                 pass
+
+            file_to_move = ["*.deb", "*.dsc", "*.changes",
+                            "*.xz", "*.tar.gz", "*.tar.bz2"]
             for wildcard in file_to_move:
                 for file in glob.glob(self.sources_path + "/" + wildcard):
                     logs.debug("#File:" + file)

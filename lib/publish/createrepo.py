@@ -29,7 +29,7 @@ class Step:
     def runAction(self):
 
         base_target = os.path.join(
-            self.options["default_target"], self.meta["name"], "redhat")
+            self.options["default_target"], self.runActionmeta["name"], "redhat")
 
         try:
             os.makedirs(base_target)

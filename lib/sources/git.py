@@ -15,27 +15,17 @@ import lib.logs as logs
 from lib.step import Step
 
 
-process = subprocess.Popen(["which", "git"],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-stdout, stderr = process.communicate()
-
-if not stdout:
-    print("ERROR: git is not installed")
-else:
-    gitpath = stdout.splitlines()[0]
-
-
 class BuildStep(Step):
 
     name = "git"
+    command = "git"
 
     def runAction(self):
         url = self.options["url"]
         branch = self.options["branch"]
 
         cmd = [
-            gitpath,
+            self.command_path,
             "clone",
             "--depth",
             "1",
@@ -70,7 +60,7 @@ class BuildStep(Step):
     def getMeta(self):
 
         cmd = [
-            gitpath,
+            self.command_path,
             "rev-parse",
             "HEAD"
         ]

@@ -8,38 +8,22 @@ Build native Redhat/Centos package (not advised for binary build, prefer docker 
 import subprocess
 import os
 import re
-from lib.config import Config
 import lib.logs as logs
-import errno
-from shlex import quote
-
 from lib.step import Step
-
-
-process = subprocess.Popen(["which", "rpmbuild"],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-stdout, stderr = process.communicate()
-
-if not stdout:
-    logs.error("ERROR: rpmbuild is not installed")
-    raise FileNotFoundError(
-        errno.ENOENT, os.strerror(errno.ENOENT), "rpmbuild")
-else:
-    builderpath = stdout.splitlines()[0]
 
 
 class BuildStep(Step):
 
     name = "rpmbuild"
+    command = "rpmbuild"
 
     def runAction(self):
 
-        pwd = os.getcwd()
+        redhat_specs = os.path.join(self.build_path, "redhat",
+                                    self.meta["name"] + ".spec")
 
-        spec = os.path.join("redhat", self.meta["name"] + ".spec")
-
-        cmd = builderpath.decode() + " -bb " + spec + " --define \"_sourcedir $PWD\""
+        cmd = self.command_path.decode() + " -bb " + redhat_specs + \
+            " --define \"_sourcedir $PWD\""
 
         logs.debug("Command passed: " + str(cmd))
 
@@ -60,8 +44,9 @@ class BuildStep(Step):
 
     def getMeta(self):
 
-        spec = os.path.join(self.build_path, "redhat", meta["name"] + ".spec")
-        with open(spec) as f:
+        redhat_specs = os.path.join(
+            self.build_path, "redhat", meta["name"] + ".spec")
+        with open(redhat_specs) as f:
             for line in f.readlines():
                 if "Version:" in line:
                     ver = re.split(r'[\ \:\n]', line)[2]
