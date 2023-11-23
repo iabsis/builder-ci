@@ -135,7 +135,8 @@ class Worker:
         if not method == None:
             try:
                 lib = step + "." + method
-                r = importlib.import_module(lib)
+                imported_lib = importlib.import_module(lib)
+                r = imported_lib(self.id, options, self.meta)
             except:
                 logs.error("Unable to import module: " + lib)
                 traceback.print_exc()
@@ -144,7 +145,7 @@ class Worker:
             return False
 
         try:
-            m = r.getMeta(self.id, options, self.meta)
+            m = r.getMeta()
             if m:
                 logs.debug("Got meta from step: " + str(m))
                 self.meta.mergeMeta(m)
@@ -160,7 +161,8 @@ class Worker:
                 self.status = "duplicate"
                 logs.info("### Duplicate build detected, stopping " + method)
                 return False
-            result, log, err = r.runAction(self.id, options, self.meta)
+
+            result, log, err = r.runAction()
         except:
             err = traceback.format_exc()
             log = None
@@ -174,7 +176,7 @@ class Worker:
 
             # Save meta returned by step
             try:
-                m = r.getMeta(self.id, options, self.meta)
+                m = r.getMeta()
                 if m:
                     logs.debug("Got meta from step: " + str(m))
                     self.meta.mergeMeta(m)

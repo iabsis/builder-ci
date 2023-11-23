@@ -64,8 +64,10 @@ class MethodsDb:
                 module = os.path.basename(file).replace(".py", "")
                 options = Nothing()
                 try:
-                    m = importlib.import_module(self.step + "." + module)
-                    if m.detect(self.id, options, self.meta):
+                    imported_lib = importlib.import_module(
+                        self.step + "." + module)
+                    m = imported_lib(self.id, options, self.meta)
+                    if m.detect():
                         self.methods.append(module)
                 except:
                     logs.warning("Unable to run detect on module " + module)

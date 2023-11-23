@@ -4,24 +4,17 @@
 import errno
 import subprocess
 import os
-import io
 import re
 from lib.config import Config
-import logs
-import glob
-import shutil
+import lib.logs as logs
 
-name = "debian_version"
+from lib.step import Step
 
-default_config = Config("default")
-
-build_location = default_config["build_location"]
-
-pwd = os.getcwd()
 
 process = subprocess.Popen(["which", "dch"],
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
+
 stdout, stderr = process.communicate()
 
 if not stdout:
@@ -32,49 +25,43 @@ else:
     cmdpath = stdout.splitlines()[0]
 
 
-def runAction(id, options, meta):
+class BuildStep(Step):
 
-    sources_path = os.path.join(pwd, build_location, id, "sources")
+    name = "debian_version"
 
-    logs.debug(sources_path)
+    def runAction(self):
 
-    cmd = [
-        cmdpath,
-        "-v",
-        options["version"],
-        "--distribution",
-        meta["dist"],
-        "New upstream release"
-    ]
+        cmd = [
+            cmdpath,
+            "-v",
+            self.options["version"],
+            "--distribution",
+            self.meta["dist"],
+            "New upstream release"
+        ]
 
-    logs.debug("Command passed: " + str(cmd))
+        logs.debug("Command passed: " + str(cmd))
 
-    process = subprocess.Popen(cmd,
-                               bufsize=1024,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               cwd=sources_path)
+        process = subprocess.Popen(cmd,
+                                   bufsize=1024,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   cwd=self.sources_path)
 
-    log_out, log_err = process.communicate()
+        log_out, log_err = process.communicate()
 
-    if not process.returncode == 0:
-        return [False, log_out, log_err]
-    else:
-        return [True, log_out, log_err]
+        if not process.returncode == 0:
+            return [False, log_out, log_err]
+        else:
+            return [True, log_out, log_err]
 
+    def getMeta(self):
 
-def cleanupAction(id, options=None):
-    pass
-
-
-def getMeta(id, options, meta):
-
-    if meta["old_version"]:
-        return None
-    build_path = os.path.join(build_location + id, "sources")
-    with open(build_path + "/debian/changelog", "r") as f:
-        firstline = f.readline()
-    f = re.split(r'[()\ \;]', firstline)
-    version = f[2]
-    dist = f[4]
-    return {"dist": dist, "old_version": version}
+        if self.meta["old_version"]:
+            return None
+        with open(self.sources_path + "/debian/changelog", "r") as f:
+            firstline = f.readline()
+        f = re.split(r'[()\ \;]', firstline)
+        version = f[2]
+        dist = f[4]
+        return {"dist": dist, "old_version": version}

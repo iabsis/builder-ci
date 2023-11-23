@@ -7,101 +7,79 @@ Create Debian/Ubuntu repository
 
 import subprocess
 import os
-import io
-import re
 from lib.config import Config
-import logs
+import lib.logs as logs
 import glob
 import shutil
 
-default_config = Config("default")
+from lib.step import Step
 
-build_location = default_config["build_location"]
-
-
-pwd = os.getcwd()
-
-method = {
-    "bin": "apt-ftparchive",
-    "name": "apt-ftparchive",
-    "meta": []
-}
-
-process = subprocess.Popen(["which", method["bin"]],
+process = subprocess.Popen(["which", "apt-ftparchive"],
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
 stdout, stderr = process.communicate()
 
 if not stdout:
-    print("ERROR: " + method["bin"] + " is not installed")
+    print("ERROR: " + "apt-ftparchive" + " is not installed")
     quit()
 else:
     bin_path = stdout.splitlines()[0].decode()
 
 
-def runAction(id, options, meta):
+class BuildStep(Step):
 
-    dist = meta["dist"]
-    arch = meta["arch"]
+    def runAction(self):
 
-    project_path = os.path.join(build_location, id)
-    sources_path = os.path.join(pwd, build_location, id, "sources")
-    binary_path = os.path.join(build_location, id, "binary")
+        dist = self.meta["dist"]
+        arch = self.meta["arch"]
 
-    repo_path = os.path.join(options["default_target"], meta["name"])
-    debian_root = os.path.join(
-        options["default_target"], meta["name"], "debian")
-    sub_repository = os.path.join("dists", dist, "main", "binary-" + arch)
-    base_target = os.path.join(debian_root, sub_repository)
+        debian_root = os.path.join(
+            self.options["default_target"], self.meta["name"], "debian")
+        sub_repository = os.path.join("dists", dist, "main", "binary-" + arch)
+        base_target = os.path.join(debian_root, sub_repository)
 
-    try:
-        os.makedirs(base_target)
-    except FileExistsError:
-        logs.debug("Target folder already exists")
-        pass
-
-    for file in glob.glob(binary_path + "/*.deb"):
-        logs.debug("Moving file: " + file)
         try:
-            shutil.move(file, base_target)
-        except Exception as e:
-            if options["ignore-existing"]:
-                continue
-            else:
-                raise Exception(f"Error while moving file: {e}")
+            os.makedirs(base_target)
+        except FileExistsError:
+            logs.debug("Target folder already exists")
+            pass
 
-    opts = f'-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
+        for file in glob.glob(self.binary_path + "/*.deb"):
+            logs.debug("Moving file: " + file)
+            try:
+                shutil.move(file, base_target)
+            except Exception as e:
+                if self.options["ignore-existing"]:
+                    continue
+                else:
+                    raise Exception(f"Error while moving file: {e}")
 
-    cmd = f'{bin_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {bin_path} release dists/{dist} > {sub_repository}/Release'
+        opts = f'-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
 
-    logs.debug("Command passed: " + str(cmd))
+        cmd = f'{bin_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {bin_path} release dists/{dist} > {sub_repository}/Release'
 
-    process = subprocess.Popen(cmd,
-                               bufsize=10240,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               shell=True,
-                               cwd=debian_root)
+        logs.debug("Command passed: " + str(cmd))
 
-    process.wait()
+        process = subprocess.Popen(cmd,
+                                   bufsize=10240,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   shell=True,
+                                   cwd=debian_root)
 
-    log_out, log_err = process.communicate()
+        process.wait()
 
-    if not process.returncode == 0:
-        return [False, log_out, log_err]
-    else:
-        return [True, log_out, log_err]
+        log_out, log_err = process.communicate()
 
+        if not process.returncode == 0:
+            return [False, log_out, log_err]
+        else:
+            return [True, log_out, log_err]
 
-def getMeta(id, options, meta):
-    return None
+    def detect(self):
 
+        # Define paths
+        debian_deb = glob.glob(self.binary_path + "/*.deb")
 
-def detect(id, options, meta):
-    binary_path = os.path.join(build_location, id, "binary")
-
-    # Define paths
-    debian_deb = glob.glob(binary_path + "/*.deb")
-
-    if debian_deb:
-        return True
+        if debian_deb:
+            return True

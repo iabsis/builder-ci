@@ -7,25 +7,12 @@ Create Redhat/Centos repository thanks to createrepo.
 
 import subprocess
 import os
-import io
-import re
-from lib.config import Config
-import logs
+import lib.logs as logs
 import glob
 import shutil
 
-default_config = Config("default")
 
-build_location = default_config["build_location"]
-pwd = os.getcwd()
-
-method = {
-    "bin": "createrepo",
-    "name": "createrepo",
-    "meta": []
-}
-
-process = subprocess.Popen(["which", method["name"]],
+process = subprocess.Popen(["which", "createrepo"],
                            stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE)
 stdout, stderr = process.communicate()
@@ -37,57 +24,46 @@ else:
     createrepo = stdout.splitlines()[0]
 
 
-def runAction(id, options, meta):
+class Step:
 
-    project_path = os.path.join(build_location, id)
-    sources_path = os.path.join(pwd, build_location, id, "sources")
-    binary_path = os.path.join(build_location, id, "binary")
+    def runAction(self):
 
-    repo_path = os.path.join(options["default_target"], meta["name"])
-    base_target = os.path.join(
-        options["default_target"], meta["name"], "redhat")
+        base_target = os.path.join(
+            self.options["default_target"], meta["name"], "redhat")
 
-    try:
-        os.makedirs(base_target)
-    except FileExistsError:
-        logs.debug("Target folder already exists")
-        pass
+        try:
+            os.makedirs(base_target)
+        except FileExistsError:
+            logs.debug("Target folder already exists")
+            pass
 
-    for file in glob.glob(binary_path + "/*.rpm"):
-        logs.debug("Moving file: " + file)
-        shutil.move(file, base_target)
+        for file in glob.glob(self.binary_path + "/*.rpm"):
+            logs.debug("Moving file: " + file)
+            shutil.move(file, base_target)
 
-    cmd = [
-        createrepo,
-        "-q",
-        "."
-    ]
+        cmd = [
+            createrepo,
+            "-q",
+            "."
+        ]
 
-    logs.debug("Command passed: " + str(cmd))
+        logs.debug("Command passed: " + str(cmd))
 
-    process = subprocess.Popen(cmd,
-                               bufsize=10240,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               cwd=base_target)
+        process = subprocess.Popen(cmd,
+                                   bufsize=10240,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   cwd=base_target)
 
-    log_out, log_err = process.communicate()
+        log_out, log_err = process.communicate()
 
-    if not process.returncode == 0:
-        return [False, log_out, log_err]
-    else:
-        return [True, log_out, log_err]
+        if not process.returncode == 0:
+            return [False, log_out, log_err]
+        else:
+            return [True, log_out, log_err]
 
+    def detect(self):
+        rpm = glob.glob(os.path.join(self.binary_path, "*.rpm"))
 
-def getMeta(id, options, meta):
-    return None
-
-
-def detect(id, options, meta):
-    binary_path = os.path.join(build_location + id, "binary")
-
-    # Define paths
-    rpm = glob.glob(os.path.join(binary_path, "*.rpm"))
-
-    if not rpm == []:
-        return True
+        if not rpm == []:
+            return True

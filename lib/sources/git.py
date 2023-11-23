@@ -7,17 +7,13 @@ Get source files from git
 
 import subprocess
 import os
-import tarfile
-import io
+
 from lib.config import Config
 import shutil
-import logs
+import lib.logs as logs
 
-default_config = Config("default")
+from lib.step import Step
 
-build_location = default_config["build_location"]
-
-name = "git"
 
 process = subprocess.Popen(["which", "git"],
                            stdout=subprocess.PIPE,
@@ -30,65 +26,63 @@ else:
     gitpath = stdout.splitlines()[0]
 
 
-def runAction(id, options, meta):
-    url = options["url"]
-    branch = options["branch"]
-    fetch_path = os.path.join(build_location, id, "sources")
+class BuildStep(Step):
 
-    cmd = [
-        gitpath,
-        "clone",
-        "--depth",
-        "1",
-        url,
-        "--branch",
-        branch,
-        fetch_path
-    ]
+    name = "git"
 
-    logs.debug("Command passed: " + str(cmd))
+    def runAction(self):
+        url = self.options["url"]
+        branch = self.options["branch"]
 
-    process = subprocess.Popen(cmd,
-                               bufsize=10240,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+        cmd = [
+            gitpath,
+            "clone",
+            "--depth",
+            "1",
+            url,
+            "--branch",
+            branch,
+            self.sources_path
+        ]
 
-    log_out, log_err = process.communicate()
+        logs.debug("Command passed: " + str(cmd))
 
-    if not process.returncode == 0:
-        return [False, log_out, log_err]
-    else:
-        return [True, log_out, log_err]
+        process = subprocess.Popen(cmd,
+                                   bufsize=10240,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
 
+        log_out, log_err = process.communicate()
 
-def cleanupAction(id, options=None):
-    fetch_path = os.path.join(build_location, id, "sources")
-    try:
-        shutil.rmtree(fetch_path)
-    except:
-        return False
-    else:
-        return True
+        if not process.returncode == 0:
+            return [False, log_out, log_err]
+        else:
+            return [True, log_out, log_err]
 
+    def cleanupAction(self):
+        try:
+            shutil.rmtree(self.sources_path)
+        except:
+            return False
+        else:
+            return True
 
-def getMeta(id, options, meta):
+    def getMeta(self):
 
-    fetch_path = os.path.join(build_location, id, "sources")
+        cmd = [
+            gitpath,
+            "rev-parse",
+            "HEAD"
+        ]
 
-    cmd = [
-        gitpath,
-        "rev-parse",
-        "HEAD"
-    ]
+        process = subprocess.Popen(cmd,
+                                   bufsize=1024,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   cwd=self.sources_path)
 
-    process = subprocess.Popen(cmd,
-                               bufsize=1024,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               cwd=fetch_path)
+        commit_id, err = process.communicate()
 
-    commit_id, err = process.communicate()
+        data = {"commit_id": commit_id.decode()[:-1]}
 
-    data = {"commit_id": commit_id.decode()[:-1]}
-
-    return data
+        return data
