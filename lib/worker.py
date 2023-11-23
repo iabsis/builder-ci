@@ -2,18 +2,20 @@
 # -*- coding: utf-8 -*-
 
 
-import db
+import lib.db as db
 import importlib
-import config
+from lib.config import Config
 import os
 import shutil
-import logs
+import lib.logs as logs
 import traceback
-from meta import Meta
-from options import OptionsDb, OptionsYaml, Nothing
-from methods import MethodsDb, MethodsYaml
+from lib.meta import Meta
+from lib.options import OptionsDb, OptionsYaml, Nothing
+from lib.methods import MethodsDb, MethodsYaml
 from datetime import datetime
 import glob
+
+config = Config("default")
 
 
 class Worker:
@@ -27,30 +29,30 @@ class Worker:
         logs.info(">>>> Building project ID: " + str(self.id))
         db.setStatus(self.id, self.meta["status"])
 
-        ## Create build location
+        # Create build location
         self.__mkBuildFolder()
 
-        ## Running of usual step from steps_orders, usually
+        # Running of usual step from steps_orders, usually
         # fetching sources, building and publishing the code
-        for step in config.getAttribute("default", "default_steps_order"):
+        for step in config["default_steps_order"]:
 
-
-            ## Running loop running step, usual notifications
-            for loop_step in config.getAttribute("default", "running_step_every_loop"):
+            # Running loop running step, usual notifications
+            for loop_step in config["running_step_every_loop"]:
                 self.__startStep(loop_step, force=True)
-
 
             result = self.__startStep(step)
 
             if not result == True:
-                
+
                 if not self.meta["status"] == "duplicate":
-                    logs.error("### A fatal error has occured, stopping now the build")
+                    logs.error(
+                        "### A fatal error has occured, stopping now the build")
                     self.status = "failed"
                     self.meta["status"] = "failed"
                     db.setStatus(self.id, self.status)
                 else:
-                    logs.warning("### This build already exist into DB with state success, stopping the build")
+                    logs.warning(
+                        "### This build already exist into DB with state success, stopping the build")
                     self.status = "duplicate"
                     db.setStatus(self.id, self.status)
                 break
@@ -64,17 +66,16 @@ class Worker:
         self.meta.saveMeta()
 
         if self.status == "failed":
-            ## Should we remove the builded folder ?
+            # Should we remove the builded folder ?
             keep_build = config.getSection("default")["keep_failed_build"]
             if keep_build == "False":
                 self.__cleanUp()
         else:
             self.__cleanUp()
 
-        ## Running post running step, usual notifications
-        for end_step in config.getAttribute("default", "default_step_end_with"):
+        # Running post running step, usual notifications
+        for end_step in config["default_step_end_with"]:
             self.__startStep(end_step, force=True)
-
 
     def __startStep(self, step, force=False):
 
@@ -91,10 +92,10 @@ class Worker:
         else:
             logs.debug("Loaded methods from Db")
             methods = MethodsDb(self.id, step, self.meta)
-        
+
         methods.runAuto()
 
-        ## Stop in case of process is not defined and step mandatory
+        # Stop in case of process is not defined and step mandatory
         if not methods.hasMethods:
             if methods.isMandatory:
                 msg = "Error, there is no method defined for step: " + step
@@ -103,9 +104,9 @@ class Worker:
                 logs.error(msg)
                 return False
             else:
-                logs.warning("There is no method defined for optional step " + step)
+                logs.warning(
+                    "There is no method defined for optional step " + step)
                 return True
-            
 
         results = []
 
@@ -130,8 +131,7 @@ class Worker:
 
     def __runMethod(self, step, method, options, logdb, force=False):
 
-
-        ## Initialize the method
+        # Initialize the method
         if not method == None:
             try:
                 lib = step + "." + method
@@ -153,7 +153,7 @@ class Worker:
             traceback.print_exc()
 
         try:
-            ## This method check if a success build with same meta already exists into DB.
+            # This method check if a success build with same meta already exists into DB.
             logs.debug("Force argument is set to: " + str(force))
             if self.__isDuplicate() and not force:
                 self.meta["status"] = "duplicate"
@@ -166,13 +166,13 @@ class Worker:
             log = None
             result = False
 
-        ## Get and write the logs
+        # Get and write the logs
         logdb.setLog(log, err)
 
-        ## General action depending of the result
+        # General action depending of the result
         if result == True:
 
-            ## Save meta returned by step
+            # Save meta returned by step
             try:
                 m = r.getMeta(self.id, options, self.meta)
                 if m:
@@ -181,12 +181,13 @@ class Worker:
             except:
                 logs.warning("Unable to get meta at step " + step)
                 traceback.print_exc()
-            
+
             self.meta.saveMeta()
-            
+
             logs.info("### Step " + step + " has finished successfully")
         else:
-            logs.error("### Step " + step + " has failed with the following error")
+            logs.error("### Step " + step +
+                       " has failed with the following error")
             try:
                 print(err.decode())
             except:
@@ -203,7 +204,7 @@ class Worker:
             for folder in ["sources", "binary"]:
                 os.makedirs(os.path.join(project_folder, folder))
         except FileExistsError:
-            pass 
+            pass
 
     def __cleanUp(self):
         logs.info("Removing build folder")
@@ -216,12 +217,11 @@ class Worker:
         else:
             return True
 
-
     def __isDuplicate(self):
         request = {}
         request["project"] = self.name
         request["status"] = "success"
-        for attr in config.getAttribute("default", "duplicates_meta"):
+        for attr in config["duplicates_meta"]:
             if self.meta[attr] == None:
                 return False
             request["meta." + attr] = self.meta[attr]
@@ -235,6 +235,7 @@ class Worker:
 
 def start_build(id):
     Worker(id)
+
 
 if __name__ == "__main__":
     Worker()

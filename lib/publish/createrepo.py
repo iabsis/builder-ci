@@ -9,12 +9,14 @@ import subprocess
 import os
 import io
 import re
-import config
+from lib.config import Config
 import logs
 import glob
 import shutil
 
-build_location = config.getSection("default")["build_location"]
+default_config = Config("default")
+
+build_location = default_config["build_location"]
 pwd = os.getcwd()
 
 method = {
@@ -24,8 +26,8 @@ method = {
 }
 
 process = subprocess.Popen(["which", method["name"]],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
 stdout, stderr = process.communicate()
 
 if not stdout:
@@ -42,7 +44,8 @@ def runAction(id, options, meta):
     binary_path = os.path.join(build_location, id, "binary")
 
     repo_path = os.path.join(options["default_target"], meta["name"])
-    base_target = os.path.join(options["default_target"], meta["name"], "redhat")
+    base_target = os.path.join(
+        options["default_target"], meta["name"], "redhat")
 
     try:
         os.makedirs(base_target)
@@ -54,7 +57,7 @@ def runAction(id, options, meta):
         logs.debug("Moving file: " + file)
         shutil.move(file, base_target)
 
-    cmd = [  
+    cmd = [
         createrepo,
         "-q",
         "."
@@ -63,10 +66,10 @@ def runAction(id, options, meta):
     logs.debug("Command passed: " + str(cmd))
 
     process = subprocess.Popen(cmd,
-        bufsize=10240,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        cwd=base_target)
+                               bufsize=10240,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               cwd=base_target)
 
     log_out, log_err = process.communicate()
 
@@ -75,6 +78,7 @@ def runAction(id, options, meta):
     else:
         return [True, log_out, log_err]
 
+
 def getMeta(id, options, meta):
     return None
 
@@ -82,7 +86,7 @@ def getMeta(id, options, meta):
 def detect(id, options, meta):
     binary_path = os.path.join(build_location + id, "binary")
 
-    ## Define paths
+    # Define paths
     rpm = glob.glob(os.path.join(binary_path, "*.rpm"))
 
     if not rpm == []:

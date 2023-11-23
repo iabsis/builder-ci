@@ -10,26 +10,29 @@ import os
 import tarfile
 import io
 import re
-import config
+from lib.config import Config
 import logs
 import errno
 from shlex import quote
 
-build_location = config.getSection("default")["build_location"]
+default_config = Config("default")
+
+build_location = default_config["build_location"]
 
 name = "rpmbuild"
 
 process = subprocess.Popen(["which", "rpmbuild"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
 stdout, stderr = process.communicate()
 
 if not stdout:
     logs.error("ERROR: rpmbuild is not installed")
     raise FileNotFoundError(
-        errno.ENOENT, os.strerror(errno.ENOENT), "rpmbuild") 
+        errno.ENOENT, os.strerror(errno.ENOENT), "rpmbuild")
 else:
     builderpath = stdout.splitlines()[0]
+
 
 def runAction(id, options, meta):
 
@@ -44,10 +47,10 @@ def runAction(id, options, meta):
     logs.debug("Command passed: " + str(cmd))
 
     process = subprocess.Popen(cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-        cwd=build_path)
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               shell=True,
+                               cwd=build_path)
 
     process.wait()
 

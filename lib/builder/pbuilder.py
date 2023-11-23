@@ -5,24 +5,27 @@
 Build native Debian/Ubuntu package
 """
 
+import errno
 import subprocess
 import os
 import tarfile
 import io
 import re
-import config
+from lib.config import Config
 import logs
 import glob
 import shutil
 
-build_location = config.getSection("default")["build_location"]
+default_config = Config("default")
+
+build_location = default_config["build_location"]
 pwd = os.getcwd()
 
 name = "pbuilder"
 
 process = subprocess.Popen(["which", "pdebuild"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
 stdout, stderr = process.communicate()
 
 file_to_move = ["*.deb", "*.dsc", "*.changes", "*.xz", "*.tar.gz", "*.tar.bz2"]
@@ -30,9 +33,10 @@ file_to_move = ["*.deb", "*.dsc", "*.changes", "*.xz", "*.tar.gz", "*.tar.bz2"]
 if not stdout:
     logs.error("ERROR: pbuilder is not installed")
     raise FileNotFoundError(
-        errno.ENOENT, os.strerror(errno.ENOENT), "pdebuild") 
+        errno.ENOENT, os.strerror(errno.ENOENT), "pdebuild")
 else:
     pbuilderpath = stdout.splitlines()[0]
+
 
 def runAction(id, options, meta):
 
@@ -45,7 +49,7 @@ def runAction(id, options, meta):
         error = "processor is not defined into options"
         logs.error(error)
         return [False, None, error]
-        
+
     dist = options["dist"]
     if not dist:
         error = "dist is not defined into options"
@@ -54,7 +58,7 @@ def runAction(id, options, meta):
 
     basetgz = options["basetgz"] + dist + "-" + processor + ".tgz"
 
-    cmd = [  
+    cmd = [
         pbuilderpath,
         "--use-pdebuild-internal",
         "--",
@@ -67,10 +71,10 @@ def runAction(id, options, meta):
     logs.debug("Command passed: " + str(cmd))
 
     process = subprocess.Popen(cmd,
-        bufsize=10240,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        cwd=sources_path)
+                               bufsize=10240,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               cwd=sources_path)
 
     log_out, log_err = process.communicate()
 
@@ -100,6 +104,7 @@ def getMeta(id, options, meta):
     arch = options["processor"]
     data = {"dist": dist, "version": version, "arch": arch}
     return data
+
 
 def detect(id, options, meta):
     build_path = os.path.join(build_location, id, "sources")

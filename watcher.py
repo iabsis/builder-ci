@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-sys.path.append('lib')
+from json import dumps, loads
+import lib.logs as logs
+import importlib
+import lib.db as db
 from time import sleep
 
-import config
-run_every = config.getAttribute("watcher", "run_every")
+from lib.config import Config
 
-import db
-import importlib
-import logs
-from json import dumps, loads
+config = Config("watcher")
+
+run_every = config["run_every"]
 
 
 def isBuilt(name, version):
     request = {
         "project": name,
-        "patcher" : {
+        "patcher": {
             "method": "debian_version",
             "options": {
                 "version": version
@@ -25,6 +25,7 @@ def isBuilt(name, version):
         }
     }
     return db.isExistBuild(request)
+
 
 def updateVersion(build, version):
     new_dump = dumps(build).replace(":version", version)
@@ -46,16 +47,18 @@ if __name__ == "__main__":
             except KeyError as e:
                 logs.error(f"Error loading method with missing key: {e}")
                 continue
-            
+
             version = method.getLastVersion(id, options)["version"]
-            
+
             if isBuilt(name, version):
-                logs.debug(f"Build for project {name} and version {version} already exists")
+                logs.debug(
+                    f"Build for project {name} and version {version} already exists")
                 continue
-            
-            logs.info(f"Automatically added project {name} and version {version} into build queue")
-            
+
+            logs.info(
+                f"Automatically added project {name} and version {version} into build queue")
+
             build = updateVersion(build, version)
             db.addBuild(build)
-        
+
         sleep(int(run_every)*60)

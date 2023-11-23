@@ -1,40 +1,43 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import errno
 import subprocess
 import os
 import io
 import re
-import config
+from lib.config import Config
 import logs
 import glob
 import shutil
 
 name = "debian_version"
 
-build_location = config.getSection("default")["build_location"]
+default_config = Config("default")
+
+build_location = default_config["build_location"]
 
 pwd = os.getcwd()
 
 process = subprocess.Popen(["which", "dch"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
 stdout, stderr = process.communicate()
 
 if not stdout:
     logs.error("ERROR: dch is not installed")
     raise FileNotFoundError(
-        errno.ENOENT, os.strerror(errno.ENOENT), "dch") 
+        errno.ENOENT, os.strerror(errno.ENOENT), "dch")
 else:
     cmdpath = stdout.splitlines()[0]
 
+
 def runAction(id, options, meta):
-    
+
     sources_path = os.path.join(pwd, build_location, id, "sources")
-    
+
     logs.debug(sources_path)
-    
-    
+
     cmd = [
         cmdpath,
         "-v",
@@ -43,14 +46,14 @@ def runAction(id, options, meta):
         meta["dist"],
         "New upstream release"
     ]
-    
+
     logs.debug("Command passed: " + str(cmd))
-    
+
     process = subprocess.Popen(cmd,
-        bufsize=1024,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        cwd=sources_path)
+                               bufsize=1024,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               cwd=sources_path)
 
     log_out, log_err = process.communicate()
 
@@ -59,9 +62,11 @@ def runAction(id, options, meta):
     else:
         return [True, log_out, log_err]
 
+
 def cleanupAction(id, options=None):
     pass
-    
+
+
 def getMeta(id, options, meta):
 
     if meta["old_version"]:

@@ -1,7 +1,8 @@
-import db
-import logs
-import db
+import lib.db as db
+import lib.logs as logs
+import lib.db as db
 from datetime import datetime
+
 
 class Meta():
 
@@ -23,7 +24,6 @@ class Meta():
 
         return result
 
-    
     def __setitem__(self, attribute, data):
         self.meta[attribute] = data
 

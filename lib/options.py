@@ -1,13 +1,17 @@
-import db
-import config
-import logs
+import lib.db as db
+from lib.config import Config
+import lib.logs as logs
 import yaml
 import os
 import traceback
 
+default_config = Config("default")
+
+
 class OptionsDb:
 
     def __init__(self, id, step, method, idx=0):
+        self.config = Config("method")
         self.id = id
         self.step = step
         self.method = method
@@ -27,14 +31,16 @@ class OptionsDb:
                     idx = idx + 1
                 raise KeyError
         except KeyError:
-            options = config.getAttribute(self.method, attribute)
+            options = self.config[attribute]
             if options == None:
-                message = "Options requested " + attribute + " at step " + self.step + " and method " + self.method + " is missing"
+                message = "Options requested " + attribute + " at step " + \
+                    self.step + " and method " + self.method + " is missing"
                 logs.warning(message)
             return options
 
     def __str__(self):
         return self.method
+
 
 class OptionsYaml:
 
@@ -44,13 +50,14 @@ class OptionsYaml:
         self.method = method
         self.options = {}
         self.idx = idx
-        build_location = config.getSection("default")["build_location"]
+        build_location = default_config["build_location"]
         sources_path = os.path.join(build_location, self.id, "sources")
         self.yml_path = os.path.join(sources_path, yml_file)
 
         try:
             with open(self.yml_path, 'r') as file:
-                logs.debug("File builder.yml found into project, attempt to load it for method: " + self.method)
+                logs.debug(
+                    "File builder.yml found into project, attempt to load it for method: " + self.method)
                 data = yaml.safe_load(file)[self.step]
         except FileNotFoundError:
             logs.warning("Loading builder.yml failed, reason: ")
@@ -77,9 +84,10 @@ class OptionsYaml:
         try:
             return self.options[attribute]
         except KeyError:
-            options = config.getAttribute(self.method, attribute)
+            options = self.config[attribute]
             if options == None:
-                message = "Options requested " + attribute + " at step " + self.step + " and method " + self.method + " is missing"
+                message = "Options requested " + attribute + " at step " + \
+                    self.step + " and method " + self.method + " is missing"
                 logs.warning(message)
             return options
 
@@ -87,5 +95,3 @@ class OptionsYaml:
 class Nothing:
     def __getitem__(self, attribute):
         return None
-        
-

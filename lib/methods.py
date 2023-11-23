@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logs
-import db
+import lib.logs as logs
+import lib.db as db
 import os
 import glob
 import importlib
 import traceback
-from options import Nothing
-import config
+from lib.options import Nothing
+from lib.config import Config
 import yaml
+
+config = Config("default")
+
 
 class MethodsDb:
 
@@ -25,10 +28,10 @@ class MethodsDb:
         elif type(methods) == type([]):
             for method in methods:
                 self.methods.append(method["method"])
-    
+
     @property
     def isMandatory(self):
-        mandatory_steps = config.getAttribute("default", "mandatory_steps")
+        mandatory_steps = config["mandatory_steps"]
         if self.step in mandatory_steps:
             return True
         else:
@@ -51,7 +54,7 @@ class MethodsDb:
 
     def delDuplicates(self):
         self.methods = list(dict.fromkeys(self.methods))
-    
+
     def runAuto(self):
         if "auto" in self.methods:
             logs.debug("auto method invoked, attempt to find automatically")
@@ -73,6 +76,7 @@ class MethodsDb:
             self.methods.remove("auto")
 #            self.delDuplicates()
 
+
 class MethodsYaml(MethodsDb):
     def __init__(self, id, step, meta, yml_file="builder.yml"):
         self.methodFrom = "yaml"
@@ -80,18 +84,20 @@ class MethodsYaml(MethodsDb):
         self.step = step
         self.meta = meta
         self.methods = []
-        build_location = config.getSection("default")["build_location"]
+        build_location = config["build_location"]
         sources_path = os.path.join(build_location, self.id, "sources")
         self.yml_path = os.path.join(sources_path, yml_file)
 
         try:
             with open(self.yml_path, 'r') as file:
-                logs.debug("File builder.yml found into project, attempt to load it")
+                logs.debug(
+                    "File builder.yml found into project, attempt to load it")
                 data = yaml.safe_load(file)[self.step]
         except FileNotFoundError:
             logs.debug("builder.yml not present")
         except KeyError:
-            logs.warning("Yml file doens't contain method at step: " + self.step)
+            logs.warning(
+                "Yml file doens't contain method at step: " + self.step)
             traceback.print_exc()
         except:
             logs.warning("Loading builder.yml failed, reason: ")
@@ -104,4 +110,5 @@ class MethodsYaml(MethodsDb):
                 for method in data:
                     self.methods.append(method["method"])
         except:
-            logs.warning("Yml file doesn't contain any method at step: " + self.step)
+            logs.warning(
+                "Yml file doesn't contain any method at step: " + self.step)

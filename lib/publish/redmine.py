@@ -11,9 +11,12 @@ import requests
 import os
 import json
 import logs
-import config
+from lib.config import Config
 
-build_location = config.getSection("default")["build_location"]
+default_config = Config("default")
+
+build_location = default_config["build_location"]
+
 pwd = os.getcwd()
 
 method = {
@@ -42,7 +45,7 @@ def runAction(id, options, meta):
 
     binary_path = os.path.join(build_location, id, "binary")
 
-    basename= os.path.basename(file)
+    basename = os.path.basename(file)
     rootname = os.path.splitext(file)[0]
     extension = os.path.splitext(file)[1]
     filename = rootname + "_" + meta["version"] + extension
@@ -80,8 +83,10 @@ def runAction(id, options, meta):
             return [False, None, err]
     return [True, None, None]
 
+
 def getMeta(id, options, meta):
     return None
+
 
 def detect(id, options, meta):
     return False

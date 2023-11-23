@@ -9,17 +9,19 @@ import subprocess
 import os
 import tarfile
 import io
-import config
+from lib.config import Config
 import shutil
 import logs
 
-build_location = config.getSection("default")["build_location"]
+default_config = Config("default")
+
+build_location = default_config["build_location"]
 
 name = "git"
 
 process = subprocess.Popen(["which", "git"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
 stdout, stderr = process.communicate()
 
 if not stdout:
@@ -47,9 +49,9 @@ def runAction(id, options, meta):
     logs.debug("Command passed: " + str(cmd))
 
     process = subprocess.Popen(cmd,
-        bufsize=10240,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE)
+                               bufsize=10240,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
 
     log_out, log_err = process.communicate()
 
@@ -57,6 +59,7 @@ def runAction(id, options, meta):
         return [False, log_out, log_err]
     else:
         return [True, log_out, log_err]
+
 
 def cleanupAction(id, options=None):
     fetch_path = os.path.join(build_location, id, "sources")
@@ -66,6 +69,7 @@ def cleanupAction(id, options=None):
         return False
     else:
         return True
+
 
 def getMeta(id, options, meta):
 
@@ -78,14 +82,13 @@ def getMeta(id, options, meta):
     ]
 
     process = subprocess.Popen(cmd,
-    bufsize=1024,
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-    cwd=fetch_path)
+                               bufsize=1024,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               cwd=fetch_path)
 
     commit_id, err = process.communicate()
 
     data = {"commit_id": commit_id.decode()[:-1]}
 
     return data
-

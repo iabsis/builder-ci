@@ -10,15 +10,18 @@ import os
 import tarfile
 import io
 import re
-import config
+from lib.config import Config
 import logs
 import errno
 import json
 from shlex import quote
 
-build_location = config.getSection("default")["build_location"]
+default_config = Config("default")
+
+build_location = default_config["build_location"]
 
 name = "docker"
+
 
 def runAction(id, options, meta):
 
@@ -31,18 +34,20 @@ def runAction(id, options, meta):
 
     client = docker.from_env()
     volume = {build_path: {'bind': '/build', 'mode': 'rw'}}
-    
+
     returncode = 0
     try:
-        log_out = client.containers.run(image=options["image"], volumes=volume, remove=True, environment=options["env"], stderr=True)
+        log_out = client.containers.run(
+            image=options["image"], volumes=volume, remove=True, environment=options["env"], stderr=True)
     except:
         log_err = "Error with image: " + options["image"]
         returncode = 1
-    
+
     if not returncode == 0:
         return [False, None, log_err]
     else:
         return [True, log_out, log_out]
+
 
 def getMeta(id, options, meta):
 
@@ -55,14 +60,15 @@ def getMeta(id, options, meta):
 
     client = docker.from_env()
     volume = {build_path: {'bind': '/build', 'mode': 'rw'}}
-    
+
     returncode = 0
     try:
-        log_out = client.containers.run(image=options["image"], command="meta", volumes=volume, remove=True, environment=options["env"])
+        log_out = client.containers.run(
+            image=options["image"], command="meta", volumes=volume, remove=True, environment=options["env"])
     except:
         returncode = 1
         log_err = "Container image not found" + options["image"]
-    
+
     data = log_out.decode()
     return json.loads(data)
 
