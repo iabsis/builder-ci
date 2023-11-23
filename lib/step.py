@@ -13,7 +13,7 @@ class Step:
 
         # Define the project root where binary and sources will be stored
         self.build_path = os.path.join(
-            os.getcwd(), config["build_location"] + id)
+            os.getcwd(), config["build_location"], id)
 
         # Define the folder where storing source
         self.sources_path = os.path.join(self.build_path, "sources")

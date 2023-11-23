@@ -67,7 +67,7 @@ class Worker:
 
         if self.status == "failed":
             # Should we remove the builded folder ?
-            keep_build = config.getSection("default")["keep_failed_build"]
+            keep_build = config["keep_failed_build"]
             if keep_build == "False":
                 self.__cleanUp()
         else:
@@ -126,7 +126,7 @@ class Worker:
             logs.debug("At least one method (" + step + ") worked, continuing")
             return True
         else:
-            logs.debug("No build succeed (" + step + ") , stopping now")
+            logs.debug("No build succeed (" + step + "), stopping now")
             return False
 
     def __runMethod(self, step, method, options, logdb, force=False):
@@ -135,8 +135,8 @@ class Worker:
         if not method == None:
             try:
                 lib = step + "." + method
-                imported_lib = importlib.import_module(lib)
-                r = imported_lib(self.id, options, self.meta)
+                imported_lib = importlib.import_module(f"lib.{lib}")
+                r = imported_lib.BuildStep(self.id, options, self.meta)
             except:
                 logs.error("Unable to import module: " + lib)
                 traceback.print_exc()
@@ -198,7 +198,7 @@ class Worker:
         return result
 
     def __mkBuildFolder(self):
-        build_location = config.getSection("default")["build_location"]
+        build_location = config["build_location"]
         project_folder = os.path.join(build_location, self.id)
         logs.debug("Create folder " + project_folder)
         try:
@@ -210,7 +210,7 @@ class Worker:
 
     def __cleanUp(self):
         logs.info("Removing build folder")
-        build_location = config.getSection("default")["build_location"]
+        build_location = config["build_location"]
         fetch_path = os.path.join(build_location, self.id)
         try:
             shutil.rmtree(fetch_path)

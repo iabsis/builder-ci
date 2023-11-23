@@ -59,21 +59,19 @@ class MethodsDb:
         if "auto" in self.methods:
             logs.debug("auto method invoked, attempt to find automatically")
             step_path = os.path.join("lib", self.step)
-            method = []
             for file in glob.glob(step_path + "/*.py"):
                 module = os.path.basename(file).replace(".py", "")
                 options = Nothing()
                 try:
                     imported_lib = importlib.import_module(
-                        self.step + "." + module)
-                    m = imported_lib(self.id, options, self.meta)
+                        f"lib.{self.step}.{module}")
+                    m = imported_lib.BuildStep(self.id, options, self.meta)
                     if m.detect():
                         self.methods.append(module)
                 except:
                     logs.warning("Unable to run detect on module " + module)
                     err = traceback.format_exc()
                     logs.warning(err)
-                    log = None
                     continue
             self.methods.remove("auto")
 #            self.delDuplicates()

@@ -79,7 +79,7 @@ class BuildStep(Step):
             except FileExistsError:
                 pass
             for wildcard in file_to_move:
-                for file in glob.glob(self.build_path + "/" + wildcard):
+                for file in glob.glob(self.sources_path + "/" + wildcard):
                     logs.debug("#File:" + file)
                     shutil.move(file, self.binary_path)
 
@@ -87,7 +87,7 @@ class BuildStep(Step):
 
     def getMeta(self):
 
-        with open(self.build_path + "/debian/changelog", "r") as f:
+        with open(self.sources_path + "/debian/changelog", "r") as f:
             firstline = f.readline()
         f = re.split(r'[()\ \;]', firstline)
         version = f[2]
@@ -97,7 +97,7 @@ class BuildStep(Step):
         return data
 
     def detect(self):
-        debian_changelog = os.path.join(self.build_path, "debian/changelog")
+        debian_changelog = os.path.join(self.sources_path, "debian/changelog")
 
         if os.path.exists(debian_changelog):
             return True

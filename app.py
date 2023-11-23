@@ -44,7 +44,8 @@ def addAuto(data):
 @app.route("/build", methods=['POST'])
 def add_build():
 
-    data = json.loads(request.data)
+    data = request.get_json()
+
     newdata = {}
 
     try:

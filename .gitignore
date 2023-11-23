@@ -8,3 +8,4 @@ debian/tmp/
 *.pyc
 venv
 .vscode/
+builder-ci/

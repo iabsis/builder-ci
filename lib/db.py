@@ -37,7 +37,7 @@ def reqBuild(request):
 
 
 def isExistBuild(request):
-    r = db.build.find(request).count()
+    r = len(list(db.build.find(request)))
     return r > 0
 
 

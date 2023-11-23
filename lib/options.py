@@ -11,7 +11,7 @@ default_config = Config("default")
 class OptionsDb:
 
     def __init__(self, id, step, method, idx=0):
-        self.config = Config("method")
+        self.config = Config(method)
         self.id = id
         self.step = step
         self.method = method

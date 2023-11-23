@@ -39,8 +39,6 @@ class BuildStep(Step):
 
         spec = os.path.join("redhat", self.meta["name"] + ".spec")
 
-        sourcedir = quote("_sourcedir " + self.build_path)
-
         cmd = builderpath.decode() + " -bb " + spec + " --define \"_sourcedir $PWD\""
 
         logs.debug("Command passed: " + str(cmd))
@@ -80,7 +78,7 @@ class BuildStep(Step):
 
     def detect(self):
         redhat_specs = os.path.join(
-            self.build_path, "redhat", self.meta["name"] + ".spec")
+            self.sources_path, "redhat", self.meta["name"] + ".spec")
 
         if os.path.exists(redhat_specs):
             return True
