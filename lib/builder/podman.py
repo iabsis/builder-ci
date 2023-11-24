@@ -26,12 +26,17 @@ class BuildStep(Step):
                 log_err = "Error, image must be defined"
                 return [False, False, log_err]
 
-            volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
+            mounts = [{
+                "target": "/build",
+                "read_only": False,
+                "source": self.build_path,
+                "type": "bind"
+            }]
 
             returncode = 0
             try:
                 log_out = client.containers.run(
-                    image=self.options["image"], volumes=volume, remove=True, environment=self.options["env"], stderr=True)
+                    image=self.options["image"], mounts=mounts, remove=True, environment=self.options["env"], stderr=True)
             except Exception as e:
                 logs.warning(f"An error as occured with podman: {e}")
                 log_err = "Error with image: " + self.options["image"]
@@ -50,27 +55,26 @@ class BuildStep(Step):
 
         with PodmanClient() as client:
 
-            volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
-
-            print(self.build_path)
+            mounts = [{
+                "target": "/build",
+                "read_only": False,
+                "source": self.build_path,
+                "type": "bind"
+            }]
 
             try:
                 log_out = client.containers.run(
-                    image=self.options["image"], command="meta", volumes=volume, remove=True, environment=self.options["env"])
+                    image=self.options["image"], command="meta", mounts=mounts, remove=True, environment=self.options["env"])
             except Exception as e:
                 logs.warning(f"An error as occured with podman: {e}")
                 returncode = 1
                 log_err = "Container image not found" + self.options["image"]
 
-            data = log_out.decode()
-            return json.loads(data)
+            for line in log_out.decode().split("\n"):
+                try:
+                    metadata = json.loads(line)
+                    return metadata
+                except json.decoder.JSONDecodeError:
+                    continue
 
-    def detect(self):
-
-        if not self.command_path:
-            return False
-
-        docker_file = os.path.join(self.sources_path, "Dockerfile")
-
-        if os.path.exists(docker_file):
-            return True
+            raise Exception(f"Unable to get metadata in: {log_out.decode()}")

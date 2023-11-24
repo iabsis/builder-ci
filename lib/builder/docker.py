@@ -58,13 +58,3 @@ class BuildStep(Step):
 
         data = log_out.decode()
         return json.loads(data)
-
-    def detect(self):
-
-        if not self.command_path:
-            return False
-
-        docker_file = os.path.join(self.sources_path, "Dockerfile")
-
-        if os.path.exists(docker_file):
-            return True
