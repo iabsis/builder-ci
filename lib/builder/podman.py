@@ -17,14 +17,16 @@ class BuildStep(Step):
 
     name = "podman"
     command = "podman"
+    mandatory_options = [
+        {
+            "name": "image",
+            "description": "The image name to build"
+        }
+    ]
 
     def runAction(self):
 
         with PodmanClient() as client:
-
-            if not self.options["image"]:
-                log_err = "Error, image must be defined"
-                return [False, False, log_err]
 
             mounts = [{
                 "target": "/build",
@@ -48,10 +50,6 @@ class BuildStep(Step):
                 return [True, log_out, log_out]
 
     def getMeta(self):
-
-        if not self.options["image"]:
-            log_err = "Error, image must be defined"
-            return [False, None, log_err]
 
         with PodmanClient() as client:
 

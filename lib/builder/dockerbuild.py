@@ -18,13 +18,14 @@ from lib.step import Step
 class BuildStep(Step):
 
     name = "dockerbuild"
+    mandatory_options = [
+        {
+            "name": "tag",
+            "description": "The target tag to build"
+        }
+    ]
 
     def runAction(self):
-
-        # Check for mandatory info
-        if not self.options["tag"]:
-            log_err = "Error, image must be defined"
-            return [False, False, log_err]
 
         client = docker.from_env()
 

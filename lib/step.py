@@ -14,6 +14,7 @@ class Step:
 
     name = "defaultstep"
     command = None
+    mandatory_options = []
 
     def __init__(self, id, options, meta) -> None:
 
@@ -30,6 +31,9 @@ class Step:
         self.options = options
         self.meta = meta
         self.id = id
+
+        # Raise an error in case of mandatory option is missing
+        self._errorOnMissingOption()
 
         # Check if a shell command is required
         # This define a self.command_path with the full path of binary
@@ -50,6 +54,12 @@ class Step:
         # Init empty logs
         self.log_out = None
         self.log_err = None
+
+    def _errorOnMissingOption(self):
+        for option in self.mandatory_options:
+            if not self.options[option['name']]:
+                raise Exception(
+                    f"The option {option['name']} is mandatory: {option['description']}")
 
     def _runCommand(self, command, **kargs):
         """Execute a specific command and return false if command failes to execute"""
