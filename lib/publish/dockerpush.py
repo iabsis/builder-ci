@@ -7,14 +7,8 @@ Build any kind of packages
 
 import docker
 import os
-import tarfile
-import io
-import re
 import config
-import logs
-import errno
 import json
-from shlex import quote
 
 build_location = config.getSection("default")["build_location"]
 

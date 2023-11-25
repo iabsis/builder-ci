@@ -11,28 +11,15 @@ import lib.logs as logs
 from lib.step import Step
 
 
-process = subprocess.Popen(["which", "dch"],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-
-stdout, stderr = process.communicate()
-
-if not stdout:
-    logs.error("ERROR: dch is not installed")
-    raise FileNotFoundError(
-        errno.ENOENT, os.strerror(errno.ENOENT), "dch")
-else:
-    cmdpath = stdout.splitlines()[0]
-
-
 class BuildStep(Step):
 
     name = "debian_version"
+    command = "dch"
 
     def runAction(self):
 
         cmd = [
-            cmdpath,
+            self.command_path,
             "-v",
             self.options["version"],
             "--distribution",

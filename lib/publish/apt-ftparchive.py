@@ -14,19 +14,11 @@ import shutil
 
 from lib.step import Step
 
-process = subprocess.Popen(["which", "apt-ftparchive"],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-stdout, stderr = process.communicate()
-
-if not stdout:
-    print("ERROR: " + "apt-ftparchive" + " is not installed")
-    quit()
-else:
-    bin_path = stdout.splitlines()[0].decode()
-
 
 class BuildStep(Step):
+
+    name = "apt-ftparchive"
+    command = "apt-ftparchive"
 
     def runAction(self):
 
@@ -56,7 +48,7 @@ class BuildStep(Step):
 
         opts = f'-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
 
-        cmd = f'{bin_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {bin_path} release dists/{dist} > {sub_repository}/Release'
+        cmd = f'{self.command_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {bin_path} release dists/{dist} > {sub_repository}/Release'
 
         logs.debug("Command passed: " + str(cmd))
 

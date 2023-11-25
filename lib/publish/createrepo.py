@@ -12,19 +12,10 @@ import glob
 import shutil
 
 
-process = subprocess.Popen(["which", "createrepo"],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
-stdout, stderr = process.communicate()
-
-if not stdout:
-    print("ERROR: createrepo is not installed")
-    quit()
-else:
-    createrepo = stdout.splitlines()[0]
-
-
 class Step:
+
+    name = "createrepo"
+    command = "createrepo"
 
     def runAction(self):
 
@@ -42,7 +33,7 @@ class Step:
             shutil.move(file, base_target)
 
         cmd = [
-            createrepo,
+            self.command_path,
             "-q",
             "."
         ]
