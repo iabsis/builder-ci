@@ -26,8 +26,6 @@ class Meta():
 
     def __setitem__(self, attribute, data):
         self.meta[attribute] = data
-
-    def saveMeta(self):
         db.setMeta(self.id, self.meta)
 
     def mergeMeta(self, meta):

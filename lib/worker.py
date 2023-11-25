@@ -200,7 +200,3 @@ class Worker:
 
 def start_build(id):
     Worker(id)
-
-
-if __name__ == "__main__":
-    Worker()
