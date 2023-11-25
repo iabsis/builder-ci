@@ -12,6 +12,8 @@ import traceback
 from lib.meta import Meta
 from lib.options import OptionsDb, OptionsYaml, Nothing
 from lib.methods import MethodsDb, MethodsYaml
+from lib.status import Status
+from lib.build import Build
 from datetime import datetime
 import glob
 
@@ -20,62 +22,50 @@ config = Config("default")
 
 class Worker:
     def __init__(self, id):
-        self.id = id
-        self.name = db.getName(self.id)
-        self.meta = Meta(self.id)
-        self.meta["start_time"] = datetime.now()
-        self.meta["status"] = "running"
+        with Build(id) as build:
+            self.id = id
+            self.name = db.getName(self.id)
+            self.meta = Meta(self.id)
+            self.meta["start_time"] = datetime.now()
 
-        logs.info(">>>> Building project ID: " + str(self.id))
-        db.setStatus(self.id, self.meta["status"])
+            self.__setStatus(Status.running)
 
-        # Create build location
-        self.__mkBuildFolder()
+            # Running of usual step from steps_orders, usually
+            # fetching sources, building and publishing the code
+            for step in config["default_steps_order"]:
 
-        # Running of usual step from steps_orders, usually
-        # fetching sources, building and publishing the code
-        for step in config["default_steps_order"]:
+                # Running loop running step, usual notifications
+                for loop_step in config["running_step_every_loop"]:
+                    self.__startStep(loop_step, force=True)
 
-            # Running loop running step, usual notifications
-            for loop_step in config["running_step_every_loop"]:
-                self.__startStep(loop_step, force=True)
+                result = self.__startStep(step)
 
-            result = self.__startStep(step)
+                if not result == True:
 
-            if not result == True:
+                    if not self.meta["status"] == Status.duplicate:
+                        self.__setStatus(Status.failed)
+                    else:
+                        self.__setStatus(Status.duplicate)
+                    break
+            else:
+                self.__setStatus(Status.success)
 
-                if not self.meta["status"] == "duplicate":
-                    logs.error(
-                        "### A fatal error has occured, stopping now the build")
-                    self.status = "failed"
-                    self.meta["status"] = "failed"
-                    db.setStatus(self.id, self.status)
-                else:
-                    logs.warning(
-                        "### This build already exist into DB with state success, stopping the build")
-                    self.status = "duplicate"
-                    db.setStatus(self.id, self.status)
-                break
-        else:
-            self.status = "success"
-            self.meta["status"] = "success"
-            db.setStatus(self.id, self.status)
-            logs.info(">>>> The build has finished with success")
+            self.meta["end_time"] = datetime.now()
 
-        self.meta["end_time"] = datetime.now()
-        self.meta.saveMeta()
+            if self.status == Status.failed:
+                # Should we remove the builded folder ?
+                if bool(config["keep_failed_build"]):
+                    build.keep_build = True
 
-        if self.status == "failed":
-            # Should we remove the builded folder ?
-            keep_build = config["keep_failed_build"]
-            if keep_build == "False":
-                self.__cleanUp()
-        else:
-            self.__cleanUp()
+            # Running post running step, usual notifications
+            for end_step in config["default_step_end_with"]:
+                self.__startStep(end_step, force=True)
 
-        # Running post running step, usual notifications
-        for end_step in config["default_step_end_with"]:
-            self.__startStep(end_step, force=True)
+    def __setStatus(self, status: Status):
+        self.status = status
+        self.meta["status"] = status.name
+        db.setStatus(self.id, status.name)
+        logs.info(f">>>> Build status updated: {status.name}")
 
     def __startStep(self, step, force=False):
 
@@ -83,7 +73,6 @@ class Worker:
         db.setStep(self.id, step)
 
         self.meta["step"] = step
-        self.meta.saveMeta()
 
         methodsyaml = MethodsYaml(self.id, step, self.meta)
         if methodsyaml.hasMethods:
@@ -149,7 +138,6 @@ class Worker:
             if m:
                 logs.debug("Got meta from step: " + str(m))
                 self.meta.mergeMeta(m)
-                self.meta.saveMeta()
         except:
             traceback.print_exc()
 
@@ -158,7 +146,7 @@ class Worker:
             logs.debug("Force argument is set to: " + str(force))
             if self.__isDuplicate() and not force:
                 self.meta["status"] = "duplicate"
-                self.status = "duplicate"
+                self.status = Status.duplicate
                 logs.info("### Duplicate build detected, stopping " + method)
                 return False
 
@@ -184,40 +172,15 @@ class Worker:
                 logs.warning("Unable to get meta at step " + step)
                 traceback.print_exc()
 
-            self.meta.saveMeta()
-
-            logs.info("### Step " + step + " has finished successfully")
+            logs.info(f"### Step {step} has finished successfully")
         else:
-            logs.error("### Step " + step +
-                       " has failed with the following error")
+            logs.error(f"### Step {step} has failed with the following error")
             try:
                 print(err.decode())
             except:
                 print(err)
 
         return result
-
-    def __mkBuildFolder(self):
-        build_location = config["build_location"]
-        project_folder = os.path.join(build_location, self.id)
-        logs.debug("Create folder " + project_folder)
-        try:
-            os.makedirs(project_folder)
-            for folder in ["sources", "binary"]:
-                os.makedirs(os.path.join(project_folder, folder))
-        except FileExistsError:
-            pass
-
-    def __cleanUp(self):
-        logs.info("Removing build folder")
-        build_location = config["build_location"]
-        fetch_path = os.path.join(build_location, self.id)
-        try:
-            shutil.rmtree(fetch_path)
-        except:
-            return False
-        else:
-            return True
 
     def __isDuplicate(self):
         request = {}

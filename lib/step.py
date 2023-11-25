@@ -51,13 +51,6 @@ class Step:
         self.log_out = None
         self.log_err = None
 
-        # Create empty target
-
-        try:
-            os.makedirs(self.binary_path)
-        except FileExistsError:
-            pass
-
     def _runCommand(self, command, **kargs):
         """Execute a specific command and return false if command failes to execute"""
 

@@ -46,7 +46,8 @@ def delBuild(id):
 
 
 def setStatus(id, status):
-    db.build.update_one({"_id": ObjectId(id)}, {"$set": {"status": status}})
+    db.build.update_one({"_id": ObjectId(id)}, {
+                        "$set": {"status": status}})
 
 
 def getName(id):

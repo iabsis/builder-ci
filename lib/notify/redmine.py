@@ -66,6 +66,5 @@ class BuildStep(Step):
             return [False, None, err]
         else:
             self.meta["redmine_id"] = response.content.decode()
-            self.meta.saveMeta()
             out = response.content
             return [True, out, None]
