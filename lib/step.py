@@ -100,7 +100,7 @@ class Step:
         pass
 
     def getMeta(self):
-        pass
+        return {}
 
     def detect(self):
         pass

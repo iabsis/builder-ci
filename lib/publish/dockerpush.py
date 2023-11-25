@@ -10,60 +10,55 @@ import os
 import config
 import json
 
-build_location = config.getSection("default")["build_location"]
 
-name = "dockerpush"
-
-
-def runAction(id, options, meta):
-
-    # Check for mandatory info
-    if not options["tag"]:
-        log_err = "Error, tag must be defined"
-        return [False, False, log_err]
-
-    # Check for mandatory info
-    # Check if we keep image
-    keep_image = options["keep_image"]
-
-    client = docker.from_env()
-
-    # Build the image
-    returncode = 0
-    try:
-        log_out = client.images.push(tag=options["tag"])
-    except:
-        log_err = "Error pushing image: " + options["image"]
-        returncode = 1
-
-    if not keep_image:
-        log_out += client.images.remove(tag=options["tag"])
-
-    if not returncode == 0:
-        return [False, None, log_err]
-    else:
-        return [True, log_out, log_out]
+from lib.step import Step
 
 
-def getMeta(id, options, meta):
+class BuildStep(Step):
 
-    pwd = os.getcwd()
-    build_path = os.path.join(pwd, build_location + id)
+    name = "dockerpush"
 
-    client = docker.from_env()
-    volume = {build_path: {'bind': '/build', 'mode': 'rw'}}
+    def runAction(self):
 
-    returncode = 0
-    try:
-        log_out = client.containers.run(
-            image=options["image"], command="meta", volumes=volume, remove=True, environment=options["env"])
-    except:
-        returncode = 1
-        log_err = "Container image not found" + options["image"]
+        # Check for mandatory info
+        if not self.options["tag"]:
+            log_err = "Error, tag must be defined"
+            return [False, False, log_err]
 
-    data = log_out.decode()
-    return json.loads(data)
+        # Check for mandatory info
+        # Check if we keep image
+        keep_image = self.options["keep_image"]
 
+        client = docker.from_env()
 
-def detect(id, options, meta):
-    return False
+        # Build the image
+        returncode = 0
+        try:
+            log_out = client.images.push(tag=self.options["tag"])
+        except:
+            log_err = "Error pushing image: " + self.options["image"]
+            returncode = 1
+
+        if not keep_image:
+            log_out += client.images.remove(tag=self.options["tag"])
+
+        if not returncode == 0:
+            return [False, None, log_err]
+        else:
+            return [True, log_out, log_out]
+
+    def getMeta(self):
+
+        client = docker.from_env()
+        volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
+
+        returncode = 0
+        try:
+            log_out = client.containers.run(
+                image=self.options["image"], command="meta", volumes=volume, remove=True, environment=self.options["env"])
+        except:
+            returncode = 1
+            log_err = "Container image not found" + self.options["image"]
+
+        data = log_out.decode()
+        return json.loads(data)

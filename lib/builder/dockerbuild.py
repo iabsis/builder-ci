@@ -11,54 +11,51 @@ import config
 import json
 from shlex import quote
 
-build_location = config.getSection("default")["build_location"]
 
-name = "dockerbuild"
-
-
-def runAction(id, options, meta):
-
-    # Check for mandatory info
-    if not options["tag"]:
-        log_err = "Error, image must be defined"
-        return [False, False, log_err]
-
-    client = docker.from_env()
-
-    # Build the image
-    returncode = 0
-    try:
-        log_out = client.images.build(
-            '.', tag=options["tag"], rm=True, pull=True, forcerm=True)
-    except:
-        log_err = "Error with image: " + options["image"]
-        returncode = 1
-
-    if not returncode == 0:
-        return [False, None, log_err]
-    else:
-        return [True, log_out, log_out]
+from lib.step import Step
 
 
-def getMeta(id, options, meta):
+class BuildStep(Step):
 
-    pwd = os.getcwd()
-    build_path = os.path.join(pwd, build_location + id)
+    name = "dockerbuild"
 
-    client = docker.from_env()
-    volume = {build_path: {'bind': '/build', 'mode': 'rw'}}
+    def runAction(self):
 
-    returncode = 0
-    try:
-        log_out = client.containers.run(
-            image=options["image"], command="meta", volumes=volume, remove=True, environment=options["env"])
-    except:
-        returncode = 1
-        log_err = "Container image not found" + options["image"]
+        # Check for mandatory info
+        if not self.options["tag"]:
+            log_err = "Error, image must be defined"
+            return [False, False, log_err]
 
-    data = log_out.decode()
-    return json.loads(data)
+        client = docker.from_env()
 
+        # Build the image
+        returncode = 0
+        try:
+            log_out = client.images.build(
+                '.', tag=self.options["tag"], rm=True, pull=True, forcerm=True)
+        except:
+            log_err = "Error with image: " + self.options["image"]
+            returncode = 1
 
-def detect(id, options, meta):
-    return False
+        if not returncode == 0:
+            return [False, None, log_err]
+        else:
+            return [True, log_out, log_out]
+
+    def getMeta(self):
+
+        pwd = os.getcwd()
+
+        client = docker.from_env()
+        volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
+
+        returncode = 0
+        try:
+            log_out = client.containers.run(
+                image=self.options["image"], command="meta", volumes=volume, remove=True, environment=self.options["env"])
+        except:
+            returncode = 1
+            log_err = "Container image not found" + self.options["image"]
+
+        data = log_out.decode()
+        return json.loads(data)
