@@ -4,6 +4,8 @@ import os
 import errno
 from lib.config import Config
 import lib.logs as logs
+import glob
+import shutil
 
 config = Config("default")
 
@@ -44,6 +46,55 @@ class Step:
                     errno.ENOENT, os.strerror(errno.ENOENT), self.command)
             else:
                 self.command_path = stdout.splitlines()[0]
+
+        # Init empty logs
+        self.log_out = None
+        self.log_err = None
+
+        # Create empty target
+
+        try:
+            os.makedirs(self.binary_path)
+        except FileExistsError:
+            pass
+
+    def _runCommand(self, command, **kargs):
+        """Execute a specific command and return false if command failes to execute"""
+
+        logs.debug("Command passed: " + str(command))
+
+        if not "cwd" in kargs:
+            kargs['cwd'] = self.sources_path,
+
+        process = subprocess.Popen(command,
+                                   **kargs,
+                                   bufsize=10240,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   )
+
+        process.wait()
+
+        self.log_out, self.log_err = process.communicate()
+
+        if not process.returncode == 0:
+            raise Exception(
+                f"An error as occured during the build: {self.log_err}")
+
+    def _moveToBinary(self, files_to_move):
+        self._moveToSpecific(files_to_move, self.binary_path)
+
+    def _moveToSpecific(self, files_to_move, target):
+        try:
+            os.makedirs(target)
+        except FileExistsError:
+            logs.debug(f"Folder {target} already exists")
+            pass
+
+        for wildcard in files_to_move:
+            for file in glob.glob(f"{self.sources_path}/{wildcard}"):
+                logs.debug(f"Move file {file} to {target}")
+                shutil.move(file, target)
 
     def runAction(self):
         pass
