@@ -48,7 +48,7 @@ class BuildStep(Step):
 
         opts = f'-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
 
-        cmd = f'{self.command_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {bin_path} release dists/{dist} > {sub_repository}/Release'
+        cmd = f'{self.command_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {self.command_path} release dists/{dist} > {sub_repository}/Release'
 
         logs.debug("Command passed: " + str(cmd))
 

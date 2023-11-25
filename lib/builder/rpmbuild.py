@@ -25,22 +25,13 @@ class BuildStep(Step):
         cmd = self.command_path.decode() + " -bb " + redhat_specs + \
             " --define \"_sourcedir $PWD\""
 
-        logs.debug("Command passed: " + str(cmd))
+        self._runCommand(cmd, cwd=self.build_path)
 
-        process = subprocess.Popen(cmd,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   shell=True,
-                                   cwd=self.build_path)
-
-        process.wait()
-
-        log_out, log_err = process.communicate()
-
-        if not process.returncode == 0:
-            return [False, log_out, log_err]
-        else:
-            return [True, log_out, log_err]
+        return [
+            True,
+            self.log_out,
+            self.log_err
+        ]
 
     def getMeta(self):
 

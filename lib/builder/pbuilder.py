@@ -10,8 +10,7 @@ import subprocess
 import os
 import re
 import lib.logs as logs
-import glob
-import shutil
+
 
 from lib.step import Step
 
@@ -47,32 +46,11 @@ class BuildStep(Step):
             basetgz
         ]
 
-        logs.debug("Command passed: " + str(cmd))
+        self._runCommand(cmd)
+        self._moveToBinary(file_to_move=["*.deb", "*.dsc", "*.changes",
+                                         "*.xz", "*.tar.gz", "*.tar.bz2"])
 
-        process = subprocess.Popen(cmd,
-                                   bufsize=10240,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   cwd=self.sources_path)
-
-        log_out, log_err = process.communicate()
-
-        if not process.returncode == 0:
-            return [False, log_out, log_err]
-        else:
-            try:
-                os.makedirs(self.binary_path)
-            except FileExistsError:
-                pass
-
-            file_to_move = ["*.deb", "*.dsc", "*.changes",
-                            "*.xz", "*.tar.gz", "*.tar.bz2"]
-            for wildcard in file_to_move:
-                for file in glob.glob(self.sources_path + "/" + wildcard):
-                    logs.debug("#File:" + file)
-                    shutil.move(file, self.binary_path)
-
-            return [True, log_out, log_err]
+        return [True, self.log_out, self.log_err]
 
     def getMeta(self):
 
