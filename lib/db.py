@@ -4,8 +4,6 @@
 from pymongo import MongoClient
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from bson.int64 import Int64
-import datetime
 import json
 from lib.config import Config
 

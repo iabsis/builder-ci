@@ -5,8 +5,6 @@
 import lib.db as db
 import importlib
 from lib.config import Config
-import os
-import shutil
 import lib.logs as logs
 import traceback
 from lib.meta import Meta
@@ -15,7 +13,6 @@ from lib.methods import MethodsDb, MethodsYaml
 from lib.status import Status
 from lib.build import Build
 from datetime import datetime
-import glob
 
 config = Config("default")
 

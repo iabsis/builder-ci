@@ -16,6 +16,12 @@ for file in config_trial_path:
         config.read(file)
         break
 
+# # This variable defines main build step components
+# default_steps_order: what is steps order and steps to run
+# default_step_end_with: what step is run at the end of the process
+# optional_steps: don't failes on this steps
+# auto_steps: what step must be guess if not defined
+
 hard_coded_config = {
     "default_steps_order": ["sources", "patcher", "builder", "publish"],
     "optional_steps": ["patcher", "notify"],
