@@ -109,10 +109,11 @@ class Worker:
             idx = idx + 1
 
         if True in results:
-            logs.debug("At least one method (" + step + ") worked, continuing")
+            logs.debug(
+                f"At least one method worked in step ({step}), continuing")
             return True
         else:
-            logs.debug("No build succeed (" + step + "), stopping now")
+            logs.debug(f"No method succeed in step ({step}), stopping now")
             return False
 
     def __runMethod(self, step, method, options, logdb, force=False):
@@ -133,7 +134,6 @@ class Worker:
         try:
             m = r.getMeta()
             if m:
-                logs.debug("Got meta from step: " + str(m))
                 self.meta.mergeMeta(m)
         except:
             traceback.print_exc()

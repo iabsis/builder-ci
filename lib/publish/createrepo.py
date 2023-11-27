@@ -8,11 +8,12 @@ Create Redhat/Centos repository thanks to createrepo.
 import subprocess
 import os
 import lib.logs as logs
+from lib.step import Step
 import glob
 import shutil
 
 
-class Step:
+class BuildStep(Step):
 
     name = "createrepo"
     command = "createrepo"

@@ -14,13 +14,14 @@ class Build():
         self.id = id
 
     def __enter__(self):
-        logs.debug(f"Initialize project {self.id}")
+        logs.debug(f"#### Initialize project {self.id} ####")
         self.build_path = os.path.join(build_location, self.id)
         self.__mkBuildFolder()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.__cleanBuildFolder()
+        logs.debug(f"#### End of build for project {self.id} ####")
 
     def __cleanBuildFolder(self):
         if self.keep_build:

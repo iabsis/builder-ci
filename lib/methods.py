@@ -69,7 +69,7 @@ class MethodsDb:
                     if m.detect():
                         self.methods.append(module)
                 except:
-                    logs.warning("Unable to run detect on module " + module)
+                    logs.warning(f"Detect feature failed for {module}")
                     err = traceback.format_exc()
                     logs.warning(err)
                     continue

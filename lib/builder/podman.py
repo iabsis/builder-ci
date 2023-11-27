@@ -48,31 +48,3 @@ class BuildStep(Step):
                 return [False, None, log_err]
             else:
                 return [True, log_out, log_out]
-
-    def getMeta(self):
-
-        with PodmanClient() as client:
-
-            mounts = [{
-                "target": "/build",
-                "read_only": False,
-                "source": self.build_path,
-                "type": "bind"
-            }]
-
-            try:
-                log_out = client.containers.run(
-                    image=self.options["image"], command="meta", mounts=mounts, remove=True, environment=self.options["env"])
-            except Exception as e:
-                logs.warning(f"An error as occured with podman: {e}")
-                returncode = 1
-                log_err = "Container image not found" + self.options["image"]
-
-            for line in log_out.decode().split("\n"):
-                try:
-                    metadata = json.loads(line)
-                    return metadata
-                except json.decoder.JSONDecodeError:
-                    continue
-
-            raise Exception(f"Unable to get metadata in: {log_out.decode()}")

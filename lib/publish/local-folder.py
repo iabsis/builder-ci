@@ -8,13 +8,14 @@ Publish any files into a folder on your build server
 import os
 
 from lib.config import Config
+from lib.step import Step
 import lib.logs as logs
 import glob
 import shutil
 import traceback
 
 
-class Step:
+class BuildStep(Step):
 
     name = "local-folder"
 
