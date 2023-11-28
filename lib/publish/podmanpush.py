@@ -20,14 +20,6 @@ class BuildStep(Step):
         {
             "name": "destination",
             "description": "The tag destination where to send the image"
-        },
-        {
-            "name": "username",
-            "description": "The Docker username allowed to push image"
-        },
-        {
-            "name": "password",
-            "description": "The Docker password for user allowed to push image"
         }
     ]
 
@@ -40,8 +32,8 @@ class BuildStep(Step):
                 "tag"] else f"builder_{self.id}"
 
             auth_config = {
-                "username": self.options["username"],
-                "password": self.options["password"]
+                "username": config["username"],
+                "password": config["password"]
             }
 
             # Push the image
@@ -58,7 +50,7 @@ class BuildStep(Step):
                 returncode = 1
 
             if not self.options["keep_image"]:
-                self.log_out += client.images.remove(image=tag)
+                self.log_out = client.images.remove(image=tag)
 
             if not self.options["no_prune"]:
                 client.images.prune()

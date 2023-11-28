@@ -9,7 +9,6 @@ from podman import PodmanClient
 import os
 import json
 import lib.logs as logs
-
 from lib.step import Step
 
 

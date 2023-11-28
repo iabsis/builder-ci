@@ -148,13 +148,12 @@ class Worker:
                 return False
 
             result, log, err = r.runAction()
+            logdb.setLog(r.log_out, r.log_err)
         except:
-            err = traceback.format_exc()
-            log = None
+            # TODO : traceback is not saved in DB
             result = False
-
-        # Get and write the logs
-        logdb.setLog(r.log_out, r.log_err)
+            err = traceback.format_exc()
+            logdb.setLog(None, err)
 
         # General action depending of the result
         if result == True:
