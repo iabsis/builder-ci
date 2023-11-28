@@ -59,6 +59,9 @@ class BuildStep(Step):
             if not self.options["keep_image"]:
                 log_out += client.images.remove(image=tag)
 
+            if not self.options["no_prune"]:
+                client.images.prune()
+
             if not returncode == 0:
                 return [False, None, log_err]
             else:
