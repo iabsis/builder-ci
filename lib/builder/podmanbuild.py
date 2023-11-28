@@ -33,23 +33,22 @@ class BuildStep(Step):
                     rm=True
                 )
             except Exception as e:
-                log_err = f"Error with image build: {e}"
+                self.log_err = f"Error with image build: {e}"
                 returncode = 1
 
             self.meta["image_id"] = image.id
             logs.debug(f"Built image id: {image.id}")
 
-            log_out = ""
-            log_err = ""
+            self.log_out = ""
             for line in log_out_raw:
                 l = line.decode()
                 if 'stream' in l:
-                    log_out += json.loads(l)['stream']
+                    self.log_out += json.loads(l)['stream']
 
             if not returncode == 0:
-                return [False, None, log_err]
+                return [False, None, self.log_err]
             else:
-                return [True, log_out, None]
+                return [True, self.log_out, None]
 
     def detect(self):
         dockerfile = os.path.join(self.sources_path, "Dockerfile")

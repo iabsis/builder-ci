@@ -32,16 +32,16 @@ class BuildStep(Step):
         # Build the image
         returncode = 0
         try:
-            log_out = client.images.build(
+            self.log_out = client.images.build(
                 '.', tag=self.options["tag"], rm=True, pull=True, forcerm=True)
         except:
-            log_err = "Error with image: " + self.options["image"]
+            self.log_err = "Error with image: " + self.options["image"]
             returncode = 1
 
         if not returncode == 0:
-            return [False, None, log_err]
+            return [False, None, self.log_err]
         else:
-            return [True, log_out, log_out]
+            return [True, self.log_out, self.log_err]
 
     def getMeta(self):
 
@@ -50,13 +50,11 @@ class BuildStep(Step):
         client = docker.from_env()
         volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
 
-        returncode = 0
         try:
-            log_out = client.containers.run(
+            self.log_out = client.containers.run(
                 image=self.options["image"], command="meta", volumes=volume, remove=True, environment=self.options["env"])
         except:
-            returncode = 1
-            log_err = "Container image not found" + self.options["image"]
+            self.log_err = "Container image not found" + self.options["image"]
 
-        data = log_out.decode()
+        data = self.log_out.decode()
         return json.loads(data)

@@ -47,22 +47,23 @@ class BuildStep(Step):
             # Push the image
             returncode = 0
             try:
-                log_out = client.images.push(
+                self.log_out = client.images.push(
                     repository=tag,
                     destination=self.options["destination"],
                     auth_config=auth_config
                 )
             except:
-                log_err = "Error pushing image: " + self.options["destination"]
+                self.log_err = "Error pushing image: " + \
+                    self.options["destination"]
                 returncode = 1
 
             if not self.options["keep_image"]:
-                log_out += client.images.remove(image=tag)
+                self.log_out += client.images.remove(image=tag)
 
             if not self.options["no_prune"]:
                 client.images.prune()
 
             if not returncode == 0:
-                return [False, None, log_err]
+                return [False, None, self.log_err]
             else:
-                return [True, log_out, log_out]
+                return [True, self.log_out, self.log_err]

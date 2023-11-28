@@ -40,8 +40,8 @@ def runAction(self):
             logs.debug("Moving file: " + file)
             shutil.move(file, base_target)
     except:
-        log_err = traceback.format_exc()
+        self.log_err = traceback.format_exc()
 
-        return [False, None, log_err]
+        return [False, None, self.log_err]
 
     return [True, None, None]

@@ -59,12 +59,13 @@ class BuildStep(Step):
         response = requests.post(url, headers=headers, json=json)
 
         if not response.status_code == 200:
-            err = response.text
-            if err == "":
-                err = "API returned error code:" + str(response.status_code)
+            self.log_err = response.text
+            if self.log_err == "":
+                self.log_err = "API returned error code:" + \
+                    str(response.status_code)
             log = "API returned error code:" + str(response.status_code)
-            return [False, None, err]
+            return [False, None, self.log_err]
         else:
             self.meta["redmine_id"] = response.content.decode()
-            out = response.content
-            return [True, out, None]
+            self.log_out = response.content
+            return [True, self.log_out, None]

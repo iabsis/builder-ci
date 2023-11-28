@@ -61,12 +61,12 @@ class BuildStep(Step):
 
         process.wait()
 
-        log_out, log_err = process.communicate()
+        self.log_out, self.log_err = process.communicate()
 
         if not process.returncode == 0:
-            return [False, log_out, log_err]
+            return [False, self.log_out, self.log_err]
         else:
-            return [True, log_out, log_err]
+            return [True, self.log_out, self.log_err]
 
     def detect(self):
 

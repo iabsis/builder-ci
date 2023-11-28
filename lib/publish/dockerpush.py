@@ -21,6 +21,10 @@ class BuildStep(Step):
         {
             "name": "destination",
             "description": "The tag destination where to send the image"
+        },
+        {
+            "name": "tag",
+            "description": "The tag destination where to send the image"
         }
     ]
 
@@ -43,16 +47,16 @@ class BuildStep(Step):
 
         returncode = 0
         try:
-            log_out = client.images.push(
+            self.log_out = client.images.push(
                 tag=tag, destination=self.options["destination"])
         except:
-            log_err = "Error pushing image: " + self.options["image"]
+            self.log_err = "Error pushing image: " + self.options["image"]
             returncode = 1
 
         if not keep_image:
             log_out += client.images.remove(tag=self.options["tag"])
 
         if not returncode == 0:
-            return [False, None, log_err]
+            return [False, None, self.log_err]
         else:
-            return [True, log_out, log_out]
+            return [True, self.log_out, self.log_out]

@@ -20,21 +20,20 @@ class BuildStep(Step):
     name: str = "pbuilder"
     command: subprocess = "pbuilder"
 
+    mandatory_options = [
+        {
+            "name": "processor",
+            "description": "Processor Arch to use for the build"
+        },
+        {
+            "name": "dist",
+            "description": "Debian/Ubuntu distribution to use"
+        }
+    ]
+
     def runAction(self):
 
-        processor = self.options["processor"]
-        if not processor:
-            error = "processor is not defined into options"
-            logs.error(error)
-            return [False, None, error]
-
-        dist = self.options["dist"]
-        if not dist:
-            error = "dist is not defined into options"
-            logs.error(error)
-            return [False, None, error]
-
-        basetgz = self.options["basetgz"] + dist + "-" + processor + ".tgz"
+        basetgz = f"{self.options['basetgz']}{self.options['dist']}-{self.options['processor']}.tgz"
 
         cmd = [
             self.command_path,
