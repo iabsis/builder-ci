@@ -40,8 +40,8 @@ class BuildStep(Step):
                 "tag"] else f"builder_{self.id}"
 
             auth_config = {
-                "username": "iabsisch",
-                "password": "Vatt1ogCegMuj"
+                "username": self.options["username"],
+                "password": self.options["password"]
             }
 
             # Push the image
