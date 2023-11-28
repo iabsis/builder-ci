@@ -154,7 +154,7 @@ class Worker:
             result = False
 
         # Get and write the logs
-        logdb.setLog(log, err)
+        logdb.setLog(r.log_out, r.log_err)
 
         # General action depending of the result
         if result == True:

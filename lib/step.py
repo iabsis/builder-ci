@@ -59,7 +59,7 @@ class Step:
         for option in self.mandatory_options:
             if not self.options[option['name']]:
                 raise Exception(
-                    f"The option {option['name']} is mandatory: {option['description']}")
+                    f"The option {option['name']} is mandatory, here the purpose: {option['description']}")
 
     def _runCommand(self, command, **kargs):
         """Execute a specific command and return false if command failes to execute"""
