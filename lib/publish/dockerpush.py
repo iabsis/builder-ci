@@ -17,6 +17,12 @@ config = Config("docker")
 class BuildStep(Step):
 
     name = "dockerpush"
+    mandatory_options = [
+        {
+            "name": "destination",
+            "description": "The tag destination where to send the image"
+        }
+    ]
 
     def runAction(self):
 
@@ -32,9 +38,13 @@ class BuildStep(Step):
         client = docker.from_env()
 
         # Build the image
+        tag = self.options["tag"] if self.options[
+            "tag"] else f"builder_{self.id}"
+
         returncode = 0
         try:
-            log_out = client.images.push(tag=self.options["tag"])
+            log_out = client.images.push(
+                tag=tag, destination=self.options["destination"])
         except:
             log_err = "Error pushing image: " + self.options["image"]
             returncode = 1
@@ -46,19 +56,3 @@ class BuildStep(Step):
             return [False, None, log_err]
         else:
             return [True, log_out, log_out]
-
-    def getMeta(self):
-
-        client = docker.from_env()
-        volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
-
-        returncode = 0
-        try:
-            log_out = client.containers.run(
-                image=self.options["image"], command="meta", volumes=volume, remove=True, environment=self.options["env"])
-        except:
-            returncode = 1
-            log_err = "Container image not found" + self.options["image"]
-
-        data = log_out.decode()
-        return json.loads(data)
