@@ -19,17 +19,31 @@ mongo = MongoClient(mongo_uri)
 db = mongo.builder
 
 max_threads = int(config["max_threads"]) if config["max_threads"] else 1
-# It seems required to check current thread, probably mongo already use some
-current_threads = threading.active_count()
-
-projects_on_build = []
 
 
-def run_thread(id, name):
-    projects_on_build.append(name)
-    worker.start_build(id)
-    projects_on_build.remove(name)
+class runThread:
 
+    projects_on_build = []
+
+    def run_thread(self, id, name):
+
+        while name in self.projects_on_build:
+            logs.debug(
+                f"Project with name {name} already in queue, waiting 1 second")
+            sleep(1)
+
+        while len(self.projects_on_build) > max_threads:
+            logs.debug(
+                f"Max threads reached {len(self.projects_on_build)} (max {max_threads}), waiting 1 second")
+            sleep(1)
+
+        self.projects_on_build.append(name)
+        worker.start_build(str(id))
+        logs.debug(f"Projects currently building: {self.projects_on_build}")
+        self.projects_on_build.remove(name)
+
+
+t = runThread()
 
 change_stream = mongo.builder.build.watch()
 for change in change_stream:
@@ -39,16 +53,6 @@ for change in change_stream:
         id = change["fullDocument"]["_id"]
         name = change["fullDocument"]["project"]
 
-        while name in projects_on_build:
-            logs.debug(
-                f"Project with name {name} already in queue, waiting 1 second")
-            sleep(1)
-
-        while threading.active_count() > max_threads + current_threads:
-            logs.debug(
-                f"Max threads reached, waiting 1 second: {threading.active_count() - current_threads}")
-            sleep(1)
-
         logs.info(f"## Queuing {str(id)}")
-        t = threading.Thread(target=run_thread, args=[str(id), name])
-        t.start()
+        threading.Thread(target=t.run_thread, args=[
+                         str(id), name]).start()
