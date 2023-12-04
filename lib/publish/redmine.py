@@ -16,27 +16,31 @@ from lib.step import Step
 class BuildStep(Step):
 
     name = "redmine"
+    mandatory_options = [
+        {
+            "name": "file",
+            "description": "The file to upload into redmine files"
+        },
+        {
+            "name": "key",
+            "description": "The redmine key with upload to project permission"
+        }
+    ]
 
     def runAction(self):
-
-        file = self.options["file"]
-
-        if not file:
-            msg = "Error, you have to define file option"
-            logs.error(msg)
-            return [False, None, msg]
 
         headers = {
             'Content-Type': 'application/octet-stream',
             'X-Redmine-Api-Key': self.options["key"]
         }
 
-        logs.debug("Publishing file: " + file + " to Redmine")
+        logs.debug(f"Publishing file: {self.options['file']} to Redmine")
 
-        rootname = os.path.splitext(file)[0]
-        extension = os.path.splitext(file)[1]
-        filename = rootname + "_" + self.meta["version"] + extension
-        fullpath_filename = os.path.join(self.binary_path, file)
+        rootname = os.path.splitext(self.options["file"])[0]
+        extension = os.path.splitext(self.options["file"])[1]
+        filename = f"{rootname}_{self.meta['version']}{extension}"
+        fullpath_filename = os.path.join(
+            self.binary_path, self.options["file"])
         if self.options["override_name"]:
             name = self.options["override_name"]
         else:

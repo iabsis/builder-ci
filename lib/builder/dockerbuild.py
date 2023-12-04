@@ -45,8 +45,6 @@ class BuildStep(Step):
 
     def getMeta(self):
 
-        pwd = os.getcwd()
-
         client = docker.from_env()
         volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
 

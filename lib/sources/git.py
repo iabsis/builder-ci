@@ -49,14 +49,6 @@ class BuildStep(Step):
         else:
             return [True, self.log_out, self.log_err]
 
-    def cleanupAction(self):
-        try:
-            shutil.rmtree(self.sources_path)
-        except:
-            return False
-        else:
-            return True
-
     def getMeta(self):
 
         cmd = [

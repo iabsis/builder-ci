@@ -20,17 +20,17 @@ redmine_config = Config("redmine")
 class BuildStep(Step):
 
     name = "redwiki"
+    mandatory_options = [
+        {
+            "name": "file",
+            "description": "The file to upload into redmine files"
+        }
+    ]
 
     def runAction(self):
 
-        file = self.options["file"]
-
-        if not file:
-            msg = "Error, you have to define file option"
-            logs.error(msg)
-            return [False, None, msg]
-
-        fullpath_filename = os.path.join(self.binary_path, file)
+        fullpath_filename = os.path.join(
+            self.binary_path, self.options["file"])
         with open(fullpath_filename, 'r') as f:
             file_content = f.read()
 
@@ -45,7 +45,7 @@ class BuildStep(Step):
             'X-Redmine-Api-Key': self.options["key"]
         }
 
-        logs.debug("Publishing file: " + file + " to Redmine wiki")
+        logs.debug(f"Publishing file: {self.options['file']} to Redmine wiki")
 
         if self.options["override_name"]:
             name = self.options["override_name"]
