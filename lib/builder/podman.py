@@ -35,16 +35,5 @@ class BuildStep(Step):
                 "type": "bind"
             }]
 
-            returncode = 0
-            try:
-                self.log_out = client.containers.run(
-                    image=self.options["image"], mounts=mounts, remove=True, environment=self.options["env"], stderr=True)
-            except Exception as e:
-                logs.warning(f"An error as occured with podman: {e}")
-                self.log_err = "Error with image: " + self.options["image"]
-                returncode = 1
-
-            if not returncode == 0:
-                return [False, None, self.log_err]
-            else:
-                return [True, self.log_out, self.log_out]
+            self.log_out = client.containers.run(
+                image=self.options["image"], mounts=mounts, remove=True, environment=self.options["env"], stderr=True)

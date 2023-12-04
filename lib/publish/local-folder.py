@@ -27,21 +27,10 @@ def runAction(self):
     base_target = os.path.join(
         self.options["default_target"], self.meta["name"], target_path)
 
-    try:
-        os.makedirs(base_target)
-    except FileExistsError:
-        logs.debug("Target folder already exists")
-        pass
+    os.makedirs(base_target, exist_ok=True)
 
     logs.debug(self.binary_path + "/" + source_files)
 
-    try:
-        for file in glob.glob(self.binary_path + "/" + source_files):
-            logs.debug("Moving file: " + file)
-            shutil.move(file, base_target)
-    except:
-        self.log_err = traceback.format_exc()
-
-        return [False, None, self.log_err]
-
-    return [True, None, None]
+    for file in glob.glob(self.binary_path + "/" + source_files):
+        logs.debug("Moving file: " + file)
+        shutil.move(file, base_target)

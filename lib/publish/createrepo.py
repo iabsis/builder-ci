@@ -35,8 +35,6 @@ class BuildStep(Step):
 
         self._runCommand(cmd)
 
-        return [True, self.log_out, self.log_err]
-
     def detect(self):
         rpm = glob.glob(os.path.join(self.binary_path, "*.rpm"))
 

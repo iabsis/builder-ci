@@ -39,7 +39,6 @@ class runThread:
 
         self.projects_on_build.append(name)
         worker.start_build(str(id))
-        logs.debug(f"Projects currently building: {self.projects_on_build}")
         self.projects_on_build.remove(name)
 
 

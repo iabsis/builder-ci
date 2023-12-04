@@ -49,8 +49,6 @@ class BuildStep(Step):
         self._moveToBinary(file_to_move=["*.deb", "*.dsc", "*.changes",
                                          "*.xz", "*.tar.gz", "*.tar.bz2"])
 
-        return [True, self.log_out, self.log_err]
-
     def getMeta(self):
 
         with open(self.sources_path + "/debian/changelog", "r") as f:
@@ -59,8 +57,7 @@ class BuildStep(Step):
         version = f[2]
         dist = f[4]
         arch = self.options["processor"]
-        data = {"dist": dist, "version": version, "arch": arch}
-        return data
+        self.meta = {"dist": dist, "version": version, "arch": arch}
 
     def detect(self):
         debian_changelog = os.path.join(self.sources_path, "debian/changelog")

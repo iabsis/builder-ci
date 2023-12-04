@@ -67,10 +67,8 @@ class BuildStep(Step):
                 }
             }
 
-            file_response = requests.post(url, headers=headers, json=file_json)
+            response = requests.post(url, headers=headers, json=file_json)
 
-            if not file_response.status_code == 200:
-                self.log_err = "API returned error code:" + \
-                    str(file_response.text)
-                return [False, None, self.log_err]
-        return [True, None, None]
+            if not response.status_code == 200:
+                raise Exception(
+                    f"Error with redmine, got {response.status_code}, message: {response.text}")

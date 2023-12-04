@@ -33,9 +33,8 @@ class OptionsDb:
         except KeyError:
             options = self.config[attribute]
             if options == None:
-                message = "Options requested " + attribute + " at step " + \
-                    self.step + " and method " + self.method + " is missing"
-                logs.warning(message)
+                logs.info(
+                    f"Options requested {attribute} at step {self.step} and method {self.method} is missing")
             return options
 
     def __str__(self):

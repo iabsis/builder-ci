@@ -19,6 +19,12 @@ class BuildStep(Step):
 
     name = "apt-ftparchive"
     command = "apt-ftparchive"
+    mandatory_options = [
+        {
+            "name": "image",
+            "description": "The image name to build"
+        }
+    ]
 
     def runAction(self):
 
@@ -47,26 +53,9 @@ class BuildStep(Step):
                     raise Exception(f"Error while moving file: {e}")
 
         opts = f'-o APT::FTPArchive::Release::Architectures="{arch}" -o APT::FTPArchive::Release::Codename="{dist}"'
-
         cmd = f'{self.command_path} {opts} packages dists/{dist} > {sub_repository}/Packages ; {self.command_path} release dists/{dist} > {sub_repository}/Release'
 
-        logs.debug("Command passed: " + str(cmd))
-
-        process = subprocess.Popen(cmd,
-                                   bufsize=10240,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   shell=True,
-                                   cwd=debian_root)
-
-        process.wait()
-
-        self.log_out, self.log_err = process.communicate()
-
-        if not process.returncode == 0:
-            return [False, self.log_out, self.log_err]
-        else:
-            return [True, self.log_out, self.log_err]
+        self._runCommand(cmd, cwd=debian_root)
 
     def detect(self):
 

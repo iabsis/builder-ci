@@ -27,16 +27,10 @@ class BuildStep(Step):
 
         self._runCommand(cmd, cwd=self.build_path)
 
-        return [
-            True,
-            self.log_out,
-            self.log_err
-        ]
-
     def getMeta(self):
 
         redhat_specs = os.path.join(
-            self.build_path, "redhat", meta["name"] + ".spec")
+            self.build_path, "redhat", self.meta["name"] + ".spec")
         with open(redhat_specs) as f:
             for line in f.readlines():
                 if "Version:" in line:
@@ -44,13 +38,7 @@ class BuildStep(Step):
                 elif "Release" in line:
                     release = re.split(r'[\ \:\n]', line)[2]
 
-        try:
-            version = ver + "-" + release
-        except:
-            return None
-
-        meta = {"version": version}
-        return meta
+        self.meta["version"] = ver + "-" + release
 
     def detect(self):
         redhat_specs = os.path.join(

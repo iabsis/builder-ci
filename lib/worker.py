@@ -147,8 +147,9 @@ class Worker:
                 logs.info("### Duplicate build detected, stopping " + method)
                 return False
 
-            result, log, err = r.runAction()
+            r.runAction()
             logdb.setLog(r.log_out, r.log_err)
+            result = True
         except:
             # TODO : traceback is not saved in DB
             result = False

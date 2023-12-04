@@ -57,14 +57,5 @@ class BuildStep(Step):
             "HEAD"
         ]
 
-        process = subprocess.Popen(cmd,
-                                   bufsize=1024,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   cwd=self.sources_path)
-
-        commit_id, err = process.communicate()
-
-        data = {"commit_id": commit_id.decode()[:-1]}
-
-        return data
+        self._runCommand(cmd, cwd=self.sources_path)
+        self.meta['commit_id'] = self.log_out.decode()[:-1]

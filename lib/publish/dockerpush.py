@@ -45,18 +45,8 @@ class BuildStep(Step):
         tag = self.options["tag"] if self.options[
             "tag"] else f"builder_{self.id}"
 
-        returncode = 0
-        try:
-            self.log_out = client.images.push(
-                tag=tag, destination=self.options["destination"])
-        except:
-            self.log_err = "Error pushing image: " + self.options["image"]
-            returncode = 1
+        self.log_out = client.images.push(
+            tag=tag, destination=self.options["destination"])
 
         if not keep_image:
-            log_out += client.images.remove(tag=self.options["tag"])
-
-        if not returncode == 0:
-            return [False, None, self.log_err]
-        else:
-            return [True, self.log_out, self.log_out]
+            self.log_out += client.images.remove(tag=self.options["tag"])
