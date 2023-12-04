@@ -24,6 +24,10 @@ class BuildStep(Step):
         {
             "name": "file",
             "description": "The file to upload into redmine files"
+        },
+        {
+            "name": "page_name",
+            "description": "The target page name to send the wiki page"
         }
     ]
 
@@ -33,12 +37,6 @@ class BuildStep(Step):
             self.binary_path, self.options["file"])
         with open(fullpath_filename, 'r') as f:
             file_content = f.read()
-
-        page_name = self.options["page_name"]
-        if not page_name:
-            msg = "Error, you have to define target option"
-            logs.error(msg)
-            return [False, None, msg]
 
         headers = {
             'Content-Type': 'application/octet-stream',
@@ -52,7 +50,7 @@ class BuildStep(Step):
         else:
             name = self.meta["name"]
 
-        page_slug = slugify(page_name)
+        page_slug = slugify(self.options["page_name"])
 
         if not self.options["url"]:
             url = redmine_config["url"] + "/projects/" + \
@@ -63,7 +61,7 @@ class BuildStep(Step):
 
         content = {
             "wiki_page": {
-                "title": page_name,
+                "title": self.options["page_name"],
                 "text": file_content
             }
         }
