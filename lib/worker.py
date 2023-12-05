@@ -132,9 +132,7 @@ class Worker:
             return False
 
         try:
-            m = r.getMeta()
-            if m:
-                self.meta.mergeMeta(m)
+            r.getMeta()
         except:
             traceback.print_exc()
 
@@ -149,35 +147,19 @@ class Worker:
 
             r.runAction()
             logdb.setLog(r.log_out, r.log_err)
-            result = True
-        except:
-            # TODO : traceback is not saved in DB
-            result = False
-            err = traceback.format_exc()
-            logdb.setLog(None, err)
 
-        # General action depending of the result
-        if result == True:
-
-            # Save meta returned by step
             try:
-                m = r.getMeta()
-                if m:
-                    logs.debug("Got meta from step: " + str(m))
-                    self.meta.mergeMeta(m)
+                r.getMeta()
             except:
-                logs.warning("Unable to get meta at step " + step)
                 traceback.print_exc()
 
             logs.info(f"### Step {step} has finished successfully")
-        else:
-            logs.error(f"### Step {step} has failed with the following error")
-            try:
-                print(err.decode())
-            except:
-                print(err)
+            return True
 
-        return result
+        except:
+            err = traceback.format_exc()
+            logdb.setLog(None, err)
+            return False
 
     def __isDuplicate(self):
         request = {}

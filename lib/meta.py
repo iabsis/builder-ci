@@ -25,11 +25,11 @@ class Meta():
         return result
 
     def __setitem__(self, key, value):
-        logs.debug(f"Added new meta: {key}: {value}")
+        logs.debug(f"Added new meta: {key} |> {value}")
         self.meta[key] = value
         db.setMeta(self.id, self.meta)
 
     def mergeMeta(self, meta):
         for key, value in meta.items():
-            logs.debug(f"Added new meta: {key}: {value}")
+            logs.debug(f"Added new meta: {key} |> {value}")
             self.meta[key] = value
