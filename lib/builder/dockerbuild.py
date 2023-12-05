@@ -6,13 +6,14 @@ Build any kind of packages
 """
 
 import docker
-import os
-import config
+from lib.config import Config
 import json
 from shlex import quote
 
 
 from lib.step import Step
+
+config = Config("docker")
 
 
 class BuildStep(Step):

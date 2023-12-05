@@ -20,6 +20,7 @@ class BuildStep(Step):
 
         cmd = [
             self.command_path,
+            "--force-distribution",
             "-v",
             self.options["version"],
             "--distribution",

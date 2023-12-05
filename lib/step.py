@@ -33,6 +33,7 @@ class Step:
         self.id = id
 
         # Raise an error in case of mandatory option is missing
+        # TODO : Update to prevent useless logs
         self._errorOnMissingOption()
 
         # Check if a shell command is required

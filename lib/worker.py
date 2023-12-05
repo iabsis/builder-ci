@@ -156,8 +156,9 @@ class Worker:
             logs.info(f"### Step {step} has finished successfully")
             return True
 
-        except:
+        except Exception as e:
             err = traceback.format_exc()
+            logs.error(f"### Step {step} has failed: {err}")
             logdb.setLog(None, err)
             return False
 

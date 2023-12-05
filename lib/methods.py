@@ -69,9 +69,8 @@ class MethodsDb:
                     if m.detect():
                         self.methods.append(module)
                 except:
-                    logs.warning(f"Detect feature failed for {module}")
                     err = traceback.format_exc()
-                    logs.warning(err)
+                    logs.debug(f"Detect feature failed for {module}: {err}")
                     continue
             self.methods.remove("auto")
 #            self.delDuplicates()
