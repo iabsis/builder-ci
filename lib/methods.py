@@ -55,13 +55,13 @@ class MethodsDb:
     def delDuplicates(self):
         self.methods = list(dict.fromkeys(self.methods))
 
-    def runAuto(self):
+    def runAuto(self, options):
         if "auto" in self.methods:
             logs.debug("auto method invoked, attempt to find automatically")
             step_path = os.path.join("lib", self.step)
             for file in glob.glob(step_path + "/*.py"):
                 module = os.path.basename(file).replace(".py", "")
-                options = Nothing()
+                # options = Nothing()
                 try:
                     imported_lib = importlib.import_module(
                         f"lib.{self.step}.{module}")
