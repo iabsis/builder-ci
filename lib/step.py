@@ -59,6 +59,8 @@ class Step:
     def _errorOnMissingOption(self):
         for option in self.mandatory_options:
             if not self.options[option['name']]:
+                # logs.warning(
+                #     f"The option {option['name']} is mandatory, this module may failes, here the purpose: {option['description']}")
                 raise Exception(
                     f"The option {option['name']} is mandatory, here the purpose: {option['description']}")
 

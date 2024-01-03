@@ -7,7 +7,7 @@ import os
 import glob
 import importlib
 import traceback
-from lib.options import Nothing
+from lib.options import Nothing, OptionsDb, OptionsYaml
 from lib.config import Config
 import yaml
 
@@ -55,13 +55,18 @@ class MethodsDb:
     def delDuplicates(self):
         self.methods = list(dict.fromkeys(self.methods))
 
-    def runAuto(self, options):
+    def runAuto(self):
         if "auto" in self.methods:
             logs.debug("auto method invoked, attempt to find automatically")
             step_path = os.path.join("lib", self.step)
             for file in glob.glob(step_path + "/*.py"):
                 module = os.path.basename(file).replace(".py", "")
                 # options = Nothing()
+                # Auto
+                if self.methodFrom == "db":
+                    options = OptionsDb(self.id, self.step, module, idx=0)
+                else:
+                    options = OptionsYaml(self.id, self.step, module, idx=0)
                 try:
                     imported_lib = importlib.import_module(
                         f"lib.{self.step}.{module}")

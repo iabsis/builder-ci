@@ -79,12 +79,7 @@ class Worker:
             logs.debug("Loaded methods from Db")
             methods = MethodsDb(self.id, step, self.meta)
 
-        # Auto
-        if methods.methodFrom == "db":
-            options = OptionsDb(self.id, step, "auto", idx=0)
-        else:
-            options = OptionsYaml(self.id, step, "auto", idx=0)
-        methods.runAuto(options)
+        methods.runAuto()
 
         # Stop in case of process is not defined and step mandatory
         if not methods.hasMethods:
