@@ -144,4 +144,4 @@ This is not recommended unless you protect the entry points with nginx and authe
 
 ### Can I use Podman instead of Docker ?
 
-I have not tried it yet, if you do try please let me know what happened ;-)
+Sure, it will come soon.
