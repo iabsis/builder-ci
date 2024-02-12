@@ -1,3 +1,46 @@
+builder-ci (0.1.1.0) buster; urgency=medium
+
+  * Disable build source (speed up builds)
+  * Untested dockerbuild method
+  * Use proper Config object
+  * Rewrite with Step object
+  * Debug since refactor
+  * Fix fallback to default config
+  * Fix missing refactor
+  * Cleanup when command is used
+  * Adding podman
+  * Remove auto-detect as it doesn't make sense
+  * Various fixes
+  * New methods to execute command and move files
+  * Add missing object
+  * Refactor worker
+  * Refactor objects
+  * Cleanup and comments
+  * Add method to check mandatory options
+  * Many small fixes and refactor and new methods podman
+  * Fix dockerpush method
+  * Add cred from option
+  * lib/publish/podmanpush.py
+  * Storing logs into object
+  * Get logs from object
+  * Fixing bug on podman build
+  * First draft with threads
+  * Handling project name to avoid building same project multiple time
+  * Finishing parallel build
+  * Continuing refactor/cleanup code
+  * Doing few fixes for wiki redmine
+  * Raise exception on method instead of getting strange return
+  * Update the way meta are stored
+  * Various refactor and bug fixes
+  * Update watcher
+  * Update auto method to transmit options
+  * Fix auto method
+  * #6379 @1h I updated a super comment
+  * I updated a super file, refs #6379 @1h
+  * New cleanup action
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 12 Feb 2024 17:34:49 +0100
+
 builder-ci (1.0.12) buster; urgency=medium
 
   * Rebuild since merge.
