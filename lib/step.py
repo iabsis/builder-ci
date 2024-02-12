@@ -53,8 +53,8 @@ class Step:
                 self.command_path = stdout.splitlines()[0]
 
         # Init empty logs
-        self.log_out = None
-        self.log_err = None
+        self.log_out = ""
+        self.log_err = ""
 
     def _errorOnMissingOption(self):
         for option in self.mandatory_options:

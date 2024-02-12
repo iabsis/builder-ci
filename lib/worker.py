@@ -146,6 +146,7 @@ class Worker:
                 return False
 
             r.runAction()
+            r.cleanupAction()
             logdb.setLog(r.log_out, r.log_err)
 
             try:

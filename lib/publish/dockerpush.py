@@ -31,11 +31,6 @@ class BuildStep(Step):
     def runAction(self):
 
         # Check for mandatory info
-        if not self.options["tag"]:
-            log_err = "Error, tag must be defined"
-            return [False, False, log_err]
-
-        # Check for mandatory info
         # Check if we keep image
         keep_image = self.options["keep_image"]
 
