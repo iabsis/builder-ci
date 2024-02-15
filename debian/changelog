@@ -1,3 +1,9 @@
+builder-ci (0.1.1.1) buster; urgency=medium
+
+  * New override method way from config
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 15 Feb 2024 09:21:54 +0100
+
 builder-ci (0.1.1.0) buster; urgency=medium
 
   * Disable build source (speed up builds)
