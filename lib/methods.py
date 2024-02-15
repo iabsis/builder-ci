@@ -12,6 +12,7 @@ from lib.config import Config
 import yaml
 
 config = Config("default")
+override_methods = Config("override_methods")
 
 
 class MethodsDb:
@@ -43,7 +44,13 @@ class MethodsDb:
 
     @property
     def all(self):
-        return self.methods
+        methods = []
+        for method in self.methods:
+            if override_methods[method]:
+                methods.append(override_methods[method])
+                continue
+            methods.append(method)
+        return methods
 
     @property
     def hasMethods(self):
