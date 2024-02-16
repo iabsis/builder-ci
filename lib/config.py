@@ -8,7 +8,7 @@ config = ConfigParser()
 
 config_trial_path = [
     "config.ini",
-    "/etc/builder-ci/builder-ci.ini"
+    "/etc/builder-ci/builder-ci.conf"
 ]
 
 for file in config_trial_path:

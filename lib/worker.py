@@ -15,6 +15,7 @@ from lib.build import Build
 from datetime import datetime
 
 config = Config("default")
+override_methods = Config("override_methods")
 
 
 class Worker:
@@ -104,6 +105,8 @@ class Worker:
             else:
                 options = OptionsYaml(self.id, step, method, idx=idx)
             logdb = logs.Log(self.id, step, method)
+            if override_methods[method]:
+                method = override_methods[method]
             result = self.__runMethod(step, method, options, logdb, force)
             results.append(result)
             idx = idx + 1
@@ -121,8 +124,8 @@ class Worker:
         # Initialize the method
         if not method == None:
             try:
-                lib = step + "." + method
-                imported_lib = importlib.import_module(f"lib.{lib}")
+                lib = f"lib.{step}.{method}"
+                imported_lib = importlib.import_module(lib)
                 r = imported_lib.BuildStep(self.id, options, self.meta)
             except:
                 logs.error("Unable to import module: " + lib)
