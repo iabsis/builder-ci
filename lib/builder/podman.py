@@ -24,9 +24,16 @@ class BuildStep(Step):
         }
     ]
 
+    def __init__(self, id, options, meta) -> None:
+        if options['url']:
+            self.url = options['url']
+        else:
+            self.url = "unix:///run/podman/podman.sock"
+        super().__init__(id, options, meta)
+
     def runAction(self):
 
-        with PodmanClient() as client:
+        with PodmanClient(base_url=self.url) as client:
 
             mounts = [{
                 "target": "/build",
