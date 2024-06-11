@@ -4,8 +4,6 @@ set +e
 
 arg=$1
 
-apt update
-
 case $arg in
     meta)
 
@@ -14,6 +12,8 @@ case $arg in
         echo "{\"version\": \"$version\", \"dist\": \"$dist\", \"arch\": \"amd64\"}"
     ;;
     *)
+
+        apt update
 
         # Run hooks
         if [ -d debian/hooks ] ; then
