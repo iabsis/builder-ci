@@ -1,5 +1,0 @@
-publish:
-- method: auto
-- method: redmine
-  options:
-    file: api-call.json
