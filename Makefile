@@ -17,7 +17,7 @@ install:
 	cp cli.py $(DESTDIR)/usr/bin/builder-ci
 	sed -i "s|sys.path.append.*|sys.path.append(\'$(STATIC)/$(PROJECT)/lib\')|"  $(DESTDIR)/usr/bin/builder-ci
 	sed -i "s|sys.path.append.*|sys.path.append(\'$(STATIC)/$(PROJECT)/lib\')|"  $(DESTDIR)$(STATIC)/$(PROJECT)/listener.py
-	sed -i "s|config.read.*|config.read(\'/etc/builder-ci/builder-ci.conf\')|" $(DESTDIR)$(STATIC)/$(PROJECT)/lib/config.py
+	# sed -i "s|config.read.*|config.read(\'/etc/builder-ci/builder-ci.conf\')|" $(DESTDIR)$(STATIC)/$(PROJECT)/lib/config.py
 	
 	## Copy config template
 	mkdir -p $(DESTDIR)/etc/$(PROJECT)

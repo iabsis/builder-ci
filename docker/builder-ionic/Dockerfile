@@ -1,7 +1,11 @@
-FROM debian:9
+FROM debian:10
+
+RUN apt update && apt -y install curl unzip build-essential zipalign
+
+RUN echo "deb http://deb.debian.org/debian sid main contrib non-free" >> /etc/apt/sources.list
 
 ## Install Basics
-RUN apt update && apt -y install curl openjdk-8-jdk-headless unzip build-essential zipalign
+RUN apt update && apt -y install openjdk-8-jdk-headless
 
 ## Install NodeJS
 RUN curl --silent --location https://deb.nodesource.com/setup_14.x | bash -
@@ -24,10 +28,10 @@ ENV ANDROID_SDK_ROOT /opt/android-sdk-linux
 ENV ANDROID_SDK /opt/android-sdk-linux
 ENV PATH ${PATH}:${ANDROID_SDK}/tools/bin
 RUN mkdir ${ANDROID_SDK} && \
-    cd ${ANDROID_SDK} && \
-    curl -SLo sdk-tools-linux.zip https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip && \
-    unzip sdk-tools-linux.zip && \
-    rm -f sdk-tools-linux.zip
+  cd ${ANDROID_SDK} && \
+  curl -SLo sdk-tools-linux.zip https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip && \
+  unzip sdk-tools-linux.zip && \
+  rm -f sdk-tools-linux.zip
 
 RUN yes | sdkmanager --licenses
 RUN sdkmanager "tools" && \  
@@ -39,8 +43,8 @@ RUN sdkmanager "tools" && \
 ENV GRADLE_HOME=/opt/gradle/gradle-6.5
 ENV PATH ${PATH}:${GRADLE_HOME}/bin
 RUN curl -SLo gradle-bin.zip https://services.gradle.org/distributions/gradle-6.5-bin.zip && \
-    unzip -d /opt/gradle/ gradle-bin.zip && \
-    rm -f gradle-bin.zip
+  unzip -d /opt/gradle/ gradle-bin.zip && \
+  rm -f gradle-bin.zip
 
 ## Builder command
 WORKDIR /build/sources
