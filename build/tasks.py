@@ -1,5 +1,6 @@
 import logging
 import importlib
+import traceback
 from celery import Celery
 from django.conf import settings
 from . import models
@@ -19,23 +20,27 @@ def run_build(id):
 
     for step in settings.STEPS_ORDER:
 
-        method_count = 0
+        one_success = False
         for module, method_options in lib_get_methods(step, build):
-            method_count += 1
             try:
-                method = importlib.import_module(f'build.method.{step}.{module}')
-                method_instance: StepAbstract = method.Step(
+                # method = importlib.import_module(f'build.methods.{step}.{module}')
+                method_instance: StepAbstract = module.Step(
                     build, method_options)
                 if method_instance.is_healthy:
                     method_instance.run()
+                    one_success = True
+                check_duplicate(build)
             except Exception as e:
+                print(traceback.format_exc())
                 logger.error(f"Encountered exception: {e}")
-                build.status = models.BuildStatus.failed
+                build.status = models.BuildStatus.warning
                 build.save()
         
-        print(method_count)
-            
-        check_duplicate(build)
+        if not one_success:
+            if step in settings.ONE_STEPS_MANDATORY:
+                build.status = models.BuildStatus.warning
+                build.save()
+                return
 
 def lib_get_methods(step: str, build: models.Build):
     
@@ -47,10 +52,14 @@ def lib_get_methods(step: str, build: models.Build):
                 yield module, method_options
 
     if isinstance(build.options, dict):
-        method_name = build.options.get("method")
-        method_options = build.options.get("options")
-        for module in yield_load_module(step, method_name):
-            yield module, method_options
+        if build.options.get(step):
+            method_name = build.options.get(step).get("method")
+            method_options = build.options.get(step).get("options")
+            for module in yield_load_module(step, method_name):
+                yield module, method_options
+        else:
+            for module in yield_load_module(step, 'auto'):
+                yield module, method_options
 
 def yield_load_module(step: str, method: str):
     logger.debug(f"Loading method: {method} at step: {step}")
@@ -58,13 +67,15 @@ def yield_load_module(step: str, method: str):
         modules = all_step_modules(step)
         for module in modules:
             yield module
+        return
+
     try:
-        modules = importlib.import_module(
-            f'build.methods.{step}').__all__
+        module = importlib.import_module(
+            f'build.methods.{step}.{method}')
+        yield module
     except Exception as e:
         raise Exception(
-            f"Unable to get auto method for step {step}: {e}")
-    yield module
+            f"Unable to load module method for step {step}: {e}")
 
 def all_step_modules(step: str):
     try:

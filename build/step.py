@@ -8,13 +8,14 @@ from django.conf import settings
 import glob
 import shutil
 
-logger = logging.getLogger(__name__)
+
 
 class StepException(Exception):
     pass
 
 class StepAbstract:
 
+    logger = logging.getLogger(__name__)
     name = "defaultstep"
     command = None
     required_options = [
@@ -43,13 +44,13 @@ class StepAbstract:
     @property
     def build_path(self) -> str:
         '''Return the temporary folder path everything is done'''
-        os.path.join(
-            os.getcwd(), settings["build_location"], self.id)
+        return os.path.join(
+            os.getcwd(), settings.BUILD_LOCATION, str(self.id))
 
     @property
     def sources_path(self) -> str:
         '''Return the full folder path where are stored sources'''
-        os.path.join(self.build_path, "sources")
+        return os.path.join(self.build_path, "sources")
 
     @property
     def binary_path(self) -> str:
@@ -79,27 +80,44 @@ class StepAbstract:
     def _run_command(self, command, **kargs):
         """Execute a specific command and return false if command failes to execute"""
 
-        logger.debug("Command passed: " + str(command))
+        self.logger.debug("Command passed: " + str(command))
+        self.logger.debug(kargs)
 
         if "cwd" not in kargs:
             kargs['cwd'] = self.sources_path,
 
-        process = subprocess.Popen(command,
-                                   **kargs,
-                                   bufsize=10240,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   )
+        process = subprocess.Popen(
+            command,
+            **kargs,
+            bufsize=10240,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
         process.wait()
 
         log_out, log_err = process.communicate()
 
-        logger.debug(f"Command {command} returned: {log_out}, {log_err}")
+        self.logger.debug(f"Command {command} returned: {log_out}, {log_err}")
 
         if process.returncode:
             raise StepException(
                 f"An error as occured during the build: {log_err}")
+
+    def _which(self, command):
+        process = subprocess.Popen(["which", command],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+
+        if stderr:
+            self.logger.warning(stderr)
+
+        if not stdout:
+            self.logger.error("ERROR: {command} is not found")
+        else:
+            return stdout.splitlines()[0]
+
 
     def _move_to_binary_folder(self, files_to_move):
         self._move(files_to_move, self.binary_path)
@@ -108,11 +126,11 @@ class StepAbstract:
         try:
             os.makedirs(target)
         except FileExistsError:
-            logger.debug(f"Folder {target} already exists")
+            self.logger.debug(f"Folder {target} already exists")
 
         for wildcard in files_to_move:
             for file in glob.glob(f"{self.sources_path}/{wildcard}"):
-                logger.debug(f"Move file {file} to {target}")
+                self.logger.debug(f"Move file {file} to {target}")
                 shutil.move(file, target)
 
     @property

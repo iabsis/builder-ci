@@ -44,6 +44,9 @@ DUPLICATES_ON_META = os.getenv('STEPS_EVERY_LOOP') if os.getenv(
     'STEPS_EVERY_LOOP') else ["name", "version"]
 STEPS_END_WITH = os.getenv('STEPS_END_WITH') if os.getenv(
     'STEPS_END_WITH') else ["notify"]
+ONE_STEPS_MANDATORY = os.getenv('ONE_STEPS_MANDATORY') if os.getenv(
+    'ONE_STEPS_MANDATORY') else ["sources", "builder", "publish"]
+BUILD_LOCATION = os.getenv('BUILD_LOCATION')
 
 # Application definition
 
@@ -148,3 +151,17 @@ CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_RESULT_EXTENDED = True
 CELERY_TRACK_STARTED = True
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}

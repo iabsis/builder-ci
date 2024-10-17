@@ -7,10 +7,7 @@ Get source files from git
 
 import subprocess
 import os
-
-from lib.config import Config
 import shutil
-import lib.logs as logs
 from ...step import StepAbstract
 
 class Step(StepAbstract):
@@ -18,42 +15,33 @@ class Step(StepAbstract):
     name = "git"
     command = "git"
 
+    def __init__(self, build, options):
+        super().__init__(build, options)
+        self.branch = options.get("branch") if options.get("branch") else 'master'
+        self.url = self.options["url"]
+
     def run(self):
-        url = self.options["url"]
-        branch = self.options["branch"]
+        
+        self._run_command(
+            [
+                self._which(self.command),
+                "clone",
+                "--depth",
+                "1",
+                self.url,
+                "--branch",
+                self.branch,
+            ],
+            cwd=self.sources_path
+        )
 
-        cmd = [
-            self.command_path,
-            "clone",
-            "--depth",
-            "1",
-            url,
-            "--branch",
-            branch,
-            self.sources_path
-        ]
+    @property
+    def meta(self):
 
-        logs.debug("Command passed: " + str(cmd))
-
-        process = subprocess.Popen(cmd,
-                                   bufsize=10240,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-
-        self.log_out, self.log_err = process.communicate()
-
-        if not process.returncode == 0:
-            return [False, self.log_out, self.log_err]
-        else:
-            return [True, self.log_out, self.log_err]
-
-    def getMeta(self):
-
-        cmd = [
-            self.command_path,
+        self._run_command(
+            self._which(self.command),
             "rev-parse",
             "HEAD"
-        ]
+        )
 
-        self._runCommand(cmd, cwd=self.sources_path)
         self.meta['commit_id'] = self.log_out.decode()[:-1]
