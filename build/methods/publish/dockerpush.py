@@ -5,7 +5,7 @@
 Build any kind of packages
 """
 
-from lib.step import Step
+from ...step import StepAbstract
 import docker
 import os
 from lib.config import Config
@@ -14,7 +14,7 @@ import json
 config = Config("docker")
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "dockerpush"
     mandatory_options = [
@@ -28,7 +28,7 @@ class BuildStep(Step):
         }
     ]
 
-    def runAction(self):
+    def run(self):
 
         # Check for mandatory info
         # Check if we keep image

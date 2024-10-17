@@ -9,10 +9,11 @@ import docker
 import os
 import json
 
-from lib.step import Step
+
+from ...step import StepAbstract
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "docker"
     command = "docker"
@@ -23,7 +24,7 @@ class BuildStep(Step):
         }
     ]
 
-    def runAction(self):
+    def run(self):
 
         client = docker.from_env()
         volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}

@@ -10,11 +10,11 @@ import lib.logs as logs
 import glob
 import shutil
 
-from lib.step import Step
+from ...step import StepAbstract
 from pkg_resources import parse_version
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "apt-ftparchive"
     command = "apt-ftparchive"
@@ -29,7 +29,7 @@ class BuildStep(Step):
         sub_repository = os.path.join("dists", dist, "main", "binary-" + arch)
         return os.path.join(debian_root, sub_repository)
 
-    def runAction(self):
+    def run(self):
 
         try:
             os.makedirs(self.base_target)

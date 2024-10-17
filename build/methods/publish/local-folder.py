@@ -8,19 +8,19 @@ Publish any files into a folder on your build server
 import os
 
 from lib.config import Config
-from lib.step import Step
+from ...step import StepAbstract
 import lib.logs as logs
 import glob
 import shutil
 import traceback
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "local-folder"
 
 
-def runAction(self):
+def run(self):
 
     source_files = self.options["source_files"]
     target_path = self.options["target_path"]

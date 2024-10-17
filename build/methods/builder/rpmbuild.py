@@ -9,15 +9,16 @@ import subprocess
 import os
 import re
 import lib.logs as logs
-from lib.step import Step
+
+from ...step import StepAbstract
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "rpmbuild"
     command = "rpmbuild"
 
-    def runAction(self):
+    def run(self):
 
         redhat_specs = os.path.join(self.build_path, "redhat",
                                     self.meta["name"] + ".spec")

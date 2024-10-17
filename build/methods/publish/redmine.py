@@ -10,10 +10,10 @@ import os
 import json
 import lib.logs as logs
 
-from lib.step import Step
+from ...step import StepAbstract
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "redmine"
     mandatory_options = [
@@ -27,7 +27,7 @@ class BuildStep(Step):
         }
     ]
 
-    def runAction(self):
+    def run(self):
 
         headers = {
             'Content-Type': 'application/octet-stream',

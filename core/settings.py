@@ -11,10 +11,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+try:
+    dotenv_path = os.path.join(BASE_DIR, '.env')
+    load_dotenv(dotenv_path)
+except Exception as e:
+    print(f"Unable to load file: {dotenv_path}")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -23,10 +30,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*x8(_t)iy&596ufar(i-&3dk5i$vf3m#3w3k84d=k@a=zx^9*r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = []
+APPEND_SLASH = True
 
+# Builder specific config
+STEPS_ORDER = os.getenv('STEPS_ORDER') if os.getenv('STEPS_ORDER') else [
+    "sources", "config", "patcher", "builder", "publish"]
+STEPS_EVERY_LOOP = os.getenv('STEPS_EVERY_LOOP') if os.getenv(
+    'STEPS_EVERY_LOOP') else ["notify"]
+DUPLICATES_ON_META = os.getenv('STEPS_EVERY_LOOP') if os.getenv(
+    'STEPS_EVERY_LOOP') else ["name", "version"]
+STEPS_END_WITH = os.getenv('STEPS_END_WITH') if os.getenv(
+    'STEPS_END_WITH') else ["notify"]
 
 # Application definition
 

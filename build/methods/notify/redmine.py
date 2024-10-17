@@ -8,12 +8,12 @@ Send build notification to Redmine by using Redmine Builder CI plugin.
 import requests
 import lib.logs as logs
 
-from lib.step import Step
+from ...step import StepAbstract
 
 
-class BuildStep(Step):
+class Step(StepAbstract):
 
-    def runAction(self):
+    def run(self):
 
         headers = {
             'Content-Type': 'application/json',

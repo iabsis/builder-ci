@@ -5,7 +5,7 @@
 Build any kind of packages
 """
 
-from lib.step import Step
+from ...step import StepAbstract
 from podman import PodmanClient
 from lib.config import Config
 import json
@@ -13,7 +13,7 @@ import json
 config = Config("docker")
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "podmanpush"
     mandatory_options = [
@@ -23,7 +23,7 @@ class BuildStep(Step):
         }
     ]
 
-    def runAction(self):
+    def run(self):
 
         with PodmanClient() as client:
 

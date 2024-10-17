@@ -12,12 +12,12 @@ import lib.logs as logs
 from lib.config import Config
 from slugify import slugify
 
-from lib.step import Step
+from ...step import StepAbstract
 
 redmine_config = Config("redmine")
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "redwiki"
     mandatory_options = [
@@ -31,7 +31,7 @@ class BuildStep(Step):
         }
     ]
 
-    def runAction(self):
+    def run(self):
 
         fullpath_filename = os.path.join(
             self.binary_path, self.options["file"])

@@ -11,12 +11,12 @@ import json
 from shlex import quote
 
 
-from lib.step import Step
+from ...step import StepAbstract
 
 config = Config("docker")
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "dockerbuild"
     mandatory_options = [
@@ -26,7 +26,7 @@ class BuildStep(Step):
         }
     ]
 
-    def runAction(self):
+    def run(self):
 
         client = docker.from_env()
 

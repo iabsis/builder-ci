@@ -11,16 +11,14 @@ import os
 from lib.config import Config
 import shutil
 import lib.logs as logs
+from ...step import StepAbstract
 
-from lib.step import Step
-
-
-class BuildStep(Step):
+class Step(StepAbstract):
 
     name = "git"
     command = "git"
 
-    def runAction(self):
+    def run(self):
         url = self.options["url"]
         branch = self.options["branch"]
 

@@ -9,13 +9,13 @@ import os
 from lib.step import Step
 import glob
 
-
-class BuildStep(Step):
+from ...step import StepAbstract
+class BuildStep(StepAbstract):
 
     name = "createrepo"
     command = "createrepo"
 
-    def runAction(self):
+    def run(self):
 
         base_target = os.path.join(
             self.options["default_target"], self.meta["name"], "redhat")

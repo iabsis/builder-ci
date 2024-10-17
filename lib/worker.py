@@ -148,7 +148,7 @@ class Worker:
                 logs.info("### Duplicate build detected, stopping " + method)
                 return False
 
-            r.runAction()
+            r.run()
             r.cleanupAction()
             logdb.setLog(r.log_out, r.log_err)
 

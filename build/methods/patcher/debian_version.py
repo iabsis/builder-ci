@@ -8,15 +8,15 @@ import re
 from lib.config import Config
 import lib.logs as logs
 
-from lib.step import Step
+from ...step import StepAbstract
 
 
-class BuildStep(Step):
+class Step(StepAbstract):
 
     name = "debian_version"
     command = "dch"
 
-    def runAction(self):
+    def run(self):
 
         cmd = [
             self.command_path,

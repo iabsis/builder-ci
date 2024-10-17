@@ -12,10 +12,10 @@ import re
 import lib.logs as logs
 
 
-from lib.step import Step
+from ...step import StepAbstract
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name: str = "pbuilder"
     command: subprocess = "pbuilder"
@@ -31,7 +31,7 @@ class BuildStep(Step):
         }
     ]
 
-    def runAction(self):
+    def run(self):
 
         basetgz = f"{self.options['basetgz']}{self.options['dist']}-{self.options['processor']}.tgz"
 

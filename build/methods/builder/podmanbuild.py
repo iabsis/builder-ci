@@ -9,10 +9,11 @@ from podman import PodmanClient
 import os
 import json
 import lib.logs as logs
-from lib.step import Step
+
+from ...step import StepAbstract
 
 
-class BuildStep(Step):
+class BuildStep(StepAbstract):
 
     name = "podmanbuild"
 
@@ -23,7 +24,7 @@ class BuildStep(Step):
             self.url = "unix:///run/podman/podman.sock"
         super().__init__(id, options, meta)
 
-    def runAction(self):
+    def run(self):
 
         with PodmanClient(base_url=self.url) as client:
 
