@@ -30,3 +30,11 @@ class Build(models.Model):
     logs = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class BuildImage(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    rules = models.TextField()
+    method = models.CharField(max_length=15)
+    type = models.CharField(choices=StepType.choices, max_length=15)
+    meta = models.JSONField()
+    logs = models.JSONField()
