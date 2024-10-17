@@ -44,8 +44,12 @@ class StepAbstract:
     @property
     def build_path(self) -> str:
         '''Return the temporary folder path everything is done'''
-        return os.path.join(
+        path = os.path.join(
             os.getcwd(), settings.BUILD_LOCATION, str(self.id))
+        if not os.path.exists(path):
+            self.logger.debug(f"Creating folder {self.path}")
+            os.mkdir(path)
+        return path
 
     @property
     def sources_path(self) -> str:
@@ -80,15 +84,14 @@ class StepAbstract:
     def _run_command(self, command, **kargs):
         """Execute a specific command and return false if command failes to execute"""
 
-        self.logger.debug("Command passed: " + str(command))
-        self.logger.debug(kargs)
+        self.logger.debug(f"Command passed: {command}")
 
         if "cwd" not in kargs:
             kargs['cwd'] = self.sources_path,
 
         process = subprocess.Popen(
             command,
-            **kargs,
+            # **kargs,
             bufsize=10240,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -116,7 +119,7 @@ class StepAbstract:
         if not stdout:
             self.logger.error("ERROR: {command} is not found")
         else:
-            return stdout.splitlines()[0]
+            return stdout.splitlines()[0].decode()
 
 
     def _move_to_binary_folder(self, files_to_move):

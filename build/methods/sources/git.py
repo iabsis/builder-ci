@@ -31,17 +31,17 @@ class Step(StepAbstract):
                 self.url,
                 "--branch",
                 self.branch,
-            ],
-            cwd=self.sources_path
+                self.sources_path
+            ]
         )
 
     @property
     def meta(self):
 
-        self._run_command(
+        self._run_command([
             self._which(self.command),
             "rev-parse",
             "HEAD"
-        )
+        ])
 
         self.meta['commit_id'] = self.log_out.decode()[:-1]
