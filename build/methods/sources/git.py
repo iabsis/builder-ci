@@ -5,9 +5,6 @@
 Get source files from git
 """
 
-import subprocess
-import os
-import shutil
 from ...step import StepAbstract
 
 class Step(StepAbstract):
@@ -35,13 +32,12 @@ class Step(StepAbstract):
             ]
         )
 
-    @property
-    def meta(self):
-
-        self._run_command([
+        stdout, stderr = self._run_command([
             self._which(self.command),
             "rev-parse",
             "HEAD"
         ])
 
-        self.meta['commit_id'] = self.log_out.decode()[:-1]
+        self.logger.debug(stdout)
+
+        self.build.meta['commit_id'] = stdout.decode()[:-1]

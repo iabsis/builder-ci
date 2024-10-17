@@ -1,7 +1,6 @@
 
 import subprocess
 import os
-import errno
 import logging
 from build.models import Build
 from django.conf import settings
@@ -32,6 +31,9 @@ class StepAbstract:
         self.build = build
         self.options = options
         self.executed = False
+
+        if not self.build.meta:
+            self.build.meta = {}
     
     @property
     def meta(self) -> dict:
@@ -81,7 +83,7 @@ class StepAbstract:
                 raise StepException(
                     f"The option {option['name']} is mandatory, here the purpose: {option['description']}")
 
-    def _run_command(self, command, **kargs):
+    def _run_command(self, command, **kargs) -> tuple[bytes, bytes]:
         """Execute a specific command and return false if command failes to execute"""
 
         self.logger.debug(f"Command passed: {command}")
@@ -101,11 +103,13 @@ class StepAbstract:
 
         log_out, log_err = process.communicate()
 
-        self.logger.debug(f"Command {command} returned: {log_out}, {log_err}")
+        self.logger.debug(f"Command {command} returned: {log_out.decode()}, {log_err.decode()}")
 
         if process.returncode:
             raise StepException(
-                f"An error as occured during the build: {log_err}")
+                f"An error as occured during the build: {log_err.decode()}")
+        
+        return log_out, log_err
 
     def _which(self, command):
         process = subprocess.Popen(["which", command],
@@ -135,7 +139,3 @@ class StepAbstract:
             for file in glob.glob(f"{self.sources_path}/{wildcard}"):
                 self.logger.debug(f"Move file {file} to {target}")
                 shutil.move(file, target)
-
-    @property
-    def meta(self) -> dict:
-        return {}

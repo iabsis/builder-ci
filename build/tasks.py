@@ -21,9 +21,9 @@ def run_build(id):
     for step in settings.STEPS_ORDER:
 
         one_success = False
-        for module, method_options in lib_get_methods(step, build):
+        for module_name, method_options in lib_get_methods(step, build):
             try:
-                # method = importlib.import_module(f'build.methods.{step}.{module}')
+                module = importlib.import_module(module_name)
                 method_instance: StepAbstract = module.Step(
                     build, method_options)
                 if method_instance.is_healthy:
@@ -34,24 +34,28 @@ def run_build(id):
                 print(traceback.format_exc())
                 logger.error(f"Encountered exception: {e}")
                 build.status = models.BuildStatus.warning
-                build.save()
         
         if not one_success:
             if step in settings.ONE_STEPS_MANDATORY:
-                build.status = models.BuildStatus.warning
-                build.save()
-                return
+                build.status = models.BuildStatus.failed
+                break
+            
+    build.save()
+
 
 def lib_get_methods(step: str, build: models.Build):
+
     
-    if isinstance(build.options, list):
+    if isinstance(build.options.get(step), list):
         for method in build.options.get(step):
             method_name = method.get("method")
             method_options = method.get("options")
             for module in yield_load_module(step, method_name):
                 yield module, method_options
 
-    if isinstance(build.options, dict):
+    if isinstance(build.options.get(step), dict):
+        logger.debug(f"Option type: {build.options.get(step)}")
+        logger.debug(f"Options: {type(build.options.get(step))}")
         if build.options.get(step):
             method_name = build.options.get(step).get("method")
             method_options = build.options.get(step).get("options")
@@ -70,52 +74,21 @@ def yield_load_module(step: str, method: str):
         return
 
     try:
-        module = importlib.import_module(
-            f'build.methods.{step}.{method}')
+        module = f'build.methods.{step}.{method}'
         yield module
     except Exception as e:
         raise Exception(
             f"Unable to load module method for step {step}: {e}")
 
-def all_step_modules(step: str):
+def all_step_modules(step: str) -> list:
     try:
         return importlib.import_module(
             f'build.methods.{step}').__all__
     except Exception as e:
-        raise Exception(
+        logger.warning(
                 f"Unable to get auto method for step {step}: {e}")
-    
+        return []
 
-
-
-    # for method in extract_steps(build, step):
-    #     logger.debug(f"Method name: {method_name}")
-    #     if method_name == "auto":
-    #         for method in importlib.import_module(f'build.methods.{step}').__all__:
-    #             all_methods.append(method_name) if method_name not in all_methods else None
-    #         continue
-    #     all_methods.append(method_name) if method_name not in all_methods else None
-    
-    # for method in all_methods:
-    #     try:
-    #         lib = f".methods.{step}.{method}"
-    #         m = importlib.import_module(lib)
-    #         yield m.StepAbstract(build)
-    #     except Exception as e:
-    #         logger.error(f"Unable to load module {lib}: {e}")
-    #         build.status = models.BuildStatus.warning
-    #         if step in 
-    #         raise Exception("Unable to load module on a mandatory step")
-
-# def extract_steps(build: models.Build, step):
-#     options= build.options
-#     logger.debug(f"Options: {options}, Step: {step}")
-#     if not options:
-#         raise Exception("Unable to build without at last one option")
-#     method = options.get(step)
-#     if isinstance(method, dict):
-#         yield method
-#     if isinstance()
 
 def check_duplicate(build: models.Build):
 
