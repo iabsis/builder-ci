@@ -14,7 +14,7 @@ from ...step import StepAbstract
 from pkg_resources import parse_version
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "apt-ftparchive"
     command = "apt-ftparchive"

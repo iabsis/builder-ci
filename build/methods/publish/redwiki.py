@@ -17,7 +17,7 @@ from ...step import StepAbstract
 redmine_config = Config("redmine")
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "redwiki"
     mandatory_options = [

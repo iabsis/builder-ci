@@ -9,13 +9,11 @@ Build native Debian/Ubuntu package
 import subprocess
 import os
 import re
-import lib.logs as logs
-
 
 from ...step import StepAbstract
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name: str = "pbuilder"
     command: subprocess = "pbuilder"
@@ -45,11 +43,11 @@ class BuildStep(StepAbstract):
             basetgz
         ]
 
-        self._runCommand(cmd)
-        self._moveToBinary(file_to_move=["*.deb", "*.dsc", "*.changes",
+        self._run_command(cmd)
+        self._move_to_binary_folder(file_to_move=["*.deb", "*.dsc", "*.changes",
                                          "*.xz", "*.tar.gz", "*.tar.bz2"])
-
-    def getMeta(self):
+    @property
+    def meta(self):
 
         with open(self.sources_path + "/debian/changelog", "r") as f:
             firstline = f.readline()
@@ -57,7 +55,10 @@ class BuildStep(StepAbstract):
         version = f[2]
         dist = f[4]
         arch = self.options["processor"]
-        self.meta = {"dist": dist, "version": version, "arch": arch}
+        self.build.meta['dist'] = dist
+        self.build.meta["version"] = version
+        self.build.meta["arch"] = arch
+        return self.build.meta
 
     def detect(self):
         debian_changelog = os.path.join(self.sources_path, "debian/changelog")

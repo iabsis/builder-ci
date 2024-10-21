@@ -15,7 +15,7 @@ import shutil
 import traceback
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "local-folder"
 

@@ -37,7 +37,7 @@ class StepAbstract:
     
     @property
     def meta(self) -> dict:
-        return self.build.meta.get(self.method) if self.build.meta else None
+        pass
     
     @property
     def id(self) -> str:

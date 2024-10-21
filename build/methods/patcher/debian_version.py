@@ -32,12 +32,12 @@ class Step(StepAbstract):
 
         logs.debug("Command passed: " + str(cmd))
 
-    def getMeta(self):
+    def meta(self):
 
-        if self.meta["old_version"]:
+        if self.build.meta["old_version"]:
             return None
         with open(self.sources_path + "/debian/changelog", "r") as f:
             firstline = f.readline()
         f = re.split(r'[()\ \;]', firstline)
-        self.meta['old_version'] = f[2]
-        self.meta['dist'] = f[4]
+        self.build.meta['old_version'] = f[2]
+        self.build.meta['dist'] = f[4]

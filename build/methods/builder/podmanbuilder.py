@@ -6,15 +6,10 @@ Build any kind of packages
 """
 
 from podman import PodmanClient
-import os
-import json
-import lib.logs as logs
-
-
 from ...step import StepAbstract
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "podman"
     command = "podman"

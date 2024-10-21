@@ -13,7 +13,7 @@ import json
 config = Config("docker")
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "podmanpush"
     mandatory_options = [

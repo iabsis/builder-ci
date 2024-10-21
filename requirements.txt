@@ -11,8 +11,10 @@ click-plugins==1.1.1
 click-repl==0.3.0
 Django==5.1.2
 django-celery-results==2.5.1
+docker==7.1.0
 idna==3.10
 kombu==5.4.2
+podman==5.2.0
 prompt_toolkit==3.0.48
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1

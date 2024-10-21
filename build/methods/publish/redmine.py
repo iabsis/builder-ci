@@ -13,7 +13,7 @@ import lib.logs as logs
 from ...step import StepAbstract
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "redmine"
     mandatory_options = [

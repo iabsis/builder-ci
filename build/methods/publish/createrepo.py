@@ -10,7 +10,7 @@ from lib.step import Step
 import glob
 
 from ...step import StepAbstract
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "createrepo"
     command = "createrepo"

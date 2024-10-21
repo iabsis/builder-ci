@@ -32,6 +32,9 @@ class Step(StepAbstract):
             ]
         )
 
+    @property
+    def meta(self):
+
         stdout, stderr = self._run_command([
             self._which(self.command),
             "rev-parse",
@@ -41,3 +44,5 @@ class Step(StepAbstract):
         self.logger.debug(stdout)
 
         self.build.meta['commit_id'] = stdout.decode()[:-1]
+
+        return self.build.meta

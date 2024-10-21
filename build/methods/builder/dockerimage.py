@@ -6,17 +6,11 @@ Build any kind of packages
 """
 
 import docker
-from lib.config import Config
 import json
-from shlex import quote
-
 
 from ...step import StepAbstract
 
-config = Config("docker")
-
-
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "dockerbuild"
     mandatory_options = [
@@ -33,7 +27,8 @@ class BuildStep(StepAbstract):
         self.log_out = client.images.build(
             '.', tag=self.options["tag"], rm=True, pull=True, forcerm=True)
 
-    def getMeta(self):
+    @property
+    def meta(self):
 
         client = docker.from_env()
         volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
@@ -43,4 +38,5 @@ class BuildStep(StepAbstract):
 
         data = json.loads(self.log_out.decode())
         for key, value in data:
-            self.meta[key] = value
+            self.build.meta[key] = value
+        return self.build.meta

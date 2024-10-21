@@ -13,11 +13,11 @@ import json
 from ...step import StepAbstract
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "docker"
     command = "docker"
-    mandatory_options = [
+    required_options = [
         {
             "name": "image",
             "description": "The image name to build"
@@ -32,7 +32,8 @@ class BuildStep(StepAbstract):
         self.log_out = client.containers.run(
             image=self.options["image"], volumes=volume, remove=True, environment=self.options["env"], stderr=True)
 
-    def getMeta(self):
+    @property
+    def meta(self):
 
         client = docker.from_env()
         volume = {self.build_path: {'bind': '/build', 'mode': 'rw'}}
@@ -42,4 +43,6 @@ class BuildStep(StepAbstract):
 
         data = json.loads(self.log_out.decode())
         for key, value in data:
-            self.meta[key] = value
+            self.build.meta[key] = value
+
+        return self.build.meta

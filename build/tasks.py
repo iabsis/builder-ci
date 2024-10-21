@@ -45,7 +45,6 @@ def run_build(id):
 
 def lib_get_methods(step: str, build: models.Build):
 
-    
     if isinstance(build.options.get(step), list):
         for method in build.options.get(step):
             method_name = method.get("method")
@@ -70,7 +69,7 @@ def yield_load_module(step: str, method: str):
     if method == "auto":
         modules = all_step_modules(step)
         for module in modules:
-            yield module
+            yield f'build.methods.{step}.{module}'
         return
 
     try:
@@ -91,7 +90,6 @@ def all_step_modules(step: str) -> list:
 
 
 def check_duplicate(build: models.Build):
-
     query = {}
     for key in settings.DUPLICATES_ON_META:
         query[key] = getattr(build, key)

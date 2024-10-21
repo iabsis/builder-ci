@@ -5,15 +5,13 @@
 Build native Redhat/Centos package (not advised for binary build, prefer docker otherwise)
 """
 
-import subprocess
 import os
 import re
-import lib.logs as logs
 
 from ...step import StepAbstract
 
 
-class BuildStep(StepAbstract):
+class Step(StepAbstract):
 
     name = "rpmbuild"
     command = "rpmbuild"
@@ -28,7 +26,8 @@ class BuildStep(StepAbstract):
 
         self._runCommand(cmd, cwd=self.build_path)
 
-    def getMeta(self):
+    @property
+    def meta(self):
 
         redhat_specs = os.path.join(
             self.build_path, "redhat", self.meta["name"] + ".spec")
@@ -39,7 +38,8 @@ class BuildStep(StepAbstract):
                 elif "Release" in line:
                     release = re.split(r'[\ \:\n]', line)[2]
 
-        self.meta["version"] = ver + "-" + release
+        self.build.meta["version"] = ver + "-" + release
+        return self.build.meta
 
     def detect(self):
         redhat_specs = os.path.join(

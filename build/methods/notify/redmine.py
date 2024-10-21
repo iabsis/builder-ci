@@ -21,22 +21,22 @@ class Step(StepAbstract):
         }
 
         json = {
-            "project": self.meta["name"],
-            "status": self.meta["status"].capitalize(),
-            "release": self.meta["version"],
-            "commit": self.meta["commit_id"],
-            "target": self.meta["dist"],
-            "builder": self.meta["builder"]
+            "project": self.build.meta["name"],
+            "status": self.build.meta["status"].capitalize(),
+            "release": self.build.meta["version"],
+            "commit": self.build.meta["commit_id"],
+            "target": self.build.meta["dist"],
+            "builder": self.build.meta["builder"]
         }
 
         try:
-            started_at = self.meta["start_time"].strftime("%Y-%m-%d_%H:%M:%S")
+            started_at = self.build.meta["start_time"].strftime("%Y-%m-%d_%H:%M:%S")
             json["started_at"] = started_at
         except:
             pass
 
         try:
-            finished_at = self.meta["end_time"].strftime("%Y-%m-%d_%H:%M:%S")
+            finished_at = self.build.meta["end_time"].strftime("%Y-%m-%d_%H:%M:%S")
             json["finished_at"] = finished_at
         except:
             pass
@@ -50,11 +50,11 @@ class Step(StepAbstract):
         # Disable because it takes too much space in logs
         # logs.debug("Json content:" + str(json))
 
-        if not self.meta["redmine_id"]:
+        if not self.build.meta["redmine_id"]:
             url = self.options["url"] + "/builds/new.json"
         else:
             url = self.options["url"] + "/builds/" + \
-                self.meta["redmine_id"] + ".json"
+                self.build.meta["redmine_id"] + ".json"
 
         response = requests.post(url, headers=headers, json=json)
 
@@ -62,4 +62,4 @@ class Step(StepAbstract):
             raise Exception(
                 f"Error with redmine, got {response.status_code}, message: {response.text}")
 
-        self.meta["redmine_id"] = response.content.decode()
+        self.build.meta["redmine_id"] = response.content.decode()
