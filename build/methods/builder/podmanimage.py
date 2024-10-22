@@ -38,7 +38,7 @@ class Step(StepAbstract):
             )
 
             self.meta["image_id"] = image.id
-            logs.debug(f"Built image id: {image.id}")
+            self.logger.debug(f"Built image id: {image.id}")
 
             self.log_out = ""
             for line in log_out_raw:

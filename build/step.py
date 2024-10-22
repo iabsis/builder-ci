@@ -29,6 +29,7 @@ class StepAbstract:
         self.build = build
         self.options = options
         self.executed = False
+        self.log_contents = ''
 
         if not self.build.meta:
             self.build.meta = {}
