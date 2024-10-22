@@ -5,12 +5,13 @@ from celery import Celery
 from django.conf import settings
 from . import models
 from .step import StepAbstract
+from io import StringIO as StringBuffer
+
 
 app = Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 logger = logging.getLogger(__name__)
-
 
 @app.task
 def run_build(id):
@@ -28,6 +29,7 @@ def run_build(id):
                     build, method_options)
                 if method_instance.is_healthy:
                     method_instance.run()
+                    logger.debug(method_instance.log_contents)
                     one_success = True
                 check_duplicate(build)
             except Exception as e:
@@ -94,6 +96,7 @@ def check_duplicate(build: models.Build):
     for key in settings.DUPLICATES_ON_META:
         query[key] = getattr(build, key)
         query['status'] = models.BuildStatus.success
-    if models.Build.objects.filter(**query).count() > 1:
+    if models.Build.objects.filter(**query).count():
         build.status = models.BuildStatus.duplicate
         raise Exception("Duplicate build, not continuing")
+    

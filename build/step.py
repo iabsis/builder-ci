@@ -7,8 +7,6 @@ from django.conf import settings
 import glob
 import shutil
 
-
-
 class StepException(Exception):
     pass
 
@@ -34,7 +32,7 @@ class StepAbstract:
 
         if not self.build.meta:
             self.build.meta = {}
-    
+
     @property
     def meta(self) -> dict:
         pass

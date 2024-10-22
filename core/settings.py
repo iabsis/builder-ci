@@ -152,6 +152,8 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_RESULT_EXTENDED = True
 CELERY_TRACK_STARTED = True
 
+LOGLEVEL = os.getenv('LOGLEVEL') if os.getenv('LOGLEVEL') == 'True' else "DEBUG"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -162,6 +164,6 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "DEBUG",
+        "level": LOGLEVEL,
     },
 }
