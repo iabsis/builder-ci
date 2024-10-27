@@ -58,9 +58,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_results',
-    'sbadmin2',
+    'crispy_forms',
+    'crispy_bootstrap5',
     'sbadmin2.example',
-    'container'
+    'container',
+    'sbadmin2',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +80,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['core/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -171,3 +173,6 @@ LOGGING = {
         "level": LOGLEVEL,
     },
 }
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"

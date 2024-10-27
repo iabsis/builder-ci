@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -15,12 +16,11 @@
             <h6 class="m-0 font-weight-bold text-primary">Container information</h6>
         </div>
         <div class="card-body">
-            <form>
-                {{ form.as_p }}
-            
+            <form method="POST">
+                {% csrf_token %}
+                {{ form|crispy }}
                 <!-- Submit and reset buttons -->
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="reset" class="btn btn-secondary">Reset</button>
             </form>
         </div>
     </div>
