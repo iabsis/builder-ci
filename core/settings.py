@@ -58,7 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_results',
-    'build'
+    'sbadmin2',
+    'sbadmin2.example',
+    'container'
 ]
 
 MIDDLEWARE = [

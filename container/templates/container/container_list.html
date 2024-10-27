@@ -1,0 +1,59 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Containers</h1>
+    <p class="mb-4">Containers are based images used to trigger action in various workflow</a>.</p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in object_list %}
+                        <tr>
+                            <td>{{obj.name}}</td>
+                            <td>{{obj.status}}</td>
+                            <td>
+                                <a href="#" class="btn btn-primary btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-pencil"></i>
+                                    </span>
+                                    <span class="text">Edit</span>
+                                </a>
+                                <a href="#" class="btn btn-danger btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span class="text">Delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+ 
+{% endblock content %}
+
