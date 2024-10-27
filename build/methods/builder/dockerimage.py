@@ -39,4 +39,5 @@ class Step(StepAbstract):
         data = json.loads(self.log_out.decode())
         for key, value in data:
             self.build.meta[key] = value
-        return self.build.meta
+
+        return super().meta

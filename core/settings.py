@@ -152,6 +152,8 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_RESULT_EXTENDED = True
 CELERY_TRACK_STARTED = True
 
+CONFIG_LOCATION = os.getenv('CONFIG_LOCATION') if os.getenv('CONFIG_LOCATION') else "config.ini"
+
 LOGLEVEL = os.getenv('LOGLEVEL') if os.getenv('LOGLEVEL') == 'True' else "DEBUG"
 
 LOGGING = {

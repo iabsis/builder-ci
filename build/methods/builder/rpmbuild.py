@@ -41,7 +41,8 @@ class Step(StepAbstract):
         self.build.meta["version"] = ver + "-" + release
         return self.build.meta
 
-    def detect(self):
+    @property
+    def is_healthy(self):
         redhat_specs = os.path.join(
             self.sources_path, "redhat", self.meta["name"] + ".spec")
 

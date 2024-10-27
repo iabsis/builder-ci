@@ -4,6 +4,7 @@ import os
 import logging
 from build.models import Build
 from django.conf import settings
+from datetime import datetime
 import glob
 import shutil
 
@@ -15,6 +16,7 @@ class StepAbstract:
     logger = logging.getLogger(__name__)
     name = "defaultstep"
     command = None
+    _messages = []
     required_options = [
         #"name": "option_example",
         #"description": "Description example"
@@ -36,7 +38,7 @@ class StepAbstract:
 
     @property
     def meta(self) -> dict:
-        pass
+        return self.build.meta
     
     @property
     def id(self) -> str:
@@ -65,7 +67,7 @@ class StepAbstract:
     @property
     def is_healthy(self) -> bool:
         '''Return if something is missing for properly run the step'''
-        return True
+        return None
 
     @property
     def method(self):
@@ -138,3 +140,13 @@ class StepAbstract:
             for file in glob.glob(f"{self.sources_path}/{wildcard}"):
                 self.logger.debug(f"Move file {file} to {target}")
                 shutil.move(file, target)
+    
+    def message(self, message):
+        self.logger.info(message)
+        now = datetime.now()
+        self._messages.append(
+            {
+                "time": now,
+                "message": message
+            }
+        )

@@ -16,6 +16,7 @@ from ...step import StepAbstract
 class Step(StepAbstract):
 
     name: str = "pbuilder"
+    os: str = "deb"
     command: subprocess = "pbuilder"
 
     mandatory_options = [
@@ -60,8 +61,10 @@ class Step(StepAbstract):
         self.build.meta["arch"] = arch
         return self.build.meta
 
-    def detect(self):
+    @property
+    def is_healthy(self):
         debian_changelog = os.path.join(self.sources_path, "debian/changelog")
 
         if os.path.exists(debian_changelog):
             return True
+        return False
