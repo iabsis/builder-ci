@@ -6,6 +6,10 @@ class BuildRequestMode(models.TextChoices):
     NIGHTLY = 'NIGHTLY', 'Nightly'
     ON_TAG = 'ON_TAG', 'On tag'
 
+class BuildRequestStatus(models.TextChoices):
+    failed = 'failed', 'Failed'
+    success = 'success', 'Success'
+
 class BuildRequest(models.Model):
     url = models.CharField(max_length=150)
     branch = models.CharField(max_length=50)

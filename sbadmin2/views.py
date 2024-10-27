@@ -65,7 +65,7 @@ class GenericViewFormUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView)
     @property
     def list_url(self):
         return resolve(
-          self.request.path_info).url_name.replace('_create', '')
+          self.request.path_info).url_name.replace('_update', '')
 
     def get_success_url(self):
             return reverse_lazy(self.list_url)
@@ -73,8 +73,7 @@ class GenericViewFormUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.model.__name__
-        current_url_name = resolve(self.request.path_info).url_name.replace('_update', '')
-        context['list_url'] = reverse_lazy(current_url_name)
+        context['list_url'] = self.list_url
         return context
     
 

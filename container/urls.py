@@ -1,10 +1,6 @@
-from django.urls import path
-
-from . import views
+from . import models
+from sbadmin2.crud import generate_crud_urls
 
 urlpatterns = [
-    path("", views.ContainerListView.as_view(), name="container"),
-    path("create/", views.ContainerCreateView.as_view(), name="container_create"),
-    path("<int:pk>/", views.ContainerUpdateView.as_view(), name="container_update"),
-    path("delete/<int:pk>/", views.ContainerDeleteView.as_view(), name="container_delete")
+    *generate_crud_urls('container', 'container', models.Container),
 ]

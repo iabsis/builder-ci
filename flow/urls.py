@@ -1,8 +1,7 @@
 from django.urls import path
-
-from . import views
+from . import models
+from sbadmin2.crud import generate_crud_urls
 
 urlpatterns = [
-    path("", views.FlowListView.as_view(), name="flow"),
-    path("<int:pk>/", views.FlowUpdateView.as_view(), name="flow_update"),
+    *generate_crud_urls('flow', 'flow', models.Flow),
 ]
