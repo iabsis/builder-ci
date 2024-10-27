@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'sbadmin2.example',
     'container',
+    'flow',
+    'build',
     'sbadmin2',
 ]
 

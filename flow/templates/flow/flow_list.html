@@ -7,8 +7,8 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Containers</h1>
-    <p class="mb-4">Containers are based images used to trigger action in various workflow</a>.</p>
+    <h1 class="h3 mb-2 text-gray-800">Flow</h1>
+    <p class="mb-4">Flow help</a>.</p>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -21,6 +21,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -28,6 +29,7 @@
                         {% for obj in object_list %}
                         <tr>
                             <td>{{obj.name}}</td>
+                            <td>{{obj.status}}</td>
                             <td>
                                 <a href="{% url 'container_update' obj.pk %}" class="btn btn-primary btn-icon-split">
                                     <span class="icon text-white-50">
