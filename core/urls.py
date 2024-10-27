@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('container/', include("container.urls")),
     path('flow/', include("flow.urls")),
-    path('example/', include("sbadmin2.example.urls")),
+    path('build/', include("build.urls")),
+    # path('example/', include("sbadmin2.example.urls")),
 ]
