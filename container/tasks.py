@@ -1,6 +1,7 @@
 import logging
 import importlib
 import traceback
+import json
 from celery import Celery
 from django.conf import settings
 from . import models
@@ -25,9 +26,28 @@ def build_image(container_id, **context):
 
     image_obj = models.Container.objects.get(pk=container_id)
     dockerfile = image_obj.render_dockerfile(**context)
+    tag = f"{image_obj.name}-{image_name}-{tag_name}"
 
     with PodmanClient(base_url=url) as client:
-        client.images.build(
+        image, logs = client.images.build(
                     fileobj=StringIO(dockerfile),
-                    tag=f"{image_obj.name}-{image_name}-{tag_name}",
+                    tag=tag,
                 )
+        
+        # logger.info(image.tags)
+        # logs = []
+        # for chunk in logs:
+        #     if 'stream' in chunk.decode():
+        #         logger.info(chunk.decode())
+
+        builtcontainer, _ = models.BuiltContainer.objects.get_or_create(
+            name=f'{tag}',
+        )
+
+        # logger.info([json.loads(log.decode()).get('stream') for log in logs])
+
+        builtcontainer.logs = "".join([json.loads(log.decode()).get('stream') for log in logs])
+        builtcontainer.status = models.BuiltContainerStatus.SUCCESS
+        builtcontainer.variables = context
+        builtcontainer.hash = image.id
+        builtcontainer.save()

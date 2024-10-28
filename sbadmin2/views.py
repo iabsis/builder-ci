@@ -1,12 +1,20 @@
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import resolve, reverse_lazy, exceptions
+from django.urls import resolve, reverse_lazy, reverse
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import get_resolver
 
 # Create your views here.
+
+def named_url_exist(name):
+    url_patterns = get_resolver().url_patterns
+    for pattern in url_patterns:
+        if hasattr(pattern, 'name') and pattern.name and pattern.name == name:
+            return True
+    return False
 
 class GenericViewList(LoginRequiredMixin, ListView):
 
@@ -26,13 +34,17 @@ class GenericViewList(LoginRequiredMixin, ListView):
           self.request.path_info).url_name + '_update'
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
         context['title'] = self.model.__name__
         context['field_list'] = [
             field.name for field in self.model._meta.fields]
-        context['create_url'] = self.create_url
-        context['delete_url'] = self.delete_url
-        context['update_url'] = self.update_url
+        if named_url_exist(self.create_url):
+            context['create_url'] = self.create_url
+        if named_url_exist(self.delete_url):
+            context['delete_url'] = self.delete_url
+        if named_url_exist(self.update_url):
+            context['update_url'] = self.update_url
         return context
    
     def get_queryset(self):

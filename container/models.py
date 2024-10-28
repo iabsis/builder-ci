@@ -2,8 +2,6 @@ from django.db import models
 from . import validator
 from jinja2 import Template
 
-
-
 # Create your models here.
 
 class Variable(models.Model):
@@ -14,7 +12,7 @@ class Variable(models.Model):
 class Container(models.Model):
 
     name = models.CharField(max_length=40)
-    dockerfile = models.TextField(null=True, validators=[validator.validate_dockerfile])
+    dockerfile = models.TextField(blank=True, validators=[validator.validate_dockerfile])
 
     def __str__(self):
         return self.name
@@ -22,3 +20,14 @@ class Container(models.Model):
     def render_dockerfile(self, **variables):
         template = Template(self.dockerfile)
         return template.render(variables)
+
+class BuiltContainerStatus(models.TextChoices):
+    SUCCESS = 'SUCCESS', 'Success'
+    FAILED = 'FAILED', 'Failed'
+
+class BuiltContainer(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    hash = models.CharField(max_length=64, unique=True, blank=True)
+    variables = models.JSONField(blank=True, null=True)
+    logs = models.TextField(blank=True, null=True)
+    status = models.TextField(choices=BuiltContainerStatus.choices, blank=True)
