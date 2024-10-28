@@ -4,7 +4,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import resolve, reverse_lazy, exceptions
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
-
+from django.contrib.auth.views import LoginView, LogoutView
 
 # Create your views here.
 
@@ -114,3 +114,9 @@ class GenericViewDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
       context['list_url'] = self.list_url
       return context
     
+class UserLoginView(LoginView):
+    template_name = 'login.html'
+    redirect_authenticated_user = True
+
+class UserLogoutView(LogoutView):
+    template_name = 'logout.html'

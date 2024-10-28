@@ -10,7 +10,11 @@ class BuildRequestStatus(models.TextChoices):
     failed = 'failed', 'Failed'
     success = 'success', 'Success'
 
+class SourceFetchMode(models.TextChoices):
+    GIT = 'GIT', 'Git'
+
 class BuildRequest(models.Model):
+    fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
     url = models.CharField(max_length=150)
     branch = models.CharField(max_length=50)
     mode = models.CharField(choices=BuildRequestMode.choices, max_length=50, default=BuildRequestMode.ONE_TIME)

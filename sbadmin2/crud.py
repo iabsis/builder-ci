@@ -2,11 +2,14 @@ from . import views
 from django.urls import path
 
 
-def generate_crud_urls(root_path, root_name, model, create=True, update=True, delete=True):
-    urls = [
-        path(
-            f"{root_path}/", views.GenericViewList.as_view(model=model), name=root_name)
-    ]
+def generate_crud_urls(root_path, root_name, model, list=True, create=True, update=True, delete=True):
+    urls = []
+
+    if list:
+        urls.append(
+            path(
+                f"{root_path}/", views.GenericViewList.as_view(model=model), name=root_name)
+        )
 
     if update:
         urls.append(
