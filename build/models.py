@@ -14,10 +14,18 @@ class SourceFetchMode(models.TextChoices):
     GIT = 'GIT', 'Git'
 
 class BuildRequest(models.Model):
+    name = models.CharField(max_length=150)
     fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
     url = models.CharField(max_length=150)
     branch = models.CharField(max_length=50)
     mode = models.CharField(choices=BuildRequestMode.choices, max_length=50, default=BuildRequestMode.ONE_TIME)
+    flows = models.ManyToManyField('flow.Flow')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    options = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 class BuildStatus(models.TextChoices):
     queued = "queued", "Queued"
@@ -33,8 +41,13 @@ class Build(models.Model):
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)
     status = models.CharField(choices=BuildStatus.choices, max_length=15, default=BuildStatus.queued)
-    options = models.JSONField(blank=True, null=True)
     meta = models.JSONField(blank=True, null=True)
-    logs = models.JSONField(blank=True, null=True)
+    # logs = models.JSONField(blank=True, null=True)
+    logs = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    started_at = models.DateTimeField(blank=True)
+    finished_at = models.DateTimeField(blank=True)
+
+    def __str__(self):
+        return self.name

@@ -32,6 +32,4 @@ def generate_crud_urls(root_path, root_name, model, list=True, create=True, upda
                             name=f"{root_name}_delete")
         )
 
-    print(urls)
-
     return urls

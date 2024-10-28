@@ -20,6 +20,14 @@ class Container(models.Model):
     def render_dockerfile(self, **variables):
         template = Template(self.dockerfile)
         return template.render(variables)
+    
+    def get_image_name(self, **variables):
+        image_name = variables.get('image')
+        tag_name = variables.get('tag')
+
+        if not image_name or not tag_name:
+            raise Exception("The key image and codename are mandatory")
+        return f"{self.name}-{image_name}-{tag_name}"
 
 class BuiltContainerStatus(models.TextChoices):
     SUCCESS = 'SUCCESS', 'Success'
@@ -28,6 +36,8 @@ class BuiltContainerStatus(models.TextChoices):
 class BuiltContainer(models.Model):
     name = models.CharField(max_length=100, unique=True)
     hash = models.CharField(max_length=64, unique=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     variables = models.JSONField(blank=True, null=True)
     logs = models.TextField(blank=True, null=True)
     status = models.TextField(choices=BuiltContainerStatus.choices, blank=True)
