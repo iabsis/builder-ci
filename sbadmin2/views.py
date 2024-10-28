@@ -3,16 +3,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import resolve, reverse_lazy, reverse
 from django.template.loader import get_template
+from django.urls import get_resolver
 from django.template import TemplateDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import get_resolver
+from django.urls.exceptions import NoReverseMatch
 
 # Create your views here.
 
 def named_url_exist(name):
-    url_patterns = get_resolver().url_patterns
-    for pattern in url_patterns:
-        if hasattr(pattern, 'name') and pattern.name and pattern.name == name:
+    for x in get_resolver(None).reverse_dict.items():
+        if x[0] == name:
             return True
     return False
 

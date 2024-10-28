@@ -42,6 +42,7 @@ def build_image(container_id, **context):
 
         builtcontainer, _ = models.BuiltContainer.objects.get_or_create(
             name=f'{tag}',
+            container=image_obj
         )
 
         # logger.info([json.loads(log.decode()).get('stream') for log in logs])
