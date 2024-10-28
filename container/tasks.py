@@ -15,14 +15,13 @@ logger = logging.getLogger(__name__)
 
 @app.task
 def build_image(container_id, **context):
-    # url = "unix:///run/podman/podman.sock"
-    url = "unix:///run/user/1000/podman/podman.sock"
+    podman_url = settings.PODMAN_URL
 
     image_obj = models.Container.objects.get(pk=container_id)
     dockerfile = image_obj.render_dockerfile(**context)
     tag = image_obj.get_image_name(**context)
 
-    with PodmanClient(base_url=url) as client:
+    with PodmanClient(base_url=podman_url) as client:
         image, logs = client.images.build(
                     fileobj=StringIO(dockerfile),
                     tag=tag,

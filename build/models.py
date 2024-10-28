@@ -42,12 +42,11 @@ class Build(models.Model):
     version = models.CharField(max_length=100, blank=True)
     status = models.CharField(choices=BuildStatus.choices, max_length=15, default=BuildStatus.queued)
     meta = models.JSONField(blank=True, null=True)
-    # logs = models.JSONField(blank=True, null=True)
     logs = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    started_at = models.DateTimeField(blank=True)
-    finished_at = models.DateTimeField(blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.name

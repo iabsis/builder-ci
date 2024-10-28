@@ -36,7 +36,7 @@ def build_trigger(build_request_id):
 @app.task
 def build_run(build_id):
 
-    podman_url = "unix:///run/user/1000/podman/podman.sock"
+    podman_url = settings.PODMAN_URL
 
     build = models.Build.objects.get(pk=build_id)
     build.status = models.BuildStatus.running
@@ -89,7 +89,6 @@ def build_run(build_id):
                     stderr=True,
                     mounts=mounts,
                     entrypoint=['/build/sources/run'],
-                    # entrypoint=['sleep', '3600'],
                     working_dir='/build/sources/',
                 )
 

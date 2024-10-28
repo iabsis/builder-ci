@@ -35,19 +35,6 @@ DEBUG = True if os.getenv('DEBUG') == 'True' else False
 ALLOWED_HOSTS = []
 APPEND_SLASH = True
 
-# Builder specific config
-STEPS_ORDER = os.getenv('STEPS_ORDER') if os.getenv('STEPS_ORDER') else [
-    "sources", "config", "patcher", "builder", "publish"]
-STEPS_EVERY_LOOP = os.getenv('STEPS_EVERY_LOOP') if os.getenv(
-    'STEPS_EVERY_LOOP') else ["notify"]
-DUPLICATES_ON_META = os.getenv('STEPS_EVERY_LOOP') if os.getenv(
-    'STEPS_EVERY_LOOP') else ["name", "version"]
-STEPS_END_WITH = os.getenv('STEPS_END_WITH') if os.getenv(
-    'STEPS_END_WITH') else ["notify"]
-ONE_STEPS_MANDATORY = os.getenv('ONE_STEPS_MANDATORY') if os.getenv(
-    'ONE_STEPS_MANDATORY') else ["sources", "builder", "publish"]
-BUILD_LOCATION = os.getenv('BUILD_LOCATION')
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -178,3 +165,8 @@ LOGGING = {
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+PODMAN_URL = os.getenv('PODMAN_URL') if os.getenv(
+    'PODMAN_URL') else "unix:///run/podman/podman.sock"
+
+REDMINE_URL = os.getenv('REDMINE_URL')
+REDMINE_KEY = os.getenv('REDMINE_KEY')

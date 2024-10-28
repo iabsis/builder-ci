@@ -42,3 +42,6 @@ class BuiltContainer(models.Model):
     logs = models.TextField(blank=True, null=True)
     status = models.TextField(choices=BuiltContainerStatus.choices, blank=True)
     container = models.ForeignKey('Container', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name

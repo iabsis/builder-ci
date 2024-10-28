@@ -1,4 +1,4 @@
-from django.views.generic import ListView, UpdateView, CreateView, DeleteView
+from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import resolve, reverse_lazy, reverse
@@ -17,6 +17,11 @@ def named_url_exist(name):
     return False
 
 class GenericViewList(LoginRequiredMixin, ListView):
+
+    @property
+    def view_url(self):
+        return resolve(
+            self.request.path_info).url_name + '_view'
 
     @property
     def create_url(self):
@@ -45,6 +50,8 @@ class GenericViewList(LoginRequiredMixin, ListView):
             context['delete_url'] = self.delete_url
         if named_url_exist(self.update_url):
             context['update_url'] = self.update_url
+        if named_url_exist(self.view_url):
+            context['view_url'] = self.view_url
         return context
    
     def get_queryset(self):
@@ -69,7 +76,7 @@ class GenericViewList(LoginRequiredMixin, ListView):
             return ['list.html']
 
 
-class GenericViewFormUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+class GenericViewFormUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     template_name = 'form.html'
     success_message = "Update successful"
     fields = "__all__"
@@ -89,7 +96,7 @@ class GenericViewFormUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView)
         return context
     
 
-class GenericViewFormCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+class GenericViewFormCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = 'form.html'
     success_message = "Create successful"
     fields = "__all__"
@@ -109,7 +116,7 @@ class GenericViewFormCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView)
         return context
 
 
-class GenericViewDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+class GenericViewDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = 'delete.html'
     success_message = "Deletion successful"
 
@@ -126,6 +133,16 @@ class GenericViewDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
       context['list_url'] = self.list_url
       return context
     
+
+class GenericViewDetail(LoginRequiredMixin, DetailView):
+    template_name = 'detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['field_list'] = [
+            field.name for field in self.model._meta.fields]
+        return context
+
 class UserLoginView(LoginView):
     template_name = 'login.html'
     redirect_authenticated_user = True
