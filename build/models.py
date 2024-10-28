@@ -1,4 +1,5 @@
 from django.db import models
+from django_celery_results.models import TaskResult
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -27,20 +28,12 @@ class BuildRequest(models.Model):
     def __str__(self):
         return self.name
 
-class BuildStatus(models.TextChoices):
-    queued = "queued", "Queued"
-    duplicate = "duplicate", 'Duplicate'
-    failed = 'failed', 'Failed'
-    success = 'success', 'Success'
-    warning = 'warning', 'Warning'
-    running = 'running', 'Running'
-
 class Build(models.Model):
     name = models.CharField(max_length=100)
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)
-    status = models.CharField(choices=BuildStatus.choices, max_length=15, default=BuildStatus.queued)
+    celery_task = models.ForeignKey(TaskResult, on_delete=models.DO_NOTHING, blank=True, null=True)
     meta = models.JSONField(blank=True, null=True)
     logs = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

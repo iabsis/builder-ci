@@ -5,7 +5,6 @@ class Command(BaseCommand):
     help = 'Build the podman image'
 
     def add_arguments(self, parser):
-        parser.add_argument("action")
         parser.add_argument("container_id")
         parser.add_argument("--image", nargs='?')
         parser.add_argument("--tag", nargs='?')

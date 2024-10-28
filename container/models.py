@@ -25,9 +25,14 @@ class Container(models.Model):
         image_name = variables.get('image')
         tag_name = variables.get('tag')
 
-        if not image_name or not tag_name:
-            raise Exception("The key image and codename are mandatory")
-        return f"{self.name}-{image_name}-{tag_name}"
+        name = self.name
+
+        if image_name:
+            name += f"-{image_name}"
+        if tag_name:
+            name += f"-{tag_name}"
+
+        return name
 
 class BuiltContainerStatus(models.TextChoices):
     SUCCESS = 'SUCCESS', 'Success'

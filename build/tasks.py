@@ -11,7 +11,9 @@ from django.utils import timezone
 from . import models
 from io import StringIO
 from podman import PodmanClient
+from django_celery_results.models import TaskResult
 from git import Repo
+from celery import shared_task
 
 app = Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
@@ -33,14 +35,17 @@ def build_trigger(build_request_id):
     build_request.save()
 
 
-@app.task
-def build_run(build_id):
+@shared_task(bind=True)
+def build_run(self, build_id):
+
+    task_id = self.request.id
 
     podman_url = settings.PODMAN_URL
 
     build = models.Build.objects.get(pk=build_id)
-    build.status = models.BuildStatus.running
     build.started_at = timezone.now()
+    build.celery_task = TaskResult.objects.get(task_id=task_id)
+    build.save()
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         logger.info(f'created temporary directory: {tmpdirname}')
@@ -51,16 +56,20 @@ def build_run(build_id):
         
         # logger.info(cloned_repo.active_branch)
 
+        logger.info(f"Regex to use: {build.flow.version_regex}")
         pattern = regex.compile(build.flow.version_regex)
 
         sources_path = os.path.join(tmpdirname, "sources")
 
         with open(os.path.join(sources_path, build.flow.version_file), 'r') as f:
             c = f.read()
-            m = regex.match(pattern, c)
+            logger.debug(f"File content: {c}")
+            m = regex.search(pattern, c)
+            logger.debug(f"Matched regex: {m}")
             build.version = m.group(1)
         
         logger.info(f"Found version: {build.version}")
+        build.save()
 
 
         for method in build.flow.method_set.order_by('priority'):
@@ -99,5 +108,4 @@ def build_run(build_id):
                 #     [json.loads(log.decode()).get('stream') for log in logs])
 
     build.finished_at = timezone.now()
-    build.status = models.BuildStatus.success
     build.save()
