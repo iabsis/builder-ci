@@ -6,7 +6,7 @@ from django.template.loader import get_template
 from django.urls import get_resolver
 from django.template import TemplateDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls.exceptions import NoReverseMatch
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -17,6 +17,7 @@ def named_url_exist(name):
     return False
 
 class GenericViewList(LoginRequiredMixin, ListView):
+    paginate_by = 10
 
     @property
     def view_url(self):

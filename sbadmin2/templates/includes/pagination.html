@@ -1,0 +1,28 @@
+{% if page_obj %}
+<div class="d-flex">
+    <div class="flex-grow-1">
+        Showing page {{page_obj.number}} of {{page.count}}
+    </div>
+    <div>
+        <div class="dataTables_paginate paging_simple_numbers">
+            <ul class="pagination">
+                
+                <li class="paginate_button page-item previous {% if not page_obj.has_previous %}disabled{% endif %}">
+                    <a href="#" tabindex="0" class="page-link">Previous</a>
+                </li>
+                {% for page in page_obj.paginator.page_range %}
+                    {% if page <= page_obj.number|add:7 and page >= page_obj.number|add:-7 %}
+                        <li class="paginate_button page-item {% if page == page_obj.number %}active{% endif %}">
+                            <a href="?page={{ page }}" data-dt-idx="1" tabindex="0" class="page-link">{{page}}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <li class="paginate_button page-item next {% if not page_obj.has_next %}disabled{% endif %}">
+                    <a href="#" tabindex="0" class="page-link">Next</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
