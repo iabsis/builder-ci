@@ -37,7 +37,6 @@ class BuildRequest(models.Model):
         return self.name
 
 class Build(models.Model):
-    name = models.SlugField(max_length=100)
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)
@@ -48,6 +47,10 @@ class Build(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def name(self):
+        return self.request.name
 
     def __str__(self):
         return self.name

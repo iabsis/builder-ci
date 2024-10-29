@@ -1,4 +1,3 @@
-from django.urls import path
 from . import models
 from sbadmin2.crud import generate_crud_urls
 

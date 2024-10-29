@@ -12,6 +12,7 @@ from django.utils import timezone
 
 import container.models
 from . import models
+from flow.models import Flow
 from io import StringIO
 from podman import PodmanClient
 from django_celery_results.models import TaskResult
@@ -27,16 +28,18 @@ logger = logging.getLogger(__name__)
 def build_trigger(build_request_id):
     build_request = models.BuildRequest.objects.get(pk=build_request_id)
     if build_request.flows.exists():
-        for flow in build_request.flows.all():
-            build = models.Build.objects.create(
-                request=build_request,
-                name=build_request.name,
-                flow=flow
-            )
+        flows = build_request.flows.all()
+    else:
+        Flow.objects.all()
+    for flow in flows:
+        build = models.Build.objects.create(
+            request=build_request,
+            name=build_request.name,
+            flow=flow
+        )
+        build_run.delay(build.pk)
 
-            build_run.delay(build.pk)
     build_request.save()
-
 
 @shared_task(bind=True)
 def build_run(self, build_id):

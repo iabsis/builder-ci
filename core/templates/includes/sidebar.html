@@ -33,6 +33,7 @@
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{% url 'request' %}">Request</a>
                 <a class="collapse-item" href="{% url 'build' %}">Builds</a>
+                <a class="collapse-item" href="{% url 'builtcontainer' %}">Containers</a>
             </div>
         </div>
     </li>
@@ -47,7 +48,6 @@
         <div id="collapseConfig" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="{% url 'container' %}">Containers</a>
-                <a class="collapse-item" href="{% url 'builtcontainer' %}">Built containers</a>
                 <a class="collapse-item" href="{% url 'flow' %}">Flows</a>
                 <a class="collapse-item" href="{% url 'method' %}">Methods</a>
             </div>
