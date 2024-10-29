@@ -15,7 +15,7 @@ class SourceFetchMode(models.TextChoices):
     GIT = 'GIT', 'Git'
 
 class BuildRequest(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.SlugField(max_length=150)
     fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
     url = models.CharField(max_length=150)
     branch = models.CharField(max_length=50)
@@ -25,11 +25,19 @@ class BuildRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     options = models.JSONField(default=dict)
 
+    @property
+    def computed_options(self):
+        options = self.options
+        options['name'] = self.name
+        options['url'] = self.url
+        options['branch'] = self.branch
+        return options
+
     def __str__(self):
         return self.name
 
 class Build(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.SlugField(max_length=100)
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)

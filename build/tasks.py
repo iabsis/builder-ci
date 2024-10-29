@@ -2,12 +2,15 @@ import logging
 import importlib
 import traceback
 import json
+import container
 import regex
 import os
 import tempfile
 from celery import Celery
 from django.conf import settings
 from django.utils import timezone
+
+import container.models
 from . import models
 from io import StringIO
 from podman import PodmanClient
@@ -75,7 +78,7 @@ def build_run(self, build_id):
         for method in build.flow.method_set.order_by('priority'):
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
-                f.write(method.script.replace('\r', ''))
+                f.write(method.render_script(**build.request.computed_options))
             os.chmod(script_file, 0o755)
 
             with PodmanClient(base_url=podman_url) as client:
@@ -95,7 +98,13 @@ def build_run(self, build_id):
                 ]
 
                 image = method.container.get_target_tag(
-                    **build.request.options)
+                    **build.request.computed_options)
+                
+                if not container.models.BuiltContainer.objects.filter(name=image).exists():
+                    logger.info(f"Container {image} doesn't exist, building")
+                    container.tasks.build_image(
+                        method.container.pk, **build.request.computed_options)
+
 
                 logger.info(f"Running image: {image}")
 
@@ -107,7 +116,6 @@ def build_run(self, build_id):
                     stderr=True,
                     mounts=mounts,
                     entrypoint=['/build/sources/run'],
-                    # entrypoint=['sleep', '3600'],
                     working_dir='/build/sources/',
                 )
 

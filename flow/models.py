@@ -1,5 +1,6 @@
 from django.db import models
 from . import validator
+from jinja2 import Template
 
 # Create your models here.
 
@@ -10,6 +11,10 @@ class Method(models.Model):
     flow = models.ForeignKey('Flow', on_delete=models.CASCADE)
     stop_on_failure = models.BooleanField(default=False)
     priority = models.IntegerField()
+
+    def render_script(self, **variables):
+        template = Template(self.script)
+        return template.render(variables).replace('\r', '')
 
     class Meta:
         unique_together = ['flow', 'priority']

@@ -1,5 +1,5 @@
 from django.db import models
-from . import validator
+from . import validator, tasks
 from jinja2 import Template
 
 # Create your models here.
@@ -11,7 +11,7 @@ class Variable(models.Model):
 
 class Container(models.Model):
 
-    name = models.CharField(max_length=40)
+    name = models.SlugField(max_length=40)
     dockerfile = models.TextField(blank=True, validators=[validator.validate_dockerfile])
     target_tag = models.CharField(max_length=50, default='builder-{{image}}-{{tag}}')
 
