@@ -13,6 +13,7 @@ class Container(models.Model):
 
     name = models.CharField(max_length=40)
     dockerfile = models.TextField(blank=True, validators=[validator.validate_dockerfile])
+    target_tag = models.CharField(max_length=50, default='builder-{{image}}-{{tag}}')
 
     def __str__(self):
         return self.name
@@ -21,18 +22,10 @@ class Container(models.Model):
         template = Template(self.dockerfile)
         return template.render(variables)
     
-    def get_image_name(self, **variables):
-        image_name = variables.get('image')
-        tag_name = variables.get('tag')
+    def get_target_tag(self, **variables):
+        template = Template(self.target_tag)
+        return template.render(variables)
 
-        name = self.name
-
-        if image_name:
-            name += f"-{image_name}"
-        if tag_name:
-            name += f"-{tag_name}"
-
-        return name
 
 class BuiltContainerStatus(models.TextChoices):
     SUCCESS = 'SUCCESS', 'Success'

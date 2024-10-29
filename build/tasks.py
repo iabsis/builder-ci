@@ -79,25 +79,35 @@ def build_run(self, build_id):
             os.chmod(script_file, 0o755)
 
             with PodmanClient(base_url=podman_url) as client:
-                mounts = [{
-                    "target": "/build",
-                    "read_only": False,
-                    "source": tmpdirname,
-                    "type": "bind"
-                }]
+                mounts = [
+                    {
+                        "target": "/build",
+                        "read_only": False,
+                        "source": tmpdirname,
+                        "type": "bind"
+                    },
+                    {
+                        "target": "/run/podman/podman.sock",
+                        "read_only": False,
+                        "source": '/run/user/1000/podman/podman.sock',
+                        "type": "bind"
+                    }
+                ]
 
-                image = method.container.get_image_name(
+                image = method.container.get_target_tag(
                     **build.request.options)
 
                 logger.info(f"Running image: {image}")
 
                 output = client.containers.run(
+                    privileged=True,
                     image=image,
                     remove=True,
                     # environment=,
                     stderr=True,
                     mounts=mounts,
                     entrypoint=['/build/sources/run'],
+                    # entrypoint=['sleep', '3600'],
                     working_dir='/build/sources/',
                 )
 

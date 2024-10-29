@@ -23,7 +23,7 @@ class BuildRequest(models.Model):
     flows = models.ManyToManyField('flow.Flow')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    options = models.JSONField(blank=True, null=True)
+    options = models.JSONField(default=dict)
 
     def __str__(self):
         return self.name

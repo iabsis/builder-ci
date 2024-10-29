@@ -19,7 +19,7 @@ def build_image(container_id, **context):
 
     image_obj = models.Container.objects.get(pk=container_id)
     dockerfile = image_obj.render_dockerfile(**context)
-    tag = image_obj.get_image_name(**context)
+    tag = image_obj.get_target_tag(**context)
 
     with PodmanClient(base_url=podman_url) as client:
         image, logs = client.images.build(
