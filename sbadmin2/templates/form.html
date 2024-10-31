@@ -13,12 +13,21 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form method="post">
+            <form id="balance" method="post">
                 {% csrf_token %}
                 {{ form|crispy }}
-                <!-- Submit and reset buttons -->
+                
+                {{child_formset.management_form}}
+                {% if child_formset %}
+                    {% for formset in child_formset %}
+                    <div class="subbalance-form">
+                        {{formset|crispy}}
+                    </div>
+                    {% endfor %}
+                {% endif %}
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
+            <!-- Submit and reset buttons -->
         </div>
     </div>
 

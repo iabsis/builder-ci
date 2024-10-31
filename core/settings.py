@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_results',
     'crispy_forms',
-    'crispy_bootstrap5',
+    'crispy_bootstrap4',
     'sbadmin2.example',
     'container',
     'flow',
@@ -163,8 +163,8 @@ LOGGING = {
     },
 }
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 PODMAN_URL = os.getenv('PODMAN_URL') if os.getenv(
     'PODMAN_URL') else "unix:///run/podman/podman.sock"
 

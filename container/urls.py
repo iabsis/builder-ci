@@ -1,4 +1,4 @@
-from . import models
+from . import models, views
 from sbadmin2.crud import generate_crud_urls
 
 urlpatterns = [
