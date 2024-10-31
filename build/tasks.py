@@ -12,7 +12,7 @@ from django.utils import timezone
 
 import container.models
 from . import models
-from flow.models import Flow
+from flow.models import Flow, Task
 from io import StringIO
 from podman import PodmanClient
 from django_celery_results.models import TaskResult
@@ -78,7 +78,8 @@ def build_run(self, build_id):
         build.save()
 
 
-        for method in build.flow.method_set.order_by('priority'):
+        for task in Task.objects.filter(flow=build.flow).order_by('priority'):
+            method = task.method
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
                 f.write(method.render_script(**build.request.computed_options))

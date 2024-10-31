@@ -8,19 +8,23 @@ class Method(models.Model):
     name = models.CharField(max_length=40)
     container = models.ForeignKey('container.Container', on_delete=models.CASCADE)
     script = models.TextField()
-    flow = models.ForeignKey('Flow', on_delete=models.CASCADE)
     stop_on_failure = models.BooleanField(default=False)
-    priority = models.IntegerField()
 
     def render_script(self, **variables):
         template = Template(self.script)
         return template.render(variables).replace('\r', '')
 
-    class Meta:
-        unique_together = ['flow', 'priority']
-
     def __str__(self):
         return self.name
+
+
+class Task(models.Model):
+    flow = models.ForeignKey('Flow', on_delete=models.CASCADE)
+    method = models.ForeignKey('Method', on_delete=models.CASCADE)
+    priority = models.IntegerField()
+
+    class Meta:
+        unique_together = ['flow', 'priority']
 
 class Flow(models.Model):
     name = models.CharField(max_length=40)

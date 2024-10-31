@@ -35,6 +35,7 @@ class BuildRequest(models.Model):
 
     def __str__(self):
         return self.name
+    
 
 class Build(models.Model):
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
