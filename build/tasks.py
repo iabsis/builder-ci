@@ -87,16 +87,16 @@ def build_run(self, build_id):
                 flow=task.flow,
                 method=task.method,
                 order=task.priority,
-                status=models.TaskStatus.running
+                status=models.Status.running
             )
+
             build_task.save()
             build.tasks.add(build_task)
 
-
-            method = task.method
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
-                f.write(method.render_script(**build.request.computed_options))
+                f.write(build_task.method.render_script(
+                    **build.request.computed_options))
             os.chmod(script_file, 0o755)
 
             with PodmanClient(base_url=settings.PODMAN_URL) as client:
@@ -115,14 +115,14 @@ def build_run(self, build_id):
                     }
                 ]
 
-                image = method.container.get_target_tag(
+                image = build_task.method.container.get_target_tag(
                     **build.request.computed_options)
                 
                 if not container.models.BuiltContainer.objects.filter(name=image).exists():
                     logger.info(f"Container {image} doesn't exist, building")
                     ## TODO: add try here in event build failes and catch logs
                     container.tasks.build_image(
-                        method.container.pk, **build.request.computed_options)
+                        build_task.method.container.pk, **build.request.computed_options)
 
 
                 logger.info(f"Running image: {image}")
@@ -139,14 +139,14 @@ def build_run(self, build_id):
                         working_dir='/build/sources/',
                     )
                     build_task.logs = output.decode()
+                    build_task.status = models.Status.success
                     build_task.save()
                 except ContainerError as e:
                     build_task.logs = "\n".join([line.decode() for line in e.stderr])
+                    build_task.status = models.Status.failed
                     build_task.save()
-                    if method.stop_on_failure:
-                        raise Exception("Build error")
-                    
-
+                    if build_task.method.stop_on_failure:
+                        break
 
     build.finished_at = timezone.now()
     build.save()

@@ -5,5 +5,6 @@ from sbadmin2.crud import generate_crud_urls
 urlpatterns = [
     *generate_crud_urls('build', 'build', models.Build, create=False, update=False, view=True),
     *generate_crud_urls('request', 'request', models.BuildRequest),
+    path('build/run/<int:pk>/', views.RunBuildView.as_view(), name="build_run"),
     path('build/', views.Build.as_view())
 ]

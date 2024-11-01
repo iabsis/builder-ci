@@ -37,10 +37,12 @@ class BuildRequest(models.Model):
         return self.name
 
 
-class TaskStatus(models.TextChoices):
+class Status(models.TextChoices):
+    queued = 'queued', 'Queued'
     success = 'success', 'Success'
     failed = 'failed', 'Failed'
     running = 'running', 'Running'
+    warning = 'warning', 'Warning'
 
 class BuildTask(models.Model):
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
@@ -48,10 +50,7 @@ class BuildTask(models.Model):
     order = models.IntegerField()
     logs = models.TextField(null=True, blank=True)
     status = models.CharField(
-        choices=TaskStatus.choices, null=True, blank=True, max_length=10)
-
-    class Meta:
-        unique_together = ['flow', 'order']
+        choices=Status.choices, null=True, blank=True, max_length=10)
 
 class Build(models.Model):
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
@@ -64,6 +63,21 @@ class Build(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def status(self) -> Status:
+        if self.celery_task and self.celery_task.status == 'FAILURE':
+            return Status.failed
+        if not self.tasks.exists():
+            return Status.queued
+        if self.tasks.filter(status=Status.running).exists():
+            return Status.running
+        if self.tasks.filter(status=Status.failed, method__stop_on_failure=True).exists():
+            return Status.failed
+        if self.tasks.filter(status=Status.failed, method__stop_on_failure=False).exists():
+            return Status.warning
+        return Status.success
+
 
     @property
     def name(self):

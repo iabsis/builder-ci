@@ -2,6 +2,7 @@
 {% load static %}
 {% load table %}
 {% load crispy_forms_tags %}
+{% load build %}
 
 {% block content %}
 
@@ -26,7 +27,16 @@
                 <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Name</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{object.request.name}}</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        <a href="{% url 'request_update' object.request.pk %}">
+                            {{object.request.name}}
+                        </a>
+                    </div>
+                </div>
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Status</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{object.status|status_badge}}</div>
                 </div>
                 <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
@@ -35,8 +45,13 @@
                 </div>
                 <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                        Flow</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{object.flow}}</div>
+                        Flow
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                        <a href="{% url 'flow_update' object.flow.pk %}">
+                            {{object.flow}}
+                        </a>
+                    </div>
                 </div>
             </div>
             
@@ -53,19 +68,32 @@
             <div class="row no-gutters align-items-center">
                 {% for task in object.tasks.all %}
                     <div class="col-12">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Task #{{task.order}}</div>
-                    </div>
-                    <div class="col-12">
-                        <code class="text-xs">{{task.logs|linebreaks}}</code>
+                        <div id="accordion">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.pk}}" aria-expanded="false"
+                                            aria-controls="collapseOne">
+                                            TASK #{{task.order}} {{task.status|status_badge}}
+                                        </button>
+                                    </h5>
+                                </div>
+                        
+                                <div id="collapse-{{task.pk}}" class="collapse {% if task.status != 'success' %}show{% endif %}" aria-labelledby="headingOne" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <code class="text-xs">{{task.logs|linebreaks}}</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {% empty %}
                     <p>No task executed</p>
                 {% endfor %}
             </div>
-    
         </div>
     </div>
+
 
 
     <div class="card shadow mb-4">
