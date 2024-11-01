@@ -95,10 +95,20 @@ class GenericViewFormUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView)
         context['title'] = self.model.__name__
         context['list_url'] = self.list_url
         return context
-    
+
+    def get_template_names(self):
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        default_template_name = f"{app_label}/{model_name}_update.html"
+
+        try:
+            get_template(default_template_name)
+            return [default_template_name]
+        except TemplateDoesNotExist:
+            return ['form.html']
+
 
 class GenericViewFormCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    template_name = 'form.html'
     success_message = "Create successful"
     fields = "__all__"
 
@@ -116,9 +126,18 @@ class GenericViewFormCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView)
         context['list_url'] = self.list_url
         return context
 
+    def get_template_names(self):
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        default_template_name = f"{app_label}/{model_name}_create.html"
+
+        try:
+            get_template(default_template_name)
+            return [default_template_name]
+        except TemplateDoesNotExist:
+            return ['form.html']
 
 class GenericViewDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
-    template_name = 'delete.html'
     success_message = "Deletion successful"
 
     @property
@@ -133,16 +152,36 @@ class GenericViewDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
       context = super().get_context_data(**kwargs)
       context['list_url'] = self.list_url
       return context
-    
+
+    def get_template_names(self):
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        default_template_name = f"{app_label}/{model_name}_delete.html"
+
+        try:
+            get_template(default_template_name)
+            return [default_template_name]
+        except TemplateDoesNotExist:
+            return ['delete.html']
 
 class GenericViewDetail(LoginRequiredMixin, DetailView):
-    template_name = 'detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['field_list'] = [
             field.name for field in self.model._meta.fields]
         return context
+
+    def get_template_names(self):
+        app_label = self.model._meta.app_label
+        model_name = self.model._meta.model_name
+        default_template_name = f"{app_label}/{model_name}_detail.html"
+
+        try:
+            get_template(default_template_name)
+            return [default_template_name]
+        except TemplateDoesNotExist:
+            return ['detail.html']
 
 class UserLoginView(LoginView):
     template_name = 'login.html'

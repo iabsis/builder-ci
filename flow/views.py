@@ -18,7 +18,6 @@ class FlowCreateView(GenericViewFormCreate):
         return context
 
     def form_valid(self, form):
-        print("BLA")
         self.object = form.save(commit=False)
         child_formset = forms.FlowFormSet(
             self.request.POST, instance=self.object, prefix='child_formset')
@@ -41,14 +40,12 @@ class FlowUpdateView(GenericViewFormUpdate):
         context = super().get_context_data(**kwargs)
         context['child_formset'] = forms.FlowFormSet(
             instance=self.object, prefix='child_formset')
-        # context['child_formset_helper'] = forms.FlowFormSetHelper()
         return context
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         child_formset = forms.FlowFormSet(
             self.request.POST, instance=self.object, prefix='child_formset')
-        print(child_formset.non_form_errors())
         if child_formset.is_valid():
             child_formset.save()
             success_message = self.get_success_message(form.cleaned_data)
