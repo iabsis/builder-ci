@@ -30,11 +30,10 @@ def build_trigger(build_request_id):
     if build_request.flows.exists():
         flows = build_request.flows.all()
     else:
-        Flow.objects.all()
+        flows = Flow.objects.all()
     for flow in flows:
         build = models.Build.objects.create(
             request=build_request,
-            name=build_request.name,
             flow=flow
         )
         build_run.delay(build.pk)

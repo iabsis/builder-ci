@@ -20,7 +20,7 @@ class BuildRequest(models.Model):
     url = models.CharField(max_length=150)
     branch = models.CharField(max_length=50)
     mode = models.CharField(choices=BuildRequestMode.choices, max_length=50, default=BuildRequestMode.ONE_TIME)
-    flows = models.ManyToManyField('flow.Flow')
+    flows = models.ManyToManyField('flow.Flow', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     options = models.JSONField(default=dict)
