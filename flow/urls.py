@@ -7,5 +7,5 @@ urlpatterns = [
     path('flow/create/', views.FlowCreateView.as_view(), name='flow_create'),
     path('flow/update/<int:pk>', views.FlowUpdateView.as_view(), name='flow_update'),
     *generate_crud_urls('method', 'method', models.Method),
-    *generate_crud_urls('task', 'task', models.Task),
+    # *generate_crud_urls('task', 'task', models.Task),
 ]
