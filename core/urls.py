@@ -23,5 +23,6 @@ urlpatterns = [
     path('container/', include("container.urls")),
     path('flow/', include("flow.urls")),
     path('build/', include("build.urls")),
+    path('secret/', include("secret.urls")),
     # path('example/', include("sbadmin2.example.urls")),
 ]

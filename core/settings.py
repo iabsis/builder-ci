@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'container',
     'flow',
     'build',
+    'secret',
     'sbadmin2',
 ]
 

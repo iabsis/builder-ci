@@ -17,11 +17,13 @@
                 {% csrf_token %}
                 {{ form|crispy }}
                 
+                <hr>
                 {{child_formset.management_form}}
                 {% if child_formset %}
                     {% for formset in child_formset %}
                     <div class="subbalance-form">
                         {{formset|crispy}}
+                        <hr>
                     </div>
                     {% endfor %}
                 {% endif %}
