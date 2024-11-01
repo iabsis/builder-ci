@@ -11,5 +11,5 @@ class Build(View):
             name=kwargs.get('name')
         )
 
-        tasks.build_trigger.delay(build_request.pk)
+        tasks.build_request.delay(build_request.pk)
         JsonResponse({"test": "test"})

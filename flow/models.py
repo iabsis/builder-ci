@@ -18,6 +18,7 @@ class Method(models.Model):
         return self.name
 
 
+
 class Task(models.Model):
     flow = models.ForeignKey('Flow', on_delete=models.CASCADE)
     method = models.ForeignKey('Method', on_delete=models.CASCADE)

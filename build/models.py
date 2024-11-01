@@ -35,15 +35,31 @@ class BuildRequest(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
+class TaskStatus(models.TextChoices):
+    success = 'success', 'Success'
+    failed = 'failed', 'Failed'
+    running = 'running', 'Running'
+
+class BuildTask(models.Model):
+    flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
+    method = models.ForeignKey('flow.Method', on_delete=models.CASCADE)
+    order = models.IntegerField()
+    logs = models.TextField(null=True, blank=True)
+    status = models.CharField(
+        choices=TaskStatus.choices, null=True, blank=True, max_length=10)
+
+    class Meta:
+        unique_together = ['flow', 'order']
 
 class Build(models.Model):
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)
     celery_task = models.ForeignKey(TaskResult, on_delete=models.DO_NOTHING, blank=True, null=True)
+    tasks = models.ManyToManyField(BuildTask, blank=True)
     meta = models.JSONField(blank=True, null=True)
-    logs = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     started_at = models.DateTimeField(null=True, blank=True)

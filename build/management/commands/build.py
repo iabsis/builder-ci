@@ -12,6 +12,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get('action') == 'run':
 
+            # tasks.build_run(
+            #     build_id=options.get('id'),
+            # )
             tasks.build_run.delay(
                 build_id=options.get('id'),
             )

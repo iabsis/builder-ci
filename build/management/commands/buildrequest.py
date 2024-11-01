@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options.get('action') == 'run':
-            tasks.build_trigger(
+            tasks.build_request(
                 options.get('id'),
             )
         

@@ -39,13 +39,38 @@
                     <div class="h5 mb-0 font-weight-bold text-gray-800">{{object.flow}}</div>
                 </div>
             </div>
+            
         </div>
     </div>
 
-    <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Task info</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Tasks info</h6>
+        </div>
+        <div class="card-body">
+    
+
+            <div class="row no-gutters align-items-center">
+                {% for task in object.tasks.all %}
+                    <div class="col-12">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Task #{{task.order}}</div>
+                    </div>
+                    <div class="col-12">
+                        <code class="text-xs">{{task.logs|linebreaks}}</code>
+                    </div>
+                    {% empty %}
+                    <p>No task executed</p>
+                {% endfor %}
+            </div>
+    
+        </div>
+    </div>
+
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Celery info</h6>
         </div>
         <div class="card-body">
             <div class="row no-gutters align-items-center">
@@ -72,6 +97,6 @@
     </div>
 
 </div>
-<!-- /.container-fluid -->
+
 
 {% endblock content %}
