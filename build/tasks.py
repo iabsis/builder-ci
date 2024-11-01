@@ -144,12 +144,7 @@ def build_run(self, build_id):
                     build_task.logs = output.decode()
                     build_task.save()
                 except ContainerError as e:
-                    logs = ""
-                    for line in e.stderr:
-                        log = line.decode()
-                        logs += log
-                        logger.warning(log)
-                    build_task.logs = logs
+                    build_task.logs = "\n".join([line.decode() for line in e.stderr])
                     build_task.save()
                     if method.stop_on_failure:
                         raise Exception("Build error")
