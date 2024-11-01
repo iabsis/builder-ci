@@ -3,7 +3,6 @@ import pgcrypto
 
 # Create your models here.
 
-
 class Secret(models.Model):
     name = models.CharField(max_length=50)
     secret = pgcrypto.EncryptedTextField()

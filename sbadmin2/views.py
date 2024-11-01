@@ -7,8 +7,10 @@ from django.urls import get_resolver
 from django.template import TemplateDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.paginator import Paginator
-
+import logging
 # Create your views here.
+
+logger = logging.getLogger(__name__)
 
 def named_url_exist(name):
     for x in get_resolver(None).reverse_dict.items():
@@ -74,6 +76,7 @@ class GenericViewList(LoginRequiredMixin, ListView):
             get_template(default_template_name)
             return [default_template_name]
         except TemplateDoesNotExist:
+            logger.debug(f"{default_template_name} not found, falling to default")
             return ['list.html']
 
 
@@ -105,6 +108,7 @@ class GenericViewFormUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView)
             get_template(default_template_name)
             return [default_template_name]
         except TemplateDoesNotExist:
+            logger.debug(f"{default_template_name} not found, falling to default")
             return ['form.html']
 
 

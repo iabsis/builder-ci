@@ -142,7 +142,7 @@ def build_run(self, build_id):
                     build_task.status = models.Status.success
                     build_task.save()
                 except ContainerError as e:
-                    build_task.logs = "\n".join([line.decode() for line in e.stderr])
+                    build_task.logs = "".join([line.decode() for line in e.stderr])
                     build_task.status = models.Status.failed
                     build_task.save()
                     if build_task.method.stop_on_failure:

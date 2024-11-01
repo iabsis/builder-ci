@@ -27,9 +27,12 @@ class Container(models.Model):
         return template.render(variables)
 
 
-class BuiltContainerStatus(models.TextChoices):
-    SUCCESS = 'SUCCESS', 'Success'
-    FAILED = 'FAILED', 'Failed'
+class Status(models.TextChoices):
+    queued = 'queued', 'Queued'
+    success = 'success', 'Success'
+    failed = 'failed', 'Failed'
+    running = 'running', 'Running'
+    warning = 'warning', 'Warning'
 
 class BuiltContainer(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -38,7 +41,7 @@ class BuiltContainer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     variables = models.JSONField(blank=True, null=True)
     logs = models.TextField(blank=True, null=True)
-    status = models.TextField(choices=BuiltContainerStatus.choices, blank=True)
+    status = models.TextField(choices=Status.choices, blank=True)
     container = models.ForeignKey('Container', on_delete=models.CASCADE)
 
     def __str__(self):
