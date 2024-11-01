@@ -44,26 +44,29 @@ def build_request(build_request_id):
 @shared_task(bind=True)
 def build_run(self, build_id):
 
-    task_id = self.request.id
-
-    podman_url = settings.PODMAN_URL
-
+    # Remove all previous built tasks if existing
     build = models.Build.objects.get(pk=build_id)
     for task in build.tasks.all():
         task.delete()
     build.started_at = timezone.now()
-    build.celery_task = TaskResult.objects.get(task_id=task_id)
+
+    # Get the current task ID and attach to the requested Build
+    build.celery_task = TaskResult.objects.get(task_id=self.request.id)
     build.save()
 
+    # Execute everything in a temporary folder
     with tempfile.TemporaryDirectory() as tmpdirname:
         logger.info(f'created temporary directory: {tmpdirname}')
 
+        # TODO: add support for other source
         repo = Repo()
         cloned_repo = repo.clone_from(
             build.request.url, os.path.join(tmpdirname, "sources"), depth=1)
         
         # logger.info(cloned_repo.active_branch)
 
+
+        ### VERSION FETCHING ##
         logger.info(f"Regex to use: {build.flow.version_regex}")
         pattern = regex.compile(build.flow.version_regex)
 
@@ -80,7 +83,7 @@ def build_run(self, build_id):
         logger.info(f"Found version: {build.version}")
         build.save()
 
-
+        ### TASKS RUNNING ##
         for task in Task.objects.filter(flow=build.flow).order_by('priority'):
 
             build_task = models.BuildTask(
@@ -99,7 +102,7 @@ def build_run(self, build_id):
                 f.write(method.render_script(**build.request.computed_options))
             os.chmod(script_file, 0o755)
 
-            with PodmanClient(base_url=podman_url) as client:
+            with PodmanClient(base_url=settings.PODMAN_URL) as client:
                 mounts = [
                     {
                         "target": "/build",
@@ -120,6 +123,7 @@ def build_run(self, build_id):
                 
                 if not container.models.BuiltContainer.objects.filter(name=image).exists():
                     logger.info(f"Container {image} doesn't exist, building")
+                    ## TODO: add try here in event build failes and catch logs
                     container.tasks.build_image(
                         method.container.pk, **build.request.computed_options)
 
@@ -147,7 +151,9 @@ def build_run(self, build_id):
                         logger.warning(log)
                     build_task.logs = logs
                     build_task.save()
-                    raise Exception("Build error")
+                    if method.stop_on_failure:
+                        raise Exception("Build error")
+                    
 
 
     build.finished_at = timezone.now()
