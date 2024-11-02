@@ -75,6 +75,7 @@
                                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.pk}}" aria-expanded="false"
                                             aria-controls="collapseOne">
                                             TASK #{{task.order}} {{task.status|status_badge}}
+                                            {% if not task.method.stop_on_failure %}(Optional){% endif %}
                                         </button>
                                     </h5>
                                 </div>

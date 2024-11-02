@@ -63,7 +63,7 @@ class Build(models.Model):
     version = models.CharField(max_length=100, blank=True)
     celery_task = models.ForeignKey(TaskResult, on_delete=models.DO_NOTHING, blank=True, null=True)
     tasks = models.ManyToManyField(BuildTask, blank=True)
-    meta = models.JSONField(blank=True, null=True)
+    meta = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     started_at = models.DateTimeField(null=True, blank=True)

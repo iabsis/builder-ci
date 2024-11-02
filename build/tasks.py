@@ -50,7 +50,7 @@ def send_notification(build):
                 "project": build.name,
                 "status": status,
                 "release": build.version,
-                "commit": 'undefined',
+                "commit": build.meta.get('commit_id'),
                 "target": 'undefined',
                 "builder": build.flow.name
             }
@@ -62,7 +62,7 @@ def send_notification(build):
             req["json"]["finished_at"] = build.finished_at.strftime("%Y-%m-%d_%H:%M:%S")
 
 
-        redmine_id = build.meta if build.meta and build.meta.get('redmine_id') else None
+        redmine_id = build.meta.get('redmine_id')
         req['url'] = f"{settings.REDMINE_URL}/builds/{redmine_id}.json" if redmine_id else f"{settings.REDMINE_URL}/builds/new.json"
 
         response = requests.post(**req)
@@ -105,6 +105,8 @@ def build_run(self, build_id):
         repo = Repo()
         cloned_repo = repo.clone_from(
             build.request.url, os.path.join(tmpdirname, "sources"), depth=1)
+        
+        build.meta['commit_id'] = cloned_repo.head.object.hexsha
         
         # logger.info(cloned_repo.active_branch)
 
