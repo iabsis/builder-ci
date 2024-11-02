@@ -93,6 +93,7 @@ def build_run(self, build_id):
             build_task.save()
             build.tasks.add(build_task)
 
+            # Create executable script and make it executable
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
                 f.write(build_task.method.render_script(
@@ -124,15 +125,14 @@ def build_run(self, build_id):
                     container.tasks.build_image(
                         build_task.method.container.pk, **build.request.computed_options)
 
-
                 logger.info(f"Running image: {image}")
-
+                
                 try:
                     output = client.containers.run(
                         privileged=True,
                         image=image,
                         remove=True,
-                        # environment=,
+                        environment=task.method.serialized_secrets,
                         stderr=True,
                         mounts=mounts,
                         entrypoint=['/build/sources/run'],

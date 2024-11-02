@@ -9,6 +9,7 @@ class Method(models.Model):
     container = models.ForeignKey('container.Container', on_delete=models.CASCADE)
     script = models.TextField()
     stop_on_failure = models.BooleanField(default=False)
+    secrets = models.ManyToManyField('secret.Secret', blank=True, help_text="Secrets will be exposed as environement variable with same name")
 
     def render_script(self, **variables):
         template = Template(self.script)
@@ -17,7 +18,9 @@ class Method(models.Model):
     def __str__(self):
         return self.name
 
-
+    @property
+    def serialized_secrets(self):
+        return {x.name: x.secret for x in self.secrets.all()}
 
 class Task(models.Model):
     flow = models.ForeignKey('Flow', on_delete=models.CASCADE)

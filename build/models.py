@@ -26,7 +26,11 @@ class BuildRequest(models.Model):
     options = models.JSONField(default=dict)
 
     @property
-    def computed_options(self):
+    def computed_options(self) -> dict:
+        '''
+        Return the options field in addition of
+        name, url and branch.
+        '''
         options = self.options
         options['name'] = self.name
         options['url'] = self.url
