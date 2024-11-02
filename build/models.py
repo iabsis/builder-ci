@@ -56,6 +56,9 @@ class BuildTask(models.Model):
     logs = models.TextField(null=True, blank=True)
     status = models.CharField(
         choices=Status.choices, null=True, blank=True, max_length=10)
+    
+    class Meta:
+        ordering = ['order']
 
 class Build(models.Model):
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
@@ -83,6 +86,13 @@ class Build(models.Model):
             return Status.warning
         return Status.success
 
+    @property
+    def logs(self):
+        logs = ""
+        for task in self.tasks.filter(status=Status.failed):
+            logs += f"Tasks ({task.method.name}) {'Optional' if task.method.stop_on_failure else ''}"
+            logs += task.logs
+        return logs
 
     @property
     def name(self):

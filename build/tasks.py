@@ -52,7 +52,8 @@ def send_notification(build):
                 "release": build.version,
                 "commit": build.meta.get('commit_id'),
                 "target": 'undefined',
-                "builder": build.flow.name
+                "builder": build.flow.name,
+                "logs": build.logs,
             }
         }
 
