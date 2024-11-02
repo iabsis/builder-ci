@@ -3,6 +3,7 @@ import container
 import regex
 import os
 import tempfile
+import requests
 from celery import Celery
 from django.conf import settings
 from django.utils import timezone
@@ -21,6 +22,51 @@ app = Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 logger = logging.getLogger(__name__)
+
+def send_notification(build):
+    
+    # TODO : make configurable notification
+
+    if build.status == models.Status.queued:
+        status = 'New'
+    if build.status == models.Status.failed:
+        status = 'Failed'
+    if build.status == models.Status.success:
+        status = 'Success'
+    if build.status == models.Status.running:
+        status = 'Running'
+    if build.status == models.Status.warning:
+        status = 'New'
+    if build.status == models.Status.duplicate:
+        status = 'Duplicate'
+
+    if settings.REDMINE_KEY and settings.REDMINE_URL:
+        req = {
+            "headers": {
+                'Content-Type': 'application/json',
+                'X-Redmine-Api-Key': settings.REDMINE_KEY
+            },
+            "json": {
+                "project": build.name,
+                "status": status,
+                "release": build.version,
+                "commit": 'undefined',
+                "target": 'undefined',
+                "builder": build.flow.name
+            }
+        }
+
+        if build.started_at:
+            req["json"]["started_at"] = build.started_at.strftime("%Y-%m-%d_%H:%M:%S")
+        if build.started_at:
+            req["json"]["finished_at"] = build.finished_at.strftime("%Y-%m-%d_%H:%M:%S")
+
+
+        redmine_id = build.meta if build.meta and build.meta.get('redmine_id') else None
+        req['url'] = f"{settings.REDMINE_URL}/builds/{redmine_id}.json" if redmine_id else f"{settings.REDMINE_URL}/builds/new.json"
+
+        response = requests.post(**req)
+        response.raise_for_status()
 
 @app.task
 def build_request(build_request_id):
@@ -82,6 +128,12 @@ def build_run(self, build_id):
 
         ### TASKS RUNNING ##
         for task in Task.objects.filter(flow=build.flow).order_by('priority'):
+
+            try:
+                send_notification(build)
+            except Exception as e:
+                logger.warning(f"Unable to send notify: {e}")
+
 
             build_task = models.BuildTask(
                 flow=task.flow,

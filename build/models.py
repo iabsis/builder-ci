@@ -47,6 +47,7 @@ class Status(models.TextChoices):
     failed = 'failed', 'Failed'
     running = 'running', 'Running'
     warning = 'warning', 'Warning'
+    duplicate = 'duplicate', 'Duplicate'
 
 class BuildTask(models.Model):
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
