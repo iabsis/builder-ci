@@ -25,7 +25,7 @@ def named_url_exist(name):
 
 class GenericViewList(LoginRequiredMixin, FilterView):
     paginate_by = 10
-    # filterset_fields = ['__all__']
+    show_filter = True
 
     @property
     def view_url(self):
@@ -75,19 +75,9 @@ class GenericViewList(LoginRequiredMixin, FilterView):
             del filter_dict['page']
         context['filter_args'] = "&" + "&".join([f"{key}={value}" for key, value in filter_dict.items()])
         context['filter_active'] = len(filter_dict)
+        context['show_filter'] = self.show_filter
 
         return context
-    
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-
-        # query_filter = {}
-        # for key, value in self.request.GET.items():
-        #   if key.startswith('filter_'):
-        #     query_filter[key.replace('filter_', '')] = value
-        # queryset = queryset.filter(**query_filter)
-        # print(self.filterset_class)
-        # return queryset
 
     def get_template_names(self):
         app_label = self.model._meta.app_label
