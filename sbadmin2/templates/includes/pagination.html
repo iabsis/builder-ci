@@ -8,19 +8,19 @@
             <ul class="pagination">
                 {% if page_obj.has_previous %}
                 <li class="paginate_button page-item previous">
-                    <a href="?page={{ page_obj.previous_page_number }}" tabindex="0" class="page-link">Previous</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{{ filter_args }}" tabindex="0" class="page-link">Previous</a>
                 </li>
                 {% endif %}
                 {% for page in page_obj.paginator.page_range %}
                     {% if page <= page_obj.number|add:7 and page >= page_obj.number|add:-7 %}
                         <li class="paginate_button page-item {% if page == page_obj.number %}active{% endif %}">
-                            <a href="?page={{ page }}" data-dt-idx="1" tabindex="0" class="page-link">{{page}}</a>
+                            <a href="?page={{ page }}{{ filter_args }}" data-dt-idx="1" tabindex="0" class="page-link">{{page}}</a>
                         </li>
                     {% endif %}
                 {% endfor %}
                 {% if page_obj.has_next %}
                 <li class="paginate_button page-item next">
-                    <a href="?page={{ page_obj.next_page_number }}" tabindex="0" class="page-link">Next</a>
+                    <a href="?page={{ page_obj.next_page_number }}{{ filter_args }}" tabindex="0" class="page-link">Next</a>
                 </li>
                 {% endif %}
             </ul>

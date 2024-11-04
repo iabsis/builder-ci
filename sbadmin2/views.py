@@ -69,17 +69,24 @@ class GenericViewList(LoginRequiredMixin, FilterView):
             context['update_url'] = self.update_url
         if named_url_exist(self.view_url):
             context['view_url'] = self.view_url
+
+        filter_args = self.filterset.data.copy()
+        if filter_args.get('page'):
+            del filter_args['page']
+        context['filter_args'] = "&" + "&".join([f"{key}={value}" for key, value in filter_args.items()])
+
         return context
    
-    def get_queryset(self):
-        queryset = super().get_queryset()
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
 
-        query_filter = {}
-        for key, value in self.request.GET.items():
-          if key.startswith('filter_'):
-            query_filter[key.replace('filter_', '')] = value
-        queryset = queryset.filter(**query_filter)
-        return queryset
+        # query_filter = {}
+        # for key, value in self.request.GET.items():
+        #   if key.startswith('filter_'):
+        #     query_filter[key.replace('filter_', '')] = value
+        # queryset = queryset.filter(**query_filter)
+        # print(self.filterset_class)
+        # return queryset
 
     def get_template_names(self):
         app_label = self.model._meta.app_label
