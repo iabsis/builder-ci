@@ -7,6 +7,8 @@ from django.urls import get_resolver
 from django.template import TemplateDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
 from django.conf import settings
+from django_filters.views import FilterView, filterset_factory
+from django.db import models
 import logging
 # Create your views here.
 
@@ -18,8 +20,12 @@ def named_url_exist(name):
             return True
     return False
 
-class GenericViewList(LoginRequiredMixin, ListView):
+# class GenericFilterViewList(LoginRequiredMixin, FilterView):
+
+
+class GenericViewList(LoginRequiredMixin, FilterView):
     paginate_by = 10
+    # filterset_fields = ['__all__']
 
     @property
     def view_url(self):
@@ -41,8 +47,16 @@ class GenericViewList(LoginRequiredMixin, ListView):
         return resolve(
           self.request.path_info).url_name + '_update'
 
-    def get_context_data(self, **kwargs):
+    def get_filterset_class(self):
+        filtered_fields = []
+        for field in self.model._meta.fields:
+            if isinstance(field, models.CharField):
+                filtered_fields.append(field.name)
+            if isinstance(field, models.ForeignKey):
+                filtered_fields.append(field.name)
+        return filterset_factory(model=self.model, fields=filtered_fields)
 
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = self.model.__name__
         context['field_list'] = [
