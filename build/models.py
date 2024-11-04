@@ -90,8 +90,8 @@ class Build(models.Model):
     def logs(self):
         logs = ""
         for task in self.tasks.filter(status=Status.failed):
-            logs += f"Tasks ({task.method.name}) {'Optional' if task.method.stop_on_failure else ''}"
-            logs += task.logs
+            logs += f"## Tasks ({task.method.name}) {'Optional' if task.method.stop_on_failure else ''}\n"
+            logs += f"{task.logs}\n"
         return logs
 
     @property
@@ -102,4 +102,4 @@ class Build(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['-finished_at']
+        ordering = ['-created_at']

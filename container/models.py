@@ -1,6 +1,6 @@
 from django.db import models
 from . import validator, tasks
-from jinja2 import Template
+from jinja2 import Template, StrictUndefined
 
 # Create your models here.
 
@@ -19,11 +19,11 @@ class Container(models.Model):
         return self.name
     
     def render_dockerfile(self, **variables):
-        template = Template(self.dockerfile)
+        template = Template(self.dockerfile, undefined=StrictUndefined)
         return template.render(variables)
     
     def get_target_tag(self, **variables):
-        template = Template(self.target_tag)
+        template = Template(self.target_tag, undefined=StrictUndefined)
         return template.render(variables)
 
 

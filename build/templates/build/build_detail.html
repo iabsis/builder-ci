@@ -91,6 +91,8 @@
                     {% empty %}
                     <p>No task executed</p>
                 {% endfor %}
+
+                {{build.logs|linebreaks}}
             </div>
         </div>
     </div>

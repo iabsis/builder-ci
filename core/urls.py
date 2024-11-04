@@ -24,5 +24,6 @@ urlpatterns = [
     path('flow/', include("flow.urls")),
     path('build/', include("build.urls")),
     path('secret/', include("secret.urls")),
+    path('api/', include("api.urls")),
     # path('example/', include("sbadmin2.example.urls")),
 ]

@@ -1,3 +1,4 @@
+import re
 from django.core.exceptions import ValidationError
 from dockerfile_parse import DockerfileParser
 
