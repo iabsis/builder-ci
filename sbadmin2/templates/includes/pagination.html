@@ -6,10 +6,11 @@
     <div>
         <div class="dataTables_paginate paging_simple_numbers">
             <ul class="pagination">
-                
-                <li class="paginate_button page-item previous {% if not page_obj.has_previous %}disabled{% endif %}">
-                    <a href="#" tabindex="0" class="page-link">Previous</a>
+                {% if page_obj.has_previous %}
+                <li class="paginate_button page-item previous">
+                    <a href="?page={{ page_obj.previous_page_number }}" tabindex="0" class="page-link">Previous</a>
                 </li>
+                {% endif %}
                 {% for page in page_obj.paginator.page_range %}
                     {% if page <= page_obj.number|add:7 and page >= page_obj.number|add:-7 %}
                         <li class="paginate_button page-item {% if page == page_obj.number %}active{% endif %}">
@@ -17,10 +18,11 @@
                         </li>
                     {% endif %}
                 {% endfor %}
-
-                <li class="paginate_button page-item next {% if not page_obj.has_next %}disabled{% endif %}">
-                    <a href="#" tabindex="0" class="page-link">Next</a>
+                {% if page_obj.has_next %}
+                <li class="paginate_button page-item next">
+                    <a href="?page={{ page_obj.next_page_number }}" tabindex="0" class="page-link">Next</a>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

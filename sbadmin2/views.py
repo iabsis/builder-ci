@@ -1,12 +1,12 @@
 from django.views.generic import ListView, UpdateView, CreateView, DeleteView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import resolve, reverse_lazy, reverse
+from django.urls import resolve, reverse_lazy
 from django.template.loader import get_template
 from django.urls import get_resolver
 from django.template import TemplateDoesNotExist
 from django.contrib.auth.views import LoginView, LogoutView
-from django.core.paginator import Paginator
+from django.conf import settings
 import logging
 # Create your views here.
 
@@ -76,7 +76,8 @@ class GenericViewList(LoginRequiredMixin, ListView):
             get_template(default_template_name)
             return [default_template_name]
         except TemplateDoesNotExist:
-            logger.debug(f"{default_template_name} not found, falling to default")
+            if settings.DEBUG:
+                logger.info(f"{default_template_name} not found, falling to default")
             return ['list.html']
 
 
@@ -108,7 +109,8 @@ class GenericViewFormUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView)
             get_template(default_template_name)
             return [default_template_name]
         except TemplateDoesNotExist:
-            logger.debug(f"{default_template_name} not found, falling to default")
+            if settings.DEBUG:
+                logger.info(f"{default_template_name} not found, falling to default")
             return ['form.html']
 
 
@@ -139,6 +141,8 @@ class GenericViewFormCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView)
             get_template(default_template_name)
             return [default_template_name]
         except TemplateDoesNotExist:
+            if settings.DEBUG:
+                logger.info(f"{default_template_name} not found, falling to default")
             return ['form.html']
 
 class GenericViewDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -166,6 +170,8 @@ class GenericViewDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
             get_template(default_template_name)
             return [default_template_name]
         except TemplateDoesNotExist:
+            if settings.DEBUG:
+                logger.info(f"{default_template_name} not found, falling to default")
             return ['delete.html']
 
 class GenericViewDetail(LoginRequiredMixin, DetailView):
@@ -185,6 +191,8 @@ class GenericViewDetail(LoginRequiredMixin, DetailView):
             get_template(default_template_name)
             return [default_template_name]
         except TemplateDoesNotExist:
+            if settings.DEBUG:
+                logger.info(f"{default_template_name} not found, falling to default")
             return ['detail.html']
 
 class UserLoginView(LoginView):
