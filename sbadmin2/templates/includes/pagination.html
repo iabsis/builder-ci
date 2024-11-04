@@ -1,7 +1,7 @@
 {% if page_obj %}
 <div class="d-flex">
     <div class="flex-grow-1">
-        Showing page {{page_obj.number}} of {{page.count}}
+        Showing page {{page_obj.number}} of {{page_obj.paginator.num_pages}}
     </div>
     <div>
         <div class="dataTables_paginate paging_simple_numbers">

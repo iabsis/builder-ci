@@ -2,6 +2,7 @@ import logging
 import container
 import regex
 import os
+from yaml import load
 import tempfile
 import requests
 from celery import Celery
@@ -58,9 +59,9 @@ def send_notification(build):
         }
 
         if build.started_at:
-            req["json"]["started_at"] = build.started_at.strftime("%Y-%m-%d_%H:%M:%S")
+            req["json"]["started_at"] = build.started_at.strftime("%Y-%m-%d_%H:%M:%S") if build.started_at else None
         if build.started_at:
-            req["json"]["finished_at"] = build.finished_at.strftime("%Y-%m-%d_%H:%M:%S")
+            req["json"]["finished_at"] = build.finished_at.strftime("%Y-%m-%d_%H:%M:%S") if build.finished_at else None
 
 
         redmine_id = build.meta.get('redmine_id')
