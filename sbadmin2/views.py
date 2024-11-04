@@ -70,13 +70,14 @@ class GenericViewList(LoginRequiredMixin, FilterView):
         if named_url_exist(self.view_url):
             context['view_url'] = self.view_url
 
-        filter_args = self.filterset.data.copy()
-        if filter_args.get('page'):
-            del filter_args['page']
-        context['filter_args'] = "&" + "&".join([f"{key}={value}" for key, value in filter_args.items()])
+        filter_dict = self.filterset.data.copy()
+        if filter_dict.get('page'):
+            del filter_dict['page']
+        context['filter_args'] = "&" + "&".join([f"{key}={value}" for key, value in filter_dict.items()])
+        context['filter_active'] = len(filter_dict)
 
         return context
-   
+    
     # def get_queryset(self):
     #     queryset = super().get_queryset()
 
