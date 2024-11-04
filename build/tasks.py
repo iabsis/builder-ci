@@ -112,6 +112,7 @@ def build_run(self, build_id):
         
         # logger.info(cloned_repo.active_branch)
 
+        # TODO : load from yaml as well
 
         ### VERSION FETCHING ##
         logger.info(f"Regex to use: {build.flow.version_regex}")

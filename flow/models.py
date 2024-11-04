@@ -1,18 +1,18 @@
 from django.db import models
 from . import validator
-from jinja2 import Template
+from jinja2 import Template, StrictUndefined
 
 # Create your models here.
 
 class Method(models.Model):
     name = models.CharField(max_length=40)
     container = models.ForeignKey('container.Container', on_delete=models.CASCADE)
-    script = models.TextField()
+    script = models.TextField(help_text="Define the Dockerfile content, use {{var}} for automatic replacement for key defined in options. {{name}} can be used for the project name, {{url}} and {{branch}} are replaced by git respective info")
     stop_on_failure = models.BooleanField(default=False)
     secrets = models.ManyToManyField('secret.Secret', blank=True, help_text="Secrets will be exposed as environement variable with same name")
 
     def render_script(self, **variables):
-        template = Template(self.script)
+        template = Template(self.script, undefined=StrictUndefined)
         return template.render(variables).replace('\r', '')
 
     def __str__(self):
