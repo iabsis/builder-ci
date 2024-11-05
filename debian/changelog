@@ -1,0 +1,116 @@
+builder-ci (2.0.1) bookworm; urgency=medium
+
+  * Complete refactor using Django and PostGreSQL
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 05 Nov 2024 17:53:37 +0100
+
+builder-ci (1.0.12) buster; urgency=medium
+
+  * Rebuild since merge.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 02 Jun 2023 13:46:29 +0200
+
+builder-ci (1.0.11) buster; urgency=medium
+
+  * Fix put method for redmine Wiki
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 02 Jun 2023 13:45:54 +0200
+
+builder-ci (1.0.10) buster; urgency=medium
+
+  * New method used to publish to Redmine wiki (untested)
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 12 May 2023 14:52:00 +0200
+
+builder-ci (1.0.9) buster; urgency=medium
+
+  * Fix ignore option bug with bolean value
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 09 Feb 2023 18:15:32 +0100
+
+builder-ci (1.0.8) buster; urgency=medium
+
+  * New option to ignore error if file exist
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sun, 29 Jan 2023 16:58:55 +0100
+
+builder-ci (1.0.7) buster; urgency=medium
+
+  * Fix npm builder
+  * New ENV for Android build
+  * Force full apt update to avoid 404 on build
+  * Force apt update on each build to avoid any 404 error
+  * Move from centos to rocky linux
+  * Adding equiv dependancy
+  * Restrict ftp archive command to only dist build
+  * Adding new debian version
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 26 Jan 2023 15:42:41 +0100
+builder-ci (0.1.0.7~beta5) buster; urgency=medium
+
+  * Now only keep digit and dot in version
+  * Automatically restart service in case of failure
+  * Fix missing mandatory steps into mongo
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 12 Jan 2022 15:27:44 +0100
+
+builder-ci (0.1.0.7~beta4) buster; urgency=medium
+
+  * Add auto method in watcher if not specified
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 12 Jan 2022 14:04:53 +0100
+
+builder-ci (0.1.0.7~beta3) buster; urgency=medium
+
+  * This release is adding new watcher service used to monitoring external release endpoint and trigger automatically new build.
+  * New patcher method useful to automatically adjust debian version as options.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 11 Jan 2022 11:33:15 +0100
+
+builder-ci (1.0.6) buster; urgency=medium
+
+  * Remove CSRFProtect
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 24 Nov 2021 13:16:24 +0100
+
+builder-ci (1.0.5) buster; urgency=medium
+
+  * Fix override variable declared into function attribute
+  * Fix CSRF and helper URL
+  * Add stderr to docker logs
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 24 Nov 2021 13:08:09 +0100
+
+builder-ci (1.0.4) buster; urgency=medium
+
+  * Rebuild to provide more easy install out the box config.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 29 Jun 2021 13:21:34 +0200
+
+builder-ci (1.0.3) buster; urgency=medium
+
+  * Rebuild for dependancy fix with Ubuntu Focal.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 29 Jun 2021 12:27:17 +0200
+
+builder-ci (1.0.2) buster; urgency=medium
+
+  * New Docker for Fedora 34.
+  * Updated mandatory steps.
+  * Updated README.md (Thanks @James S.)
+  * Updated comment to generate json doc.
+  * Now able to run same methods several time in a build.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 25 Jun 2021 12:08:01 +0200
+
+builder-ci (1.0.1) buster; urgency=medium
+
+  * Rewrite Docker method with native docker module.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 21 Jun 2021 21:14:57 +0200
+
+builder-ci (1.0.0) buster; urgency=medium
+
+  * Initial Release.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 17 May 2021 19:33:57 +0200

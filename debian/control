@@ -1,0 +1,19 @@
+Source: builder-ci
+Section: unknown
+Priority: optional
+Maintainer: Olivier Bitsch <olivier.b@iabsis.com>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+Standards-Version: 4.6.2
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/builder-ci
+#Vcs-Git: https://salsa.debian.org/debian/builder-ci.git
+
+Package: builder-ci
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: <insert up to 60 chars description>
+ <Insert long description, indented with spaces.>
