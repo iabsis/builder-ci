@@ -1,4 +1,4 @@
-build:
+builder:
 - method: docker
   options:
     image: builder-bookworm
