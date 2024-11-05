@@ -1,2 +1,2 @@
-FROM {{image}}:{{tag}}
-RUN apt update && apt install -y build-essential
+FROM {{dist}}:{{codename}}
+RUN yum -y install rpm-build make gcc yum-utils

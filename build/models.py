@@ -1,5 +1,6 @@
 from django.db import models
 from django_celery_results.models import TaskResult
+import json
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -23,7 +24,7 @@ class BuildRequest(models.Model):
     flows = models.ManyToManyField('flow.Flow', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    options = models.JSONField(default=dict)
+    options = models.JSONField(default=dict, null=True, blank=True)
 
     @property
     def computed_options(self) -> dict:

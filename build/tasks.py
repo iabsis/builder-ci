@@ -2,7 +2,7 @@ import logging
 import container
 import regex
 import os
-from yaml import load
+from yaml import load, Loader
 import tempfile
 import requests
 from celery import Celery
@@ -112,7 +112,6 @@ def build_run(self, build_id):
         
         # logger.info(cloned_repo.active_branch)
 
-        # TODO : load from yaml as well
 
         ### VERSION FETCHING ##
         logger.info(f"Regex to use: {build.flow.version_regex}")
@@ -127,6 +126,22 @@ def build_run(self, build_id):
             m = regex.search(pattern, c)
             logger.debug(f"Matched regex: {m}")
             build.version = m.group(1)
+    
+
+        # Load from yaml as well
+        for file in ['builder.yml', 'builder.yaml', 'build.yml', 'build.yaml']:
+            full_path_file = os.path.join(sources_path, file)
+            if os.path.exists(full_path_file):
+                try:
+                    with open(full_path_file, 'r') as f:
+                        logger.info(f"Attempt to load {full_path_file}")
+                        c = f.read()
+                        data = load(c, Loader=Loader)
+                        build.meta['yaml'] = data
+                        break
+                except Exception as e:
+                    logger.error(f"Error loading xml")
+                    pass
 
         logger.info(f"Found version: {build.version}")
         build.save()
@@ -153,8 +168,7 @@ def build_run(self, build_id):
             # Create executable script and make it executable
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
-                f.write(build_task.method.render_script(
-                    **build.request.computed_options))
+                f.write(build_task.method.render_script(build))
             os.chmod(script_file, 0o755)
 
             with PodmanClient(base_url=settings.PODMAN_URL) as client:
@@ -173,8 +187,7 @@ def build_run(self, build_id):
                     }
                 ]
 
-                image = build_task.method.container.get_target_tag(
-                    **build.request.computed_options)
+                image = build_task.method.container.get_target_tag(build)
                 
                 if not container.models.BuiltContainer.objects.filter(name=image).exists():
                     logger.info(f"Container {image} doesn't exist, building")

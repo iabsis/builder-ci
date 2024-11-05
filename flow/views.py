@@ -18,7 +18,7 @@ class FlowCreateView(GenericViewFormCreate):
         return context
 
     def form_valid(self, form):
-        self.object = form.save(commit=False)
+        self.object = form.save()
         child_formset = forms.FlowFormSet(
             self.request.POST, instance=self.object, prefix='child_formset')
         if child_formset.is_valid():

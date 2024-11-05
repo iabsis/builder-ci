@@ -1,5 +1,6 @@
 from django.db import models
 from . import validator, tasks
+from build.models import Build
 from django.forms import ValidationError
 from jinja2 import Template, StrictUndefined, UndefinedError
 
@@ -30,8 +31,8 @@ class Container(models.Model):
             raise ValidationError(
                 'Default option must not be empty and must at least contain empty dictionnary {}.', code="invalid")
         try:
-            self.render_dockerfile(**self.default_options)
-            self.get_target_tag(**self.default_options)
+            self.render_dockerfile()
+            self.get_target_tag()
         except UndefinedError as e:
             raise ValidationError(
                 f'You defined variable, but is missing in default options: {e}', code="invalid")
@@ -39,25 +40,36 @@ class Container(models.Model):
     def __str__(self):
         return self.name
     
-    def merge_options(self, variables):
+    def merge_options(self, dictionnary):
         options = self.default_options
-        for key, value in variables.items():
+        for key, value in dictionnary.items():
             options[key] = value
         return options
 
-    def render_dockerfile(self, **variables):
+    def render_dockerfile(self, build: Build=None):
+        if build:
+            options = build.request.computed_options
+        else:
+            options = {}
+
         template = Template(self.dockerfile, undefined=StrictUndefined)
         if self.options_are_mandatory:
-            return template.render(**variables)
+            return template.render(**options)
         else:
-            return template.render(**self.merge_options(variables))
+            return template.render(**self.merge_options(options))
     
-    def get_target_tag(self, **variables):
+    def get_target_tag(self, build: Build=None):
+
+        if build:
+            options = build.request.computed_options
+        else:
+            options = {}
+        
         template = Template(self.target_tag, undefined=StrictUndefined)
         if self.options_are_mandatory:
-            return template.render(**variables)
+            return template.render(**options)
         else:
-            return template.render(**self.merge_options(variables))
+            return template.render(**self.merge_options(options))
 
 
 class Status(models.TextChoices):
@@ -69,7 +81,7 @@ class Status(models.TextChoices):
 
 class BuiltContainer(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    hash = models.CharField(max_length=64, unique=True, blank=True)
+    hash = models.CharField(max_length=64, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     variables = models.JSONField(blank=True, null=True)
