@@ -187,13 +187,13 @@ def build_run(self, build_id):
                     }
                 ]
 
-                image = build_task.method.container.get_target_tag(build)
+                image = build_task.method.container.get_target_tag(build.request.computed_options)
                 
                 if not container.models.BuiltContainer.objects.filter(name=image).exists():
                     logger.info(f"Container {image} doesn't exist, building")
                     ## TODO: add try here in event build failes and catch logs
                     container.tasks.build_image(
-                        build_task.method.container.pk, **build.request.computed_options)
+                        build_task.method.container.pk, build.request.options)
 
                 logger.info(f"Running image: {image}")
                 

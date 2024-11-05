@@ -1,2 +1,2 @@
-FROM {{dist}}:{{codename}}
-RUN yum -y install rpm-build make gcc yum-utils
+FROM {{distrib}}:{{codename}}
+RUN apt update && apt install -y build-essential devscripts

@@ -17,3 +17,12 @@ class RunBuildView(LoginRequiredMixin, RedirectView):
             task.delete()
         messages.success(self.request, f"Build {build.name} triggered successfully")
         return super().get(request, *args)
+
+class TiggerBuildRequestView(LoginRequiredMixin, RedirectView):
+    pattern_name = 'request'
+
+    def get(self, request, *args, **kwargs):
+        request = get_object_or_404(models.BuildRequest, pk=kwargs['pk'])
+        tasks.build_request.delay(request.pk)
+        messages.success(self.request, f"Build {request.name} triggered successfully")
+        return super().get(request, *args)

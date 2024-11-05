@@ -10,8 +10,10 @@ class ReBuildContainer(LoginRequiredMixin, RedirectView):
     pattern_name = 'builtcontainer'
 
     def get(self, request, *args, **kwargs):
-        build = get_object_or_404(models.BuiltContainer, pk=kwargs['pk'])
-        build.status = models.Status.queued
-        tasks.build_image.delay(build.container.pk, **build.variables)
-        messages.success(self.request, f"Build {build.name} triggered successfully")
+        builtcontainer = get_object_or_404(models.BuiltContainer, pk=kwargs['pk'])
+        builtcontainer.status = models.Status.queued
+        builtcontainer.save()
+        options = builtcontainer.variables
+        tasks.build_image.delay(builtcontainer.container.pk, options)
+        messages.success(self.request, f"Rebuild container {builtcontainer} triggered successfully")
         return super().get(request, *args)

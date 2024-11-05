@@ -46,25 +46,18 @@ class Container(models.Model):
             options[key] = value
         return options
 
-    def render_dockerfile(self, build: Build=None):
-        if build:
-            options = build.request.computed_options
-        else:
+    def render_dockerfile(self, options: dict=None):
+        if not options:
             options = {}
-
         template = Template(self.dockerfile, undefined=StrictUndefined)
         if self.options_are_mandatory:
             return template.render(**options)
         else:
             return template.render(**self.merge_options(options))
     
-    def get_target_tag(self, build: Build=None):
-
-        if build:
-            options = build.request.computed_options
-        else:
+    def get_target_tag(self, options: dict=None):
+        if not options:
             options = {}
-        
         template = Template(self.target_tag, undefined=StrictUndefined)
         if self.options_are_mandatory:
             return template.render(**options)

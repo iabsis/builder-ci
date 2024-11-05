@@ -11,9 +11,14 @@ class Method(models.Model):
     stop_on_failure = models.BooleanField(default=False)
     secrets = models.ManyToManyField('secret.Secret', blank=True, help_text="Secrets will be exposed as environement variable with same name")
 
-    def render_script(self, **variables):
+    def render_script(self, build):
+        if build:
+            options = build.request.computed_options
+        else:
+            options = {}
+
         template = Template(self.script, undefined=StrictUndefined)
-        return template.render(variables).replace('\r', '')
+        return template.render(**options).replace('\r', '')
 
     def __str__(self):
         return self.name
