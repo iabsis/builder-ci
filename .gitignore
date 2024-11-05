@@ -10,3 +10,4 @@ venv
 builder-ci/
 build-folder/
 old/
+.env
