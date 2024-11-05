@@ -90,9 +90,13 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
 }
 
@@ -145,8 +149,6 @@ CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_RESULT_EXTENDED = True
 CELERY_TASK_TRACK_STARTED = True
-
-CONFIG_LOCATION = os.getenv('CONFIG_LOCATION') if os.getenv('CONFIG_LOCATION') else "config.ini"
 
 LOGLEVEL = os.getenv('LOGLEVEL') if os.getenv('LOGLEVEL') == 'True' else "DEBUG"
 
