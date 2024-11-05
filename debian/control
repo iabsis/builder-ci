@@ -5,6 +5,8 @@ Maintainer: Olivier Bitsch <olivier.b@iabsis.com>
 Rules-Requires-Root: no
 Build-Depends:
  debhelper-compat (= 13),
+ python3-pip,
+ python3-venv,
 Standards-Version: 4.6.2
 Homepage: <insert the upstream URL, if relevant>
 #Vcs-Browser: https://salsa.debian.org/debian/builder-ci
@@ -15,5 +17,6 @@ Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
+  python3
 Description: <insert up to 60 chars description>
  <Insert long description, indented with spaces.>
