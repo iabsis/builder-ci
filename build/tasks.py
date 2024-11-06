@@ -104,8 +104,7 @@ def build_run(self, build_id):
         logger.info(f'created temporary directory: {tmpdirname}')
 
         # TODO: add support for other source
-        repo = Repo()
-        cloned_repo = repo.clone_from(
+        cloned_repo = Repo.clone_from(
             build.request.url, os.path.join(tmpdirname, "sources"), depth=1)
         
         build.meta['commit_id'] = cloned_repo.head.object.hexsha

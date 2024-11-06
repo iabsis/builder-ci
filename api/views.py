@@ -24,7 +24,7 @@ class BuildView(View):
         branch = options.get('branch')
         flows = options.get('flows')
 
-        build_request = models.BuildRequest.objects.create(
+        build_request = models.BuildRequest.objects.update_or_create(
             name=name,
             options=options,
             url=url,
