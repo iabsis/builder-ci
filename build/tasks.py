@@ -203,6 +203,7 @@ def build_run(self, build_id):
                         network_mode="host",
                         entrypoint=['/build/sources/run'],
                         working_dir='/build/sources/',
+                        user='0',
                     )
                     build_task.logs = output.decode()
                     build_task.status = models.Status.success
