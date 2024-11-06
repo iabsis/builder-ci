@@ -7,7 +7,7 @@ set -e
 
 case "$1" in
     configure)
-        adduser --sytem builder || true
+        useradd --sytem builder || true
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
