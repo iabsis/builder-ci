@@ -1,3 +1,16 @@
+builder-ci (2.0.2) UNRELEASED; urgency=medium
+
+  * Update rules
+  * Update dependancies
+  * Fix models and small bug fixes
+  * Big bug fixes
+  * Fix makefile
+  * Build for bookworm
+  * Fix build.yml
+  * Add missing statics
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 01:25:41 +0100
+
 builder-ci (2.0.1) bookworm; urgency=medium
 
   * Complete refactor using Django and PostGreSQL
