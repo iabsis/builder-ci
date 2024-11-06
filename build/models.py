@@ -75,7 +75,6 @@ class Build(models.Model):
 
     @property
     def status(self) -> Status:
-        print(self.tasks.exists())
         if self.celery_task and self.celery_task.status == 'FAILURE':
             return Status.failed
         if not self.tasks.all().exists():
