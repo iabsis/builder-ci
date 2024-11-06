@@ -7,7 +7,7 @@ set -e
 
 case "$1" in
     configure)
-        useradd --sytem builder || true
+        useradd --system builder || true
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
