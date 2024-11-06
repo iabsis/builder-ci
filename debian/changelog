@@ -1,3 +1,11 @@
+builder-ci (2.0.4) bookworm; urgency=medium
+
+  * Fix user adding
+  * Fix clone process
+  * Fix build issue with Git
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 11:04:28 +0100
+
 builder-ci (2.0.3) bookworm; urgency=medium
 
   * Update rules
