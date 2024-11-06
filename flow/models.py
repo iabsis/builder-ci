@@ -1,3 +1,4 @@
+import regex
 from django.db import models
 from . import validator
 from jinja2 import Template, StrictUndefined
@@ -40,5 +41,15 @@ class Flow(models.Model):
     version_file = models.CharField(max_length=100)
     version_regex = models.CharField(max_length=150, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
 
+    def get_version(self, content):
+        pattern = regex.compile(self.version_regex)
+        m = regex.search(pattern, content)
+        if not m:
+            raise Exception("Regex didn't matched anything")
+        return m.group(1)
+
     def __str__(self):
         return self.name
+    
+    class Meta:
+        ordering = ['pk']

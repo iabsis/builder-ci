@@ -114,17 +114,14 @@ def build_run(self, build_id):
 
         ### VERSION FETCHING ##
         logger.info(f"Regex to use: {build.flow.version_regex}")
-        pattern = regex.compile(build.flow.version_regex)
 
         sources_path = os.path.join(tmpdirname, "sources")
         version_file = os.path.join(sources_path, build.flow.version_file)
 
         with open(version_file, 'r') as f:
-            c = f.read()
-            logger.debug(f"File content: {c}")
-            m = regex.search(pattern, c)
-            logger.debug(f"Matched regex: {m}")
-            build.version = m.group(1)
+            content = f.read()
+            logger.debug(f"File content: {content}")
+            build.version = build.flow.get_version(content)
     
 
         # Load from yaml as well
@@ -139,8 +136,7 @@ def build_run(self, build_id):
                         build.meta['yaml'] = data
                         break
                 except Exception as e:
-                    logger.error(f"Error loading xml")
-                    pass
+                    logger.error("Error loading xml")
 
         logger.info(f"Found version: {build.version}")
         build.save()
