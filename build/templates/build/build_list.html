@@ -42,8 +42,15 @@
                         {% for obj in object_list %}
                         <tr>
                             <td>{{ obj.pk }}</td>
-                            <td>{{ obj.request }}</td>
-                            <td>{{ obj.flow }}</td>
+                            <td>
+                                <a href="{% url 'request' %}?name={{ obj.request.name }}">
+                                    {{ obj.request }}</td>
+                                </a>
+                            <td>
+                                <a href="{% url 'flow_update' obj.flow.pk %}">
+                                    {{ obj.flow }}
+                                </a>
+                            </td>
                             <td>{{ obj.version }}</td>
                             <td>{{ obj.status|status_badge }}</td>
                             <td>{{ obj.created_at }}</td>
