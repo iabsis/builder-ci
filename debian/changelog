@@ -1,3 +1,9 @@
+builder-ci (2.0.6) bookworm; urgency=medium
+
+  * Fix no internet in podman inception
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 15:49:22 +0100
+
 builder-ci (2.0.5) bookworm; urgency=medium
 
   * Fix typo
