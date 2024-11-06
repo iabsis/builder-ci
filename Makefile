@@ -16,7 +16,7 @@ ${STATIC}/${PROJECT}/venv:
 
 install: ${STATIC}/${PROJECT}/venv
 	mkdir -p $(DESTDIR)/${STATIC}/${PROJECT}
-	cp -a api build container core flow sbadmin2 secret $(DESTDIR)/${STATIC}/${PROJECT}
+	cp -a manage.py statics api build container core flow sbadmin2 secret $(DESTDIR)/${STATIC}/${PROJECT}
 	mkdir -p $(DESTDIR)/etc/${PROJECT}
 	cp .env.dist $(DESTDIR)/etc/${PROJECT}/${PROJECT}.conf
 	mkdir -p $(DESTDIR)/${VAR}/${PROJECT}

@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-*x8(_t)iy&596ufar(i-&3dk5i$vf3m#3w3k84d=k@a=zx^9*r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv('DEBUG') == 'True' else False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS')]
 APPEND_SLASH = True
 
 # Application definition
@@ -173,3 +173,5 @@ PODMAN_URL = os.getenv('PODMAN_URL') if os.getenv(
 
 REDMINE_URL = os.getenv('REDMINE_URL')
 REDMINE_KEY = os.getenv('REDMINE_KEY')
+
+STATIC_ROOT = 'statics'
