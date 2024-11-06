@@ -1,3 +1,13 @@
+builder-ci (2.0.5) bookworm; urgency=medium
+
+  * Fix typo
+  * Now use settings for PODMAN_PATH bind
+  * Remove print
+  * Add test regex feature
+  * Few polishing
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 14:48:53 +0100
+
 builder-ci (2.0.4) bookworm; urgency=medium
 
   * Fix user adding
