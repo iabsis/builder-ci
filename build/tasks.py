@@ -200,6 +200,7 @@ def build_run(self, build_id):
                         environment=task.method.serialized_secrets,
                         stderr=True,
                         mounts=mounts,
+                        network_mode="host",
                         entrypoint=['/build/sources/run'],
                         working_dir='/build/sources/',
                     )
