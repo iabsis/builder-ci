@@ -170,6 +170,9 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 PODMAN_URL = os.getenv('PODMAN_URL') if os.getenv(
     'PODMAN_URL') else "unix:///run/podman/podman.sock"
+PODMAN_PATH = os.getenv('PODMAN_PATH') if os.getenv(
+    'PODMAN_PATH') else "/run/podman/podman.sock"
+
 
 REDMINE_URL = os.getenv('REDMINE_URL')
 REDMINE_KEY = os.getenv('REDMINE_KEY')

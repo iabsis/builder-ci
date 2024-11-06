@@ -181,7 +181,7 @@ def build_run(self, build_id):
                     {
                         "target": "/run/podman/podman.sock",
                         "read_only": False,
-                        "source": '/run/user/1000/podman/podman.sock',
+                        "source": settings.PODMAN_PATH,
                         "type": "bind"
                     }
                 ]
