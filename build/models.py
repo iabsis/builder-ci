@@ -65,7 +65,7 @@ class Build(models.Model):
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)
-    celery_task = models.ForeignKey(TaskResult, on_delete=models.DO_NOTHING, blank=True, null=True)
+    celery_task = models.ForeignKey(TaskResult, on_delete=models.SET_NULL, blank=True, null=True)
     tasks = models.ManyToManyField(BuildTask, blank=True)
     meta = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -75,9 +75,10 @@ class Build(models.Model):
 
     @property
     def status(self) -> Status:
+        print(self.tasks.exists())
         if self.celery_task and self.celery_task.status == 'FAILURE':
             return Status.failed
-        if not self.tasks.exists():
+        if not self.tasks.all().exists():
             return Status.queued
         if self.tasks.filter(status=Status.running).exists():
             return Status.running
