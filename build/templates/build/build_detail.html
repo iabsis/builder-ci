@@ -104,7 +104,19 @@
                         
                                 <div id="collapse-{{task.pk}}" class="collapse {% if task.status == 'failed' %}show{% endif %}" aria-labelledby="headingOne" data-parent="#accordion">
                                     <div class="card-body">
-                                        <pre class="text-xs">{{task.logs|linebreaks}}</pre>
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Options</div>
+                                                <div class="mb-0 text-gray-800">{{task.options}}</div>
+                                            </div>
+                                            <div class="col-12 mr-2 mt-3">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Task log</div>
+                                                <pre class="text-xs">{{task.logs|linebreaks}}</pre>
+                                            </div>
+                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>

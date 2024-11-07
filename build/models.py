@@ -50,7 +50,14 @@ class BuildTask(models.Model):
     
     @property
     def options(self):
-        return self.method.container.default_options | self.build.options
+        if self.build.meta and self.build.meta.get('yaml'):
+            option_meta = self.build.meta.get(
+                'yaml').get(self.method.name)
+            if not isinstance(option_meta, dict): option_meta = {}
+        else:
+            option_meta = {}
+            
+        return self.method.container.default_options | self.build.options | option_meta
 
     @property
     def script(self):
