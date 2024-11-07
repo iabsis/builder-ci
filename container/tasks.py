@@ -15,7 +15,7 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 logger = logging.getLogger(__name__)
 
 @app.task
-def build_image(container_id: int, options: dict):
+def build_image(container_id: int, options: dict, force=False) -> models.BuiltContainer:
 
     podman_url = settings.PODMAN_URL
 
@@ -26,10 +26,13 @@ def build_image(container_id: int, options: dict):
         container=container,
     )
 
-    builtcontainer, _ = models.BuiltContainer.objects.get_or_create(
+    builtcontainer, created = models.BuiltContainer.objects.get_or_create(
         name=temp_builtcontainer.name,
         container=container,
     )
+
+    if not created and not force:
+        return builtcontainer
 
     builtcontainer.status = models.Status.running
     builtcontainer.options = options
@@ -53,4 +56,6 @@ def build_image(container_id: int, options: dict):
     
     builtcontainer.hash = image.id
     builtcontainer.save()
+
+    return builtcontainer
 

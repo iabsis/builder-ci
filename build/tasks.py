@@ -184,20 +184,14 @@ def build_run(self, build_id):
                     }
                 ]
 
-                image = build_task.method.container.get_target_tag(build=build)
-                
-                if not container.models.BuiltContainer.objects.filter(name=image).exists():
-                    logger.info(f"Container {image} doesn't exist, building")
-                    ## TODO: add try here in event build failes and catch logs
-                    container.tasks.build_image(
-                        build_task.method.container.pk, build.options)
-
-                logger.info(f"Running image: {image}")
+                ## TODO: add try here in event build failes and catch logs
+                builtcontainer = container.tasks.build_image(
+                    build_task.method.container.pk, build.options)
                 
                 try:
                     output = client.containers.run(
                         privileged=True,
-                        image=image,
+                        image=builtcontainer.name,
                         remove=True,
                         environment=task.method.serialized_secrets,
                         stderr=True,
