@@ -1,3 +1,9 @@
+builder-ci (2.0.9) bookworm; urgency=medium
+
+  * Fix bug + add automigrate
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:37:56 +0100
+
 builder-ci (2.0.8) bookworm; urgency=medium
 
   * Way more clean properties
