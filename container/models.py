@@ -3,7 +3,6 @@ from . import validator
 from build.models import Build
 from django.forms import ValidationError
 from jinja2 import Template, StrictUndefined, UndefinedError
-from core.template import get_template
 
 # Create your models here.
 
@@ -32,20 +31,17 @@ class Container(models.Model):
             raise ValidationError(
                 'Default option must not be empty and must at least contain empty dictionnary {}.', code="invalid")
         try:
-            self.render_dockerfile()
-            self.get_target_tag()
+            builtcontainer = BuiltContainer(
+                container=self,
+                options=self.default_options
+            )
+            builtcontainer.dockerfile
         except UndefinedError as e:
             raise ValidationError(
                 f'You defined variable, but is missing in default options: {e}', code="invalid")
 
     def __str__(self):
         return self.name
-    
-    def render_dockerfile(self, build: Build = None, options: dict = None):
-        return get_template(self.dockerfile, options=options, default_options=self.default_options)
-    
-    def get_target_tag(self, build: Build = None, options: dict = None):
-        return get_template(self.target_tag, options=options, default_options=self.default_options)
 
 class Status(models.TextChoices):
     queued = 'queued', 'Queued'

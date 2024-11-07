@@ -1,3 +1,9 @@
+builder-ci (2.0.8) bookworm; urgency=medium
+
+  * Way more clean properties
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:34:37 +0100
+
 builder-ci (2.0.7) bookworm; urgency=medium
 
   * Forcefully run container as root to prevent run script permission issue
