@@ -1,5 +1,6 @@
 from django.db import models
 from django_celery_results.models import TaskResult
+from jinja2 import Template, StrictUndefined
 import json
 
 # Create your models here.
@@ -26,18 +27,6 @@ class BuildRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     options = models.JSONField(default=dict, null=True, blank=True)
 
-    @property
-    def computed_options(self) -> dict:
-        '''
-        Return the options field in addition of
-        name, url and branch.
-        '''
-        options = self.options
-        options['name'] = self.name
-        options['url'] = self.url
-        options['branch'] = self.branch
-        return options
-
     def __str__(self):
         return self.name
 
@@ -51,6 +40,7 @@ class Status(models.TextChoices):
     duplicate = 'duplicate', 'Duplicate'
 
 class BuildTask(models.Model):
+    build = models.ForeignKey('Build', on_delete=models.CASCADE, null=True)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     method = models.ForeignKey('flow.Method', on_delete=models.CASCADE)
     order = models.IntegerField()
@@ -58,6 +48,15 @@ class BuildTask(models.Model):
     status = models.CharField(
         choices=Status.choices, null=True, blank=True, max_length=10)
     
+    @property
+    def options(self):
+        return self.method.container.default_options | self.build.options
+
+    @property
+    def script(self):
+        t = Template(self.method.script, undefined=StrictUndefined)
+        return t.render(**self.options).replace('\r', '')
+
     class Meta:
         ordering = ['order']
 
@@ -66,7 +65,6 @@ class Build(models.Model):
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)
     celery_task = models.ForeignKey(TaskResult, on_delete=models.SET_NULL, blank=True, null=True)
-    tasks = models.ManyToManyField(BuildTask, blank=True)
     meta = models.JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -77,20 +75,32 @@ class Build(models.Model):
     def status(self) -> Status:
         if self.celery_task and self.celery_task.status == 'FAILURE':
             return Status.failed
-        if not self.tasks.all().exists():
+        if not self.buildtask_set.all().exists():
             return Status.queued
-        if self.tasks.filter(status=Status.running).exists():
+        if self.buildtask_set.filter(status=Status.running).exists():
             return Status.running
-        if self.tasks.filter(status=Status.failed, method__stop_on_failure=True).exists():
+        if self.buildtask_set.filter(status=Status.failed, method__stop_on_failure=True).exists():
             return Status.failed
-        if self.tasks.filter(status=Status.failed, method__stop_on_failure=False).exists():
+        if self.buildtask_set.filter(status=Status.failed, method__stop_on_failure=False).exists():
             return Status.warning
         return Status.success
 
     @property
+    def options(self) -> dict:
+        '''
+        Return the options field in addition of
+        name, url and branch.
+        '''
+        options = self.request.options
+        options['name'] = self.request.name
+        options['url'] = self.request.url
+        options['branch'] = self.request.branch
+        return options
+
+    @property
     def logs(self):
         logs = ""
-        for task in self.tasks.filter(status=Status.failed):
+        for task in self.buildtask_set.filter(status=Status.failed):
             logs += f"## Tasks ({task.method.name}) {'Optional' if task.method.stop_on_failure else ''}\n"
             logs += f"{task.logs}\n"
         return logs

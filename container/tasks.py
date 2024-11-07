@@ -19,26 +19,29 @@ def build_image(container_id: int, options: dict):
 
     podman_url = settings.PODMAN_URL
 
-    image_obj = models.Container.objects.get(pk=container_id)
-    dockerfile = image_obj.render_dockerfile(options=options)
-    tag = image_obj.get_target_tag(options=options)
+    container = models.Container.objects.get(pk=container_id)
+
+    temp_builtcontainer = models.BuiltContainer(
+        options=options,
+        container=container,
+    )
 
     builtcontainer, _ = models.BuiltContainer.objects.get_or_create(
-        name=tag,
-        container=image_obj
+        name=temp_builtcontainer.name,
+        container=container,
     )
 
     builtcontainer.status = models.Status.running
-    builtcontainer.variables = options
+    builtcontainer.options = options
     builtcontainer.save()
 
     try:
         with PodmanClient(base_url=podman_url) as client:
             image, logs = client.images.build(
-                        fileobj=StringIO(dockerfile),
-                        tag=tag,
-                        pull=True,
-                    )
+                fileobj=StringIO(builtcontainer.dockerfile),
+                tag=builtcontainer.name,
+                pull=True,
+            )
     except BuildError as e:
         builtcontainer.logs = "".join([line.decode() for line in e.build_log])
         builtcontainer.status = models.Status.failed

@@ -63,7 +63,7 @@
                         Options
                     </div>
                     <div class="h6 mb-0 font-weight-bold text-gray-800">
-                        <pre>{{object.request.options}}</pre>
+                        <pre>{{object.options}}</pre>
                     </div>
                 </div>
             </div>
@@ -76,10 +76,18 @@
             <h6 class="m-0 font-weight-bold text-primary">Tasks info</h6>
         </div>
         <div class="card-body">
-    
+
+            <a href="{% url 'build_run' object.pk %}" class="btn btn-primary btn-icon-split mb-4">
+                <span class="icon text-white-50">
+                    <i class="fas fa-refresh"></i>
+                </span>
+                <span class="text">
+                    Run again
+                </span>
+            </a>
 
             <div class="row no-gutters align-items-center">
-                {% for task in object.tasks.all %}
+                {% for task in object.buildtask_set.all %}
                     <div class="col-12">
                         <div id="accordion">
                             <div class="card">
@@ -95,9 +103,10 @@
                         
                                 <div id="collapse-{{task.pk}}" class="collapse {% if task.status != 'success' %}show{% endif %}" aria-labelledby="headingOne" data-parent="#accordion">
                                     <div class="card-body">
-                                        <code class="text-xs">{{task.logs|linebreaks}}</code>
+                                        <pre class="text-xs">{{task.logs|linebreaks}}</pre>
                                     </div>
                                 </div>
+                                {{task.script|linebreaks}}
                             </div>
                         </div>
                     </div>

@@ -18,6 +18,7 @@ from podman.errors import ContainerError
 from django_celery_results.models import TaskResult
 from git import Repo
 from celery import shared_task
+from core.template import get_options
 
 app = Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
@@ -91,7 +92,7 @@ def build_run(self, build_id):
 
     # Remove all previous built tasks if existing
     build = models.Build.objects.get(pk=build_id)
-    for task in build.tasks.all():
+    for task in build.buildtask_set.all():
         task.delete()
     build.started_at = timezone.now()
 
@@ -141,30 +142,31 @@ def build_run(self, build_id):
         logger.info(f"Found version: {build.version}")
         build.save()
 
-        ### TASKS RUNNING ##
+        ### TASKS DEFINITION ##
         for task in Task.objects.filter(flow=build.flow).order_by('priority'):
 
+            build_task = models.BuildTask.objects.create(
+                build=build,
+                flow=task.flow,
+                method=task.method,
+                order=task.priority,
+                status=models.Status.queued
+            )
+
+        ### TASKS DEFINITION ##
+        for build_task in models.BuildTask.objects.filter(build=build).order_by('order'):
             try:
                 send_notification(build)
             except Exception as e:
                 logger.warning(f"Unable to send notify: {e}")
 
-
-            build_task = models.BuildTask(
-                flow=task.flow,
-                method=task.method,
-                order=task.priority,
-                status=models.Status.running
-            )
-
+            build_task.status = models.Status.running
             build_task.save()
-            build.tasks.add(build_task)
 
             # Create executable script and make it executable
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
-                f.write(build_task.method.render_script(
-                    build=build, default_options=build_task.method.container.default_options))
+                f.write(build_task.script)
             os.chmod(script_file, 0o755)
 
             with PodmanClient(base_url=settings.PODMAN_URL) as client:
@@ -189,7 +191,7 @@ def build_run(self, build_id):
                     logger.info(f"Container {image} doesn't exist, building")
                     ## TODO: add try here in event build failes and catch logs
                     container.tasks.build_image(
-                        build_task.method.container.pk, build.request.options)
+                        build_task.method.container.pk, build.options)
 
                 logger.info(f"Running image: {image}")
                 

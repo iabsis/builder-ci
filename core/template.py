@@ -27,7 +27,7 @@ def get_options(*, build: Build = None, options: dict = None, default_options=No
         return merged_with_default(options, default_options)
     if build:
         return merged_with_default(
-            build.request.computed_options, default_options)
+            build.options, default_options)
     return default_options
 
 def get_template(template, *, build: Build = None, options: dict = None, default_options=None):

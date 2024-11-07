@@ -29,7 +29,7 @@
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
-                            <th>Variables</th>
+                            <th>Options</th>
                             <th>Hash</th>
                             <th>Status</th>
                             <th>Created at</th>
@@ -42,7 +42,7 @@
                         <tr>
                             <td>{{ obj.pk }}</td>
                             <td>{{ obj.name }}</td>
-                            <td>{{ obj.variables }}</td>
+                            <td>{{ obj.options }}</td>
                             <td>{{ obj.hash|slice:":12" }}</td>
                             <td>{{ obj.status|status_badge }}</td>
                             <td>{{ obj.created_at }}</td>

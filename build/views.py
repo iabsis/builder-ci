@@ -12,7 +12,7 @@ class RunBuildView(LoginRequiredMixin, RedirectView):
 
     def get(self, request, *args, **kwargs):
         build = get_object_or_404(models.Build, pk=kwargs['pk'])
-        for task in build.tasks.all():
+        for task in build.buildtask_set.all():
             task.delete()
         if build.celery_task:
             build.celery_task.delete()

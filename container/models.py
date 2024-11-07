@@ -1,5 +1,5 @@
 from django.db import models
-from . import validator, tasks
+from . import validator
 from build.models import Build
 from django.forms import ValidationError
 from jinja2 import Template, StrictUndefined, UndefinedError
@@ -55,14 +55,31 @@ class Status(models.TextChoices):
     warning = 'warning', 'Warning'
 
 class BuiltContainer(models.Model):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = self._name
+
     name = models.CharField(max_length=100, unique=True)
     hash = models.CharField(max_length=64, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    variables = models.JSONField(blank=True, null=True)
     logs = models.TextField(blank=True, null=True)
     status = models.TextField(choices=Status.choices, blank=True)
+    options = models.JSONField(default=dict, null=True, blank=True)
     container = models.ForeignKey('Container', on_delete=models.CASCADE)
+
+    @property
+    def dockerfile(self):
+        options = self.container.default_options | self.options
+        t = Template(self.container.dockerfile, undefined=StrictUndefined)
+        return t.render(**options).replace('\r', '')
+
+    @property
+    def _name(self):
+        options = self.container.default_options | self.options
+        t = Template(self.container.target_tag, undefined=StrictUndefined)
+        return t.render(**options).replace('\r', '')
 
     def __str__(self):
         return self.name
