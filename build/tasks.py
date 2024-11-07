@@ -185,13 +185,13 @@ def build_run(self, build_id):
                 ]
 
                 ## TODO: add try here in event build failes and catch logs
-                builtcontainer = container.tasks.build_image(
+                builtcontainer_name = container.tasks.build_image(
                     build_task.method.container.pk, build.options)
                 
                 try:
                     output = client.containers.run(
                         privileged=True,
-                        image=builtcontainer.name,
+                        image=builtcontainer_name,
                         remove=True,
                         environment=task.method.serialized_secrets,
                         stderr=True,

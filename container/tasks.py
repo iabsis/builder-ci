@@ -32,7 +32,7 @@ def build_image(container_id: int, options: dict, force=False) -> models.BuiltCo
     )
 
     if not created and not force:
-        return builtcontainer
+        return builtcontainer.name
 
     builtcontainer.status = models.Status.running
     builtcontainer.options = options
@@ -57,5 +57,5 @@ def build_image(container_id: int, options: dict, force=False) -> models.BuiltCo
     builtcontainer.hash = image.id
     builtcontainer.save()
 
-    return builtcontainer
+    return builtcontainer.name
 
