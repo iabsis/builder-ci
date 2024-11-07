@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Put this file into <git bare>/.git/hooks/post-receive
+
+import sys
+import os
+import requests
+from yaml import load, Loader
+
+import fileinput
+from git import Repo
+
+project_name = os.getcwd().split("/")[-1]
+
+## Extract info from stdin
+for line in fileinput.input():
+    print(line.split(" "))
+    oldrev, newrev, refname = line.split(" ")
+    refname = refname.replace('refs/heads/', '').replace('\n', '')
+
+## Gretting
+committer_name = os.environ.get("GIT_COMMITTER_NAME")
+if committer_name:
+    print(
+        f"Hello {committer_name}, thanks for your commit into {project_name} !!")
+
+def trigger_build():
+    repo = Repo(os.getcwd())
+    for file in ['builder.yml', 'builder.yaml', 'build.yml', 'build.yaml']:
+        commit = repo.commit(newrev)
+        try:
+            blob = commit.tree / file
+            file_content = blob.data_stream.read().decode('utf-8')
+        except Exception as e:
+            continue
+
+        print(f"I found file {file}, I will check it...")
+
+        try:
+            yaml_content = load(file_content, Loader=Loader)
+        except Exception as e:
+            print(f"It seems the file is invalid, I'm not sending to builder: {e}")
+            return
+        
+        post_builder(yaml_content)
+        break
+
+
+def post_builder(yaml_content):
+    req = {
+        "url": "http://builder/api/build",
+        "json": {
+            "name": project_name,
+            "url": f"http://redmine/git/{project_name}",
+            "branch": "master",
+            "flows": yaml_content.get('flows'),
+            "options": yaml_content.get('options')
+        }
+    }
+
+    res = requests.post(**req)
+
+    
+
+
+if __name__ == "__main__":
+    trigger_build()
+
+
+
+print("Hello")
+print(sys.argv)
+print(os.environ)
+print(os.path.dirname(os.path.realpath(__file__)))
+print(os.getcwd())
+
+print(fileinput.input())
+
+
+
+fileinput.nextfile()
+
+print(fileinput.input())
+
+print(fileinput.filename())
+
+
+
+
+print()
+
+
+
+print(file_content)

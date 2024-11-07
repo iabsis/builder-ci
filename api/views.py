@@ -32,9 +32,22 @@ class BuildView(View):
             branch=branch,
         )
 
+        for flow in build_request.flows.all():
+            flow.delete()
+
+        print(Flow.objects.all())
+
         for flow_name in flows:
-            flow = Flow.objects.get(name=flow_name)
+            try:
+                flow = Flow.objects.get(name=flow_name)
+            except Flow.DoesNotExist:
+                return JsonResponse({"status": "ERROR", "message": f"The flow {flow_name} doesn't exist, build not triggered"})
             build_request.flows.add(flow)
 
         tasks.build_request.delay(build_request.pk)
-        return JsonResponse({"status": "SUCCESS", "buildrequest_id": build_request.pk})
+        return JsonResponse({
+            "status": "SUCCESS",
+            "buildrequest_id": build_request.pk,
+            "message": f"Buildrequest successfully triggered with ID {build_request.pk}",
+            "url": ""
+            })

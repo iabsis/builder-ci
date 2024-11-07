@@ -122,21 +122,6 @@ def build_run(self, build_id):
             content = f.read()
             logger.debug(f"File content: {content}")
             build.version = build.flow.get_version(content)
-    
-
-        # Load from yaml as well
-        for file in ['builder.yml', 'builder.yaml', 'build.yml', 'build.yaml']:
-            full_path_file = os.path.join(sources_path, file)
-            if os.path.exists(full_path_file):
-                try:
-                    with open(full_path_file, 'r') as f:
-                        logger.info(f"Attempt to load {full_path_file}")
-                        c = f.read()
-                        data = load(c, Loader=Loader)
-                        build.meta['yaml'] = data
-                        break
-                except Exception as e:
-                    logger.error("Error loading xml")
 
         logger.info(f"Found version: {build.version}")
         build.save()
