@@ -3,7 +3,6 @@ from django.db import models
 from . import validator
 from build.models import Build
 from jinja2 import Template, StrictUndefined
-from core.template import get_template
 
 # Create your models here.
 

@@ -18,7 +18,6 @@ from podman.errors import ContainerError
 from django_celery_results.models import TaskResult
 from git import Repo
 from celery import shared_task
-from core.template import get_options
 
 app = Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
