@@ -20,8 +20,8 @@ def build_image(container_id: int, options: dict):
     podman_url = settings.PODMAN_URL
 
     image_obj = models.Container.objects.get(pk=container_id)
-    dockerfile = image_obj.render_dockerfile(options)
-    tag = image_obj.get_target_tag(options)
+    dockerfile = image_obj.render_dockerfile(options=options)
+    tag = image_obj.get_target_tag(options=options)
 
     builtcontainer, _ = models.BuiltContainer.objects.get_or_create(
         name=tag,

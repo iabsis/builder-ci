@@ -3,6 +3,7 @@ from . import validator, tasks
 from build.models import Build
 from django.forms import ValidationError
 from jinja2 import Template, StrictUndefined, UndefinedError
+from core.template import get_template
 
 # Create your models here.
 
@@ -40,30 +41,11 @@ class Container(models.Model):
     def __str__(self):
         return self.name
     
-    def merge_options(self, dictionnary):
-        options = self.default_options
-        for key, value in dictionnary.items():
-            options[key] = value
-        return options
-
-    def render_dockerfile(self, options: dict=None):
-        if not options:
-            options = {}
-        template = Template(self.dockerfile, undefined=StrictUndefined)
-        if self.options_are_mandatory:
-            return template.render(**options)
-        else:
-            return template.render(**self.merge_options(options))
+    def render_dockerfile(self, build: Build = None, options: dict = None):
+        return get_template(self.dockerfile, options=options, default_options=self.default_options)
     
-    def get_target_tag(self, options: dict=None):
-        if not options:
-            options = {}
-        template = Template(self.target_tag, undefined=StrictUndefined)
-        if self.options_are_mandatory:
-            return template.render(**options)
-        else:
-            return template.render(**self.merge_options(options))
-
+    def get_target_tag(self, build: Build = None, options: dict = None):
+        return get_template(self.target_tag, options=options, default_options=self.default_options)
 
 class Status(models.TextChoices):
     queued = 'queued', 'Queued'

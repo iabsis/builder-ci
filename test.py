@@ -17,8 +17,6 @@ def capture_logs(func):
         formatter = logging.Formatter('- %(message)s')
         ch.setFormatter(formatter)
 
-        logger.warning("BLA")
-
         
         try:
             # Execute the decorated function

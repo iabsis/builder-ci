@@ -163,7 +163,8 @@ def build_run(self, build_id):
             # Create executable script and make it executable
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
-                f.write(build_task.method.render_script(build))
+                f.write(build_task.method.render_script(
+                    build=build, default_options=build_task.method.container.default_options))
             os.chmod(script_file, 0o755)
 
             with PodmanClient(base_url=settings.PODMAN_URL) as client:
@@ -182,7 +183,7 @@ def build_run(self, build_id):
                     }
                 ]
 
-                image = build_task.method.container.get_target_tag(build.request.computed_options)
+                image = build_task.method.container.get_target_tag(build=build)
                 
                 if not container.models.BuiltContainer.objects.filter(name=image).exists():
                     logger.info(f"Container {image} doesn't exist, building")

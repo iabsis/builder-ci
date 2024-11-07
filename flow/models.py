@@ -1,7 +1,9 @@
 import regex
 from django.db import models
 from . import validator
+from build.models import Build
 from jinja2 import Template, StrictUndefined
+from core.template import get_template
 
 # Create your models here.
 
@@ -12,14 +14,10 @@ class Method(models.Model):
     stop_on_failure = models.BooleanField(default=False)
     secrets = models.ManyToManyField('secret.Secret', blank=True, help_text="Secrets will be exposed as environement variable with same name")
 
-    def render_script(self, build):
-        if build:
-            options = build.request.computed_options
-        else:
-            options = {}
 
-        template = Template(self.script, undefined=StrictUndefined)
-        return template.render(**options).replace('\r', '')
+    def render_script(self, *, build: Build = None, options: dict = None, default_options=None):
+        return get_template(self.script, options=options, default_options=default_options)
+
 
     def __str__(self):
         return self.name
