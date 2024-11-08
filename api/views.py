@@ -32,7 +32,7 @@ class BuildView(View):
             branch=branch,
         )
 
-        build_request.flow_set.clear()
+        build_request.flows.clear()
 
         if not flows:
             tasks.build_request.delay(build_request.pk)
