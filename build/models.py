@@ -77,20 +77,23 @@ class Build(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(choices=Status.choices, max_length=10, default=Status.queued)
 
-    @property
-    def status(self) -> Status:
-        if self.celery_task and self.celery_task.status == 'FAILURE':
-            return Status.failed
-        if not self.buildtask_set.all().exists():
-            return Status.queued
-        if self.buildtask_set.filter(status=Status.running).exists():
-            return Status.running
-        if self.buildtask_set.filter(status=Status.failed, method__stop_on_failure=True).exists():
-            return Status.failed
-        if self.buildtask_set.filter(status=Status.failed, method__stop_on_failure=False).exists():
-            return Status.warning
-        return Status.success
+    def save(self, *args, **kwargs):
+        if not self.status:
+            if self.celery_task and self.celery_task.status == 'FAILURE':
+                self.status = Status.failed
+            elif not self.buildtask_set.all().exists():
+                self.status = Status.queued
+            elif self.buildtask_set.filter(status=Status.running).exists():
+                self.status = Status.running
+            elif self.buildtask_set.filter(status=Status.failed, method__stop_on_failure=True).exists():
+                self.status = Status.failed
+            elif self.buildtask_set.filter(status=Status.failed, method__stop_on_failure=False).exists():
+                self.status = Status.warning
+            else:
+                self.status = Status.success
+        super(Build, self).save(*args, **kwargs)
 
     @property
     def options(self) -> dict:

@@ -2,7 +2,6 @@ import logging
 import container
 import regex
 import os
-from yaml import load, Loader
 import tempfile
 import requests
 from celery import Celery
@@ -123,6 +122,22 @@ def build_run(self, build_id):
             logger.debug(f"File content: {content}")
             build.version = build.flow.get_version(content)
 
+        logger.debug("Check for duplicates")
+        if models.Build.objects.filter(
+            request=build.request,
+            version=build.version,
+            status=models.Status.success,
+        ).exclude(
+            pk=build.pk
+        ).exists():
+            logger.debug("Duplicate found, stopping")
+            build.status = models.Status.duplicate
+            logger.debug(build)
+            build.save()
+            return
+        
+        logger.debug("No duplicates, continuing")
+
         logger.info(f"Found version: {build.version}")
         build.save()
 
@@ -139,10 +154,8 @@ def build_run(self, build_id):
 
         ### TASKS DEFINITION ##
         for build_task in models.BuildTask.objects.filter(build=build).order_by('order'):
-            try:
-                send_notification(build)
-            except Exception as e:
-                logger.warning(f"Unable to send notify: {e}")
+            
+            send_notification(build)
 
             build_task.status = models.Status.running
             build_task.save()
@@ -195,6 +208,9 @@ def build_run(self, build_id):
                     build_task.save()
                     if build_task.method.stop_on_failure:
                         break
+        build.status = None
+        build.save()
 
+    send_notification(build)
     build.finished_at = timezone.now()
     build.save()
