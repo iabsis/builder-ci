@@ -1,3 +1,9 @@
+builder-ci (2.0.14) bookworm; urgency=medium
+
+  * Clear flows if no flow defined
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 11:00:43 +0100
+
 builder-ci (2.0.13) bookworm; urgency=medium
 
   * Change status to field
