@@ -41,7 +41,7 @@ def send_notification(build):
         status = 'Duplicate'
     else:
         logger.debug(f"Received unknow status: {build.status}")
-        status = 'Unknown'
+        status = 'Failed'
 
     if settings.REDMINE_KEY and settings.REDMINE_URL:
         req = {
@@ -70,6 +70,8 @@ def send_notification(build):
         req['url'] = f"{settings.REDMINE_URL}/builds/{redmine_id}.json" if redmine_id else f"{settings.REDMINE_URL}/builds/new.json"
 
         response = requests.post(**req)
+        if response.status_code != 200:
+            logger.error(f"Unable to notify Redmine: {response.text}, {req['json']}")
         # response.raise_for_status()
 
 @app.task
@@ -254,5 +256,5 @@ def build_run(self, build_id):
     # Set to None will automatically detect the status
     build.status = None
     build.finished_at = timezone.now()
-    send_notification(build)
     build.save()
+    send_notification(build)

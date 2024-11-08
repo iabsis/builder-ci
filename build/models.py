@@ -112,7 +112,7 @@ class Build(models.Model):
     def logs(self):
         logs = ""
         for task in self.buildtask_set.filter(status=Status.failed):
-            logs += f"## Tasks ({task.method.name}) {'Optional' if task.method.stop_on_failure else ''}\n"
+            logs += f"## Tasks ({task.method.name}) {'Optional' if not task.method.stop_on_failure else ''}\n"
             logs += f"{task.logs}\n"
         return logs
 
