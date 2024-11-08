@@ -29,16 +29,19 @@ def send_notification(build):
 
     if build.status == models.Status.queued:
         status = 'New'
-    if build.status == models.Status.failed:
+    elif build.status == models.Status.failed:
         status = 'Failed'
-    if build.status == models.Status.success:
+    elif build.status == models.Status.success:
         status = 'Success'
-    if build.status == models.Status.running:
+    elif build.status == models.Status.running:
         status = 'Running'
-    if build.status == models.Status.warning:
+    elif build.status == models.Status.warning:
         status = 'New'
-    if build.status == models.Status.duplicate:
+    elif build.status == models.Status.duplicate:
         status = 'Duplicate'
+    else:
+        logger.debug(f"Received unknow status: {build.status}")
+        status = 'Unknown'
 
     if settings.REDMINE_KEY and settings.REDMINE_URL:
         req = {
@@ -67,7 +70,7 @@ def send_notification(build):
         req['url'] = f"{settings.REDMINE_URL}/builds/{redmine_id}.json" if redmine_id else f"{settings.REDMINE_URL}/builds/new.json"
 
         response = requests.post(**req)
-        response.raise_for_status()
+        # response.raise_for_status()
 
 @app.task
 def build_request(build_request_id):
@@ -103,11 +106,28 @@ def build_run(self, build_id):
     with tempfile.TemporaryDirectory() as tmpdirname:
         logger.info(f'created temporary directory: {tmpdirname}')
 
-        # TODO: add support for other source
-        cloned_repo = Repo.clone_from(
-            build.request.url, os.path.join(tmpdirname, "sources"), depth=1)
-        
+
+        build_task = models.BuildTask.objects.create(
+            description="Cloning repository",
+            build=build,
+            order=0,
+            status=models.Status.queued
+        )
+
+        try:
+            cloned_repo = Repo.clone_from(
+                build.request.url, os.path.join(tmpdirname, "sources"), depth=1)
+        except Exception as e:
+            build_task.logs = f"Got exception during clone: {e}"
+            build_task.status = models.Status.failed
+            build_task.save()
+            raise Exception("Error during cloning repository")
+
         build.meta['commit_id'] = cloned_repo.head.object.hexsha
+        
+        build_task.logs = f"Cloned successfully "
+        build_task.status = models.Status.success
+        build_task.save()
         
         # logger.info(cloned_repo.active_branch)
 
