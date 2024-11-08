@@ -15,14 +15,15 @@ class BuildView(View):
     def post(self, request, *args, **kwargs):
 
         try:
-            options = json.loads(request.body)
+            config = json.loads(request.body)
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
         
-        name = options.get('name')
-        url = options.get('url')
-        branch = options.get('branch')
-        flows = options.get('flows')
+        name = config.get('name')
+        url = config.get('url')
+        branch = config.get('branch')
+        flows = config.get('flows')
+        options = config.get('options')
 
         build_request, _ = models.BuildRequest.objects.update_or_create(
             name=name,
