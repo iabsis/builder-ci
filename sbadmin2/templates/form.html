@@ -1,0 +1,82 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form id="parent-form" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                
+                <hr>
+                {% if child_formset %}
+                    {{child_formset.management_form}}
+                    {% for formset in child_formset %}
+                    <div class="child-form">
+                        {{formset|crispy}}
+                        <hr>
+                    </div>
+                    {% endfor %}
+                    <button id="add-item" class="btn btn-secondary">Add item</button>
+                    <hr>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <!-- Submit and reset buttons -->
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+ 
+{% endblock content %}
+
+{% block scripts %}
+
+{% if child_formset %}
+<script>
+
+    let childForm = document.querySelectorAll(".child-form")
+    let container = document.querySelector("#parent-form")
+    let addButton = document.querySelector("#add-item")
+    let totalForms = document.querySelector("#id_child_formset-TOTAL_FORMS")
+
+    let formNum = childForm.length - 1
+    addButton.addEventListener('click', addForm)
+
+    function addForm(e) {
+        e.preventDefault()
+
+        let newForm = childForm[0].cloneNode(true)
+        let formRegex = RegExp(`child_formset-(\\d){1}-`, 'g')
+        
+        const fields = newForm.querySelectorAll("input, select, textarea");
+
+        fields.forEach(field => {
+            if (field.type === "text" || field.type === "number" || field.type === "email" || field.type === "url" || field.tagName.toLowerCase() === "textarea") {
+                field.value = ""; 
+            } else if (field.tagName.toLowerCase() === "select") {
+                field.selectedIndex = 0;
+            }
+        });
+
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `child_formset-${formNum}-`)
+        container.insertBefore(newForm, addButton)
+
+        totalForms.setAttribute('value', `${formNum + 1}`)
+    }
+
+</script>
+{% endif %}
+
+{% endblock scripts %}

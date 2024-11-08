@@ -1,0 +1,116 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
+    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
+        For more information about DataTables, please visit the <a target="_blank"
+            href="https://datatables.net">official DataTables documentation</a>.</p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Form Example</h6>
+        </div>
+        <div class="card-body">
+            <form>
+                <!-- Text input -->
+                <div class="form-group">
+                    <label for="exampleInputText">Text</label>
+                    <input type="text" class="form-control" id="exampleInputText" placeholder="Enter some text">
+                </div>
+            
+                <!-- Email address -->
+                <div class="form-group">
+                    <label for="exampleInputEmail">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail" placeholder="Enter your email">
+                </div>
+            
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="exampleInputPassword">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword" placeholder="Password">
+                </div>
+            
+                <!-- Textarea -->
+                <div class="form-group">
+                    <label for="exampleTextarea">Textarea</label>
+                    <textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Enter more text here"></textarea>
+                </div>
+            
+                <!-- Select -->
+                <div class="form-group">
+                    <label for="exampleSelect">Select an option</label>
+                    <select class="form-control select2" id="exampleSelect">
+                        <option>Option 1</option>
+                        <option>Option 2</option>
+                        <option>Option 3</option>
+                    </select>
+                </div>
+            
+                <!-- Radio buttons -->
+                <div class="form-group">
+                    <label>Choose an option</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"
+                            checked>
+                        <label class="form-check-label" for="exampleRadios1">
+                            Option 1
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+                        <label class="form-check-label" for="exampleRadios2">
+                            Option 2
+                        </label>
+                    </div>
+                </div>
+            
+                <!-- Checkboxes -->
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                        <label class="form-check-label" for="defaultCheck1">
+                            Check this
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
+                        <label class="form-check-label" for="defaultCheck2">
+                            And this
+                        </label>
+                    </div>
+                </div>
+            
+                <!-- File input -->
+                <div class="form-group">
+                    <label for="exampleFormControlFile">Upload a file</label>
+                    <input type="file" class="form-control-file" id="exampleFormControlFile">
+                </div>
+            
+                <!-- Range input -->
+                <div class="form-group">
+                    <label for="formControlRange">Adjust the value</label>
+                    <input type="range" class="form-control-range" id="formControlRange">
+                </div>
+            
+                <!-- Submit and reset buttons -->
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+ 
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+{% endblock scripts %}

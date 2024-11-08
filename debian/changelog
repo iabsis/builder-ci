@@ -1,3 +1,149 @@
+builder-ci (2.0.23) bookworm; urgency=medium
+
+  * Adding missing migration
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 20:32:05 +0100
+
+builder-ci (2.0.22) bookworm; urgency=medium
+
+  * Validation of field options
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 20:29:04 +0100
+
+builder-ci (2.0.21) bookworm; urgency=medium
+
+  * Add missing migration
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 18:19:08 +0100
+
+builder-ci (2.0.20) bookworm; urgency=medium
+
+  * Ignore mode
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 18:15:35 +0100
+
+builder-ci (2.0.19) bookworm; urgency=medium
+
+  * New fix for options
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 17:03:29 +0100
+
+builder-ci (2.0.18) bookworm; urgency=medium
+
+  * Fix API clean
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 16:40:59 +0100
+
+builder-ci (2.0.17) bookworm; urgency=medium
+
+  * Add message
+  * Finishing html
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 16:16:14 +0100
+
+builder-ci (2.0.16) bookworm; urgency=medium
+
+  * Default to stop on failure
+  * Fix failures on build with task on version
+  * Fix tasks build
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 15:32:37 +0100
+
+builder-ci (2.0.15) bookworm; urgency=medium
+
+  * Handling version issue
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 11:11:11 +0100
+
+builder-ci (2.0.14) bookworm; urgency=medium
+
+  * Clear flows if no flow defined
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 11:00:43 +0100
+
+builder-ci (2.0.13) bookworm; urgency=medium
+
+  * Change status to field
+  * Properly handling duplicates
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 10:49:01 +0100
+
+builder-ci (2.0.12) bookworm; urgency=medium
+
+  * Small fix to rebuild container
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 08:33:40 +0100
+
+builder-ci (2.0.10) bookworm; urgency=medium
+
+  * Fix cleanup
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:48:11 +0100
+
+builder-ci (2.0.9) bookworm; urgency=medium
+
+  * Fix bug + add automigrate
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:37:56 +0100
+
+builder-ci (2.0.8) bookworm; urgency=medium
+
+  * Way more clean properties
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:34:37 +0100
+
+builder-ci (2.0.7) bookworm; urgency=medium
+
+  * Forcefully run container as root to prevent run script permission issue
+  * Way more clean template method
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 12:52:39 +0100
+
+builder-ci (2.0.6) bookworm; urgency=medium
+
+  * Fix no internet in podman inception
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 15:49:22 +0100
+
+builder-ci (2.0.5) bookworm; urgency=medium
+
+  * Fix typo
+  * Now use settings for PODMAN_PATH bind
+  * Remove print
+  * Add test regex feature
+  * Few polishing
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 14:48:53 +0100
+
+builder-ci (2.0.4) bookworm; urgency=medium
+
+  * Fix user adding
+  * Fix clone process
+  * Fix build issue with Git
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 11:04:28 +0100
+
+builder-ci (2.0.3) bookworm; urgency=medium
+
+  * Update rules
+  * Update dependancies
+  * Fix models and small bug fixes
+  * Big bug fixes
+  * Fix makefile
+  * Build for bookworm
+  * Fix build.yml
+  * Add missing statics
+  * Add redirect for the home page
+  * More url path cleanup
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 09:04:14 +0100
+
+builder-ci (2.0.1) bookworm; urgency=medium
+
+  * Complete refactor using Django and PostGreSQL
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 05 Nov 2024 17:53:37 +0100
+
 builder-ci (1.0.12) buster; urgency=medium
 
   * Rebuild since merge.

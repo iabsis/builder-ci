@@ -1,0 +1,176 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load table %}
+{% load crispy_forms_tags %}
+{% load build %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Build information</h6>
+        </div>
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        ID</div>
+                    <div class="h4 mb-0 text-gray-800">{{object.pk}}</div>
+                </div>
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Request</div>
+                    <div class="h5 mb-0 text-gray-800">
+                        <a href="{% url 'request_update' object.request.pk %}">
+                            {{object.request.name}}
+                        </a>
+                    </div>
+                </div>
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Version</div>
+                    <div class="h5 mb-0 text-gray-800">
+                        {{object.version}}
+                    </div>
+                </div>
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Status</div>
+                    <div class="h5 mb-0 text-gray-800">{{object.status|status_badge}}</div>
+                </div>
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Flow
+                    </div>
+                    <div class="h5 mb-0 text-gray-800">
+                        <a href="{% url 'flow_update' object.flow.pk %}">
+                            {{object.flow}}
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Metadata
+                    </div>
+                    <div class="h6 mb-0 text-gray-800">
+                        <pre>{{object.meta}}</pre>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Options
+                    </div>
+                    <div class="h6 mb-0 text-gray-800">
+                        <pre>{{object.options}}</pre>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Tasks info</h6>
+        </div>
+        <div class="card-body">
+
+            <a href="{% url 'build_run' object.pk %}" class="btn btn-primary btn-icon-split mb-4">
+                <span class="icon text-white-50">
+                    <i class="fas fa-refresh"></i>
+                </span>
+                <span class="text">
+                    Run again
+                </span>
+            </a>
+
+            <div class="row no-gutters align-items-center">
+                {% for task in object.buildtask_set.all %}
+                <div class="col-12">
+                    <div id="accordion">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.pk}}" aria-expanded="false"
+                                            aria-controls="collapseOne">
+                                            TASK #{{task.order}} {{task.status|status_badge}}
+                                            {% if task.method %}
+                                                {% if not task.method.stop_on_failure %}
+                                                    (Optional)
+                                                {% endif %}
+                                            {% endif %}
+                                        </button>
+                                        <span class="text-xs">{{task.description}}</span>
+                                    </h5>
+                                </div>
+                        
+                                <div id="collapse-{{task.pk}}" class="collapse {% if task.status == 'failed' %}show{% endif %}" aria-labelledby="headingOne" data-parent="#accordion">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Options</div>
+                                                <div class="mb-0 text-gray-800">{{task.options}}</div>
+                                            </div>
+                                            <div class="col-12 mr-2 mt-3">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Task log</div>
+                                                <pre class="text-xs">{{task.logs|linebreaks}}</pre>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No task executed</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Celery info</h6>
+        </div>
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        ID</div>
+                    <div class="h5 mb-0 text-gray-800">{{object.celery_task.task_id}}</div>
+                </div>
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Status</div>
+                    <div class="h5 mb-0 text-gray-800">{{object.celery_task.status}}</div>
+                </div>
+            </div>
+
+            <div class="row no-gutters align-items-center mt-5">
+                <p class="text-xs font-weight-bold text-primary text-uppercase mb-1">Traceback</p>
+            </div>
+            <div class="row no-gutters align-items-center">
+                <code class="text-xs">{{object.celery_task.traceback|linebreaks}}</code>
+            </div>
+    
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock content %}

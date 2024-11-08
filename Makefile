@@ -1,34 +1,22 @@
 STATIC=/usr/share
+VAR=/var
 PROJECT=builder-ci
+VERSION := $(shell head -n 1 debian/changelog | cut -d\( -f2 | cut -d\) -f1 | cut -d\~ -f1)
 
-all: build
+all:
+	echo "Nothing to prepare"
 
-build:
-	echo "Nothing to build"
+${STATIC}/${PROJECT}/venv:
+	mkdir -p ${STATIC}/${PROJECT}/venv
+	python3 -m venv ${STATIC}/${PROJECT}/venv
+	. ${STATIC}/${PROJECT}/venv/bin/activate ; pip3 install -r requirements.txt
+	# ${STATIC}/${PROJECT}/venv/bin/python3 manage.py collectstatic
+	mkdir -p $(DESTDIR)/${STATIC}/${PROJECT}
+	mv ${STATIC}/${PROJECT}/venv $(DESTDIR)/${STATIC}/${PROJECT}
 
-install:
-	
-	## Copy static files
-	mkdir -p $(DESTDIR)$(STATIC)/$(PROJECT)/
-	cp -R listener.py app.py wsgi.py watcher.py lib $(DESTDIR)$(STATIC)/$(PROJECT)/
-
-	## Copy executable
-	mkdir $(DESTDIR)/usr/bin/
-	cp cli.py $(DESTDIR)/usr/bin/builder-ci
-	sed -i "s|sys.path.append.*|sys.path.append(\'$(STATIC)/$(PROJECT)/lib\')|"  $(DESTDIR)/usr/bin/builder-ci
-	sed -i "s|sys.path.append.*|sys.path.append(\'$(STATIC)/$(PROJECT)/lib\')|"  $(DESTDIR)$(STATIC)/$(PROJECT)/listener.py
-	sed -i "s|config.read.*|config.read(\'/etc/builder-ci/builder-ci.conf\')|" $(DESTDIR)$(STATIC)/$(PROJECT)/lib/config.py
-	
-	## Copy config template
-	mkdir -p $(DESTDIR)/etc/$(PROJECT)
-	cp config.ini $(DESTDIR)/etc/$(PROJECT)/$(PROJECT).conf
-
-	## Copy helpers and docker builds
-	mkdir -p $(DESTDIR)$(STATIC)/doc/$(PROJECT)/
-	cp -a docker helpers $(DESTDIR)$(STATIC)/doc/$(PROJECT)/
-
-	## Generate documentation
-	python3 gen_doc.py > ../binary/api-call.json
-
-clean:
-	echo "Nothing to clean"
+install: ${STATIC}/${PROJECT}/venv
+	mkdir -p $(DESTDIR)/${STATIC}/${PROJECT}
+	cp -a manage.py statics api build container core flow sbadmin2 secret $(DESTDIR)/${STATIC}/${PROJECT}
+	mkdir -p $(DESTDIR)/etc/${PROJECT}
+	cp .env.dist $(DESTDIR)/etc/${PROJECT}/${PROJECT}.conf
+	mkdir -p $(DESTDIR)/${VAR}/${PROJECT}

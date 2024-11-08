@@ -1,3 +1,0 @@
-- Adding the automatic meta "format" to provide target format.
-- Check if build is already running, avoid duplicate run.
-- Integrate running specific step into cli.py

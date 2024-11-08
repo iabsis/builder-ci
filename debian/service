@@ -1,0 +1,13 @@
+[Unit]
+Description=Builder CI - Django
+After=network.target
+
+[Service]
+User=buider
+Environment=VIRTUAL_ENV=/usr/share/builder-ci/venv
+EnvironmentFile=/etc/builder-ci/builder-ci.conf
+WorkingDirectory=/usr/share/builder-ci/
+ExecStart=/usr/share/builder-ci/venv/bin/gunicorn core.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

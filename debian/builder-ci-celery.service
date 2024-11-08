@@ -1,0 +1,13 @@
+[Unit]
+Description=Builder CI - Celery
+After=network.target
+
+[Service]
+User=root
+Environment=VIRTUAL_ENV=/usr/share/builder-ci/venv
+EnvironmentFile=/etc/builder-ci/builder-ci.conf
+WorkingDirectory=/usr/share/builder-ci/
+ExecStart=/usr/share/builder-ci/venv/bin/celery -A core.celery worker --loglevel=info
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,113 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load table %}
+{% load build %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            {% if create_url %}
+            <a href="{% url create_url %}" class="btn btn-success btn-icon-split mb-4">
+                <span class="icon text-white-50">
+                    <i class="fas fa-plus-circle"></i>
+                </span>
+                <span class="text">Create</span>
+            </a>
+            {% endif %}
+            {% include 'includes/filter.html' %}
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Request</th>
+                            <th>Flow</th>
+                            <th>Version</th>
+                            <th>Status</th>
+                            <th>Created at</th>
+                            <th>Started at</th>
+                            <th>Finished at</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in object_list %}
+                        <tr>
+                            <td>
+                                {% if view_url %}
+                                    <a href="{% url view_url obj.pk %}">
+                                        {{ obj.pk }}
+                                    </a>
+                                {% else %}
+                                    {{ obj.pk }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'request' %}?name={{ obj.request.name }}">
+                                    {{ obj.request }}</td>
+                                </a>
+                            <td>
+                                <a href="{% url 'flow_update' obj.flow.pk %}">
+                                    {{ obj.flow }}
+                                </a>
+                            </td>
+                            <td>{{ obj.version }}</td>
+                            <td>{{ obj.status|status_badge }}</td>
+                            <td>{{ obj.created_at }}</td>
+                            <td>{{ obj.started_at }}</td>
+                            <td>{{ obj.finished_at }}</td>
+                            <td>
+                                {% if view_url %}
+                                <a href="{% url view_url obj.pk %}" class="btn btn-info btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-eye"></i>
+                                    </span>
+                                    <span class="text">View</span>
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'build_run' obj.pk %}" class="btn btn-primary btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-refresh"></i>
+                                    </span>
+                                    <span class="text">
+                                        Run again
+                                    </span>
+                                </a>
+                                {% if update_url %}
+                                <a href="{% url update_url obj.pk %}" class="btn btn-primary btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-pencil"></i>
+                                    </span>
+                                    <span class="text">Edit</span>
+                                </a>
+                                {% endif %}
+                                {% if delete_url %}
+                                <a href="{% url delete_url obj.pk %}" class="btn btn-danger btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span class="text">Delete</span>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include 'includes/pagination.html' %}
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+{% endblock content %}

@@ -1,5 +1,4 @@
-publish:
-- method: auto
-- method: redmine
+builder:
+- method: docker
   options:
-    file: api-call.json
+    image: builder-bookworm

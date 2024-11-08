@@ -7,8 +7,8 @@ set -e
 
 case "$1" in
     configure)
-        ## (cd /usr/share/doc/builder-ci/docker && . ./gen-all-docker.sh)
-        echo "Consider running the following command to build all dockers: cd /usr/share/doc/builder-ci/docker && . ./gen-all-docker.sh "
+        useradd --system builder || true
+        (set -a ; . /etc/builder-ci/builder-ci.conf ; /usr/share/builder-ci/venv/bin/python3 /usr/share/builder-ci/manage.py migrate)
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

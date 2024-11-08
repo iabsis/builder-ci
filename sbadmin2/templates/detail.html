@@ -1,0 +1,38 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load table %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Details</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+            {% for field in field_list %}
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        {{field}}
+                    </div>
+                    <div class="mb-0 text-gray-800">
+                        {{object|get_field_value:field|linebreaks}}
+                    </div>
+                </div>                
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+{% endblock content %}

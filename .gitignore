@@ -7,4 +7,7 @@ debian/builder-ci/
 debian/tmp/
 *.pyc
 venv
-.vscode/
+builder-ci/
+build-folder/
+old/
+.env
