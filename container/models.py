@@ -54,7 +54,8 @@ class BuiltContainer(models.Model):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.name = self._name
+        if not self.name:
+            self.name = self._name
 
     name = models.CharField(max_length=100, unique=True)
     hash = models.CharField(max_length=64, blank=True)
