@@ -1,3 +1,10 @@
+builder-ci (2.0.17) bookworm; urgency=medium
+
+  * Add message
+  * Finishing html
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 16:16:14 +0100
+
 builder-ci (2.0.16) bookworm; urgency=medium
 
   * Default to stop on failure
