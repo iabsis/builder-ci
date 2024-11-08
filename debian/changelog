@@ -1,3 +1,10 @@
+builder-ci (2.0.13) bookworm; urgency=medium
+
+  * Change status to field
+  * Properly handling duplicates
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 10:49:01 +0100
+
 builder-ci (2.0.12) bookworm; urgency=medium
 
   * Small fix to rebuild container
