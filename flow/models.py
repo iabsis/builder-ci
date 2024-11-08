@@ -8,6 +8,7 @@ from jinja2 import Template, StrictUndefined
 
 class Method(models.Model):
     name = models.CharField(max_length=40)
+    description = models.CharField(max_length=50, null=True, blank=True)
     container = models.ForeignKey('container.Container', on_delete=models.CASCADE)
     script = models.TextField(help_text="Define the Dockerfile content, use {{var}} for automatic replacement for key defined in options. {{name}} can be used for the project name, {{url}} and {{branch}} are replaced by git respective info")
     stop_on_failure = models.BooleanField(default=True)

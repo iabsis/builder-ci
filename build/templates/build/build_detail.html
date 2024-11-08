@@ -35,6 +35,13 @@
                 </div>
                 <div class="col mr-2">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        Version</div>
+                    <div class="h5 mb-0 text-gray-800">
+                        {{object.version}}
+                    </div>
+                </div>
+                <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Status</div>
                     <div class="h5 mb-0 text-gray-800">{{object.status|status_badge}}</div>
                 </div>
@@ -96,9 +103,13 @@
                                         <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.pk}}" aria-expanded="false"
                                             aria-controls="collapseOne">
                                             TASK #{{task.order}} {{task.status|status_badge}}
-                                            {% if not task.method.stop_on_failure %}(Optional){% endif %}
+                                            {% if task.method %}
+                                                {% if not task.method.stop_on_failure %}
+                                                    (Optional)
+                                                {% endif %}
+                                            {% endif %}
                                         </button>
-                                        <span class="text-xs">{{task.method}}</span>
+                                        <span class="text-xs">{{task.description}}</span>
                                     </h5>
                                 </div>
                         

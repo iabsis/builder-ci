@@ -118,13 +118,25 @@ def build_run(self, build_id):
         sources_path = os.path.join(tmpdirname, "sources")
         version_file = os.path.join(sources_path, build.flow.version_file)
 
+        build_task = models.BuildTask.objects.create(
+            description="Getting version",
+            build=build,
+            order=0,
+            status=models.Status.queued
+        )
+
         try:
             with open(version_file, 'r') as f:
                 content = f.read()
                 logger.debug(f"File content: {content}")
                 build.version = build.flow.get_version(content)
+            build_task.status = models.Status.success
+            build_task.save()
         except:
-            if build.flow.version_mandatory:
+            if build.flow.version_mandatory or not build.flow:
+                build_task.logs = "Unable to parse version with regex, build fails"
+                build_task.status = models.Status.failed
+                build_task.save()
                 build.status = models.Status.failed
                 build.save()
                 return
@@ -161,7 +173,9 @@ def build_run(self, build_id):
             )
 
         ### TASKS DEFINITION ##
-        for build_task in models.BuildTask.objects.filter(build=build).order_by('order'):
+        for build_task in models.BuildTask.objects.filter(build=build, flow__isnull=False).order_by('order'):
+
+            logger.debug(build_task)
             
             send_notification(build)
 

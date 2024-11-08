@@ -40,29 +40,30 @@ class Status(models.TextChoices):
     duplicate = 'duplicate', 'Duplicate'
 
 class BuildTask(models.Model):
-    build = models.ForeignKey('Build', on_delete=models.CASCADE, null=True)
-    flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
-    method = models.ForeignKey('flow.Method', on_delete=models.CASCADE)
+    description = models.CharField(max_length=50, null=True, blank=True)
+    build = models.ForeignKey('Build', on_delete=models.CASCADE)
+    flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE, null=True)
+    method = models.ForeignKey('flow.Method', on_delete=models.CASCADE, null=True)
     order = models.IntegerField()
     logs = models.TextField(null=True, blank=True)
     status = models.CharField(
         choices=Status.choices, null=True, blank=True, max_length=10)
     
+    def save(self, *args, **kwargs):
+        if not self.description and self.method:
+            self.description = self.method.description
+        super(BuildTask, self).save(*args, **kwargs)
+
     @property
     def options(self):
-        # if self.build.meta and self.build.meta.get('yaml'):
-        #     option_meta = self.build.meta.get(
-        #         'yaml').get(self.method.name)
-        #     if not isinstance(option_meta, dict): option_meta = {}
-        # else:
-        #     option_meta = {}
-            
-        return self.method.container.default_options | self.build.options
+        if self.method:
+            return self.method.container.default_options | self.build.options
 
     @property
     def script(self):
-        t = Template(self.method.script, undefined=StrictUndefined)
-        return t.render(**self.options).replace('\r', '')
+        if self.method:
+            t = Template(self.method.script, undefined=StrictUndefined)
+            return t.render(**self.options).replace('\r', '')
 
     class Meta:
         ordering = ['order']
