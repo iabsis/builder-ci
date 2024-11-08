@@ -1,3 +1,9 @@
+builder-ci (2.0.18) bookworm; urgency=medium
+
+  * Fix API clean
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 16:40:59 +0100
+
 builder-ci (2.0.17) bookworm; urgency=medium
 
   * Add message
