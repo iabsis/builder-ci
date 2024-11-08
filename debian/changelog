@@ -1,3 +1,9 @@
+builder-ci (2.0.20) bookworm; urgency=medium
+
+  * Ignore mode
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 18:15:35 +0100
+
 builder-ci (2.0.19) bookworm; urgency=medium
 
   * New fix for options
