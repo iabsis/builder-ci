@@ -155,6 +155,7 @@ def build_run(self, build_id):
             build_task.status = models.Status.success
             build_task.save()
         except:
+            build_task.status = models.Status.ignored
             if build.flow.version_mandatory or not build.flow:
                 build_task.logs = "Unable to parse version with regex, build fails"
                 build_task.status = models.Status.failed

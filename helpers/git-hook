@@ -11,11 +11,18 @@ from yaml import load, Loader
 import fileinput
 from git import Repo
 
+redmine_url = "http://redmine"
+redmine_api = "28ab845575801439cf7390023995defaecfffe0f"
+weblate_url = "https://translate.iabsis.com"
+weblate_api = "GI3mQQB90EWM6pXuupkaKsq8gUNeWqULHfT6uE9L"
+builder_url = "https://builder.iabsis.com"
+builder_api = ""
+old_builder_url = "https://builder"
+
 project_name = os.getcwd().split("/")[-1]
 
 ## Extract info from stdin
 for line in fileinput.input():
-    print(line.split(" "))
     oldrev, newrev, refname = line.split(" ")
     refname = refname.replace('refs/heads/', '').replace('\n', '')
 
@@ -28,8 +35,9 @@ if committer_name:
 def trigger_build():
     repo = Repo(os.getcwd())
     yaml_content = None
+    commit = repo.commit(newrev)
+
     for file in ['builder.yml', 'builder.yaml', 'build.yml', 'build.yaml']:
-        commit = repo.commit(newrev)
         try:
             blob = commit.tree / file
             file_content = blob.data_stream.read().decode('utf-8')
@@ -41,14 +49,17 @@ def trigger_build():
         try:
             yaml_content = load(file_content, Loader=Loader)
         except Exception as e:
-            print(f"It seems the file is invalid, I'm not sending to builder: {e}")
-            return
+            yaml_content = {}
         
-        post_builder(yaml_content)
-        break
+        if yaml_content.get('builder'):
+            print(f"Deprecation warning, the file builder.yaml contain old data, please read https://projects.iabsis.com/projects/iabsis-ch/wiki/Configure_builder#Deprecation-warning")
+            post_old_builder()
+        else:
+            post_builder(yaml_content)
+        post_weblate()
 
 
-def post_builder(yaml_content):
+def post_builder(yaml_content=None):
     try:
         flows = yaml_content.get('flows')
     except:
@@ -62,7 +73,7 @@ def post_builder(yaml_content):
         print(f"Hum, I can't find the key 'options', the builder will build with default values if possible" )
 
     req = {
-        "url": "https://builder.iabsis.com/api/build",
+        "url": f"{builder_url}/api/build",
         "json": {
             "name": project_name,
             "url": f"http://redmine/git/{project_name}",
@@ -79,6 +90,64 @@ def post_builder(yaml_content):
     else:
         print(f"Seems all good: {res.text}")
     
+def post_old_builder():
+    req = {
+        "url": f"{old_builder_url}/api/build",
+        "json": {
+            "project": project_name,
+            "sources": {
+                "method": "git",
+                "options": {
+                    "url": f"{redmine_url}/git/{project_name}",
+                    "branch": refname
+                }
+            },
+            "notify": {
+                "method": "redmine"
+            }
+        }
+    }
+    res = requests.post(**req)
+    if res.status_code != 200:
+        print(f"Arg, I received an unexpected error: {res.text}")
+    else:
+        print(f"Seems all good: {res.text}")
+
+def post_weblate():
+    req = {
+        "url": f"{redmine_url}/projects/{project_name}.json",
+        "headers": {
+            "X-Redmine-API-Key": redmine_api
+        }
+    }
+    res = requests.get(**req)
+
+    for field in res.json()['project']['custom_fields']:
+        if field['name'] == "weblate":
+            weblate_project = field['value']
+            break
+
+    if weblate_project == "":
+        print(f"Weblate field not defined for this project")
+        return
+
+    req = {
+        "url": f"{weblate_url}/api/components/{weblate_project}/repository/",
+        "headers": {
+            "Authorization": f"Token {weblate_api}",
+            "Content-Type": "application/json"
+        },
+        "json": {
+            'operation': 'pull'
+        }
+    }
+    res = requests.post(**req)
+
+
+    if res.status_code == 200 and res.json()['result']:
+        print(f"Weblate notified successfully, good translations !!")
+    else:
+        print(f"An error has occured while notifing weblate: {res.text}")
 
 
 if __name__ == "__main__":

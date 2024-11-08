@@ -38,6 +38,7 @@ class Status(models.TextChoices):
     running = 'running', 'Running'
     warning = 'warning', 'Warning'
     duplicate = 'duplicate', 'Duplicate'
+    ignored = 'ignored', 'Ignored'
 
 class BuildTask(models.Model):
     description = models.CharField(max_length=50, null=True, blank=True)
