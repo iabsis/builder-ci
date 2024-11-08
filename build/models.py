@@ -1,7 +1,7 @@
 from django.db import models
 from django_celery_results.models import TaskResult
 from jinja2 import Template, StrictUndefined
-import json
+from . import validations
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -25,7 +25,7 @@ class BuildRequest(models.Model):
     flows = models.ManyToManyField('flow.Flow', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    options = models.JSONField(default=dict, null=True, blank=True)
+    options = models.JSONField(default=dict, null=True, blank=True, validators=[validations.validate_dict])
 
     def __str__(self):
         return self.name
@@ -74,7 +74,7 @@ class Build(models.Model):
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE)
     version = models.CharField(max_length=100, blank=True)
     celery_task = models.ForeignKey(TaskResult, on_delete=models.SET_NULL, blank=True, null=True)
-    meta = models.JSONField(default=dict)
+    meta = models.JSONField(default=dict, validators=[validations.validate_dict])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     started_at = models.DateTimeField(null=True, blank=True)
