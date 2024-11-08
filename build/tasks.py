@@ -167,8 +167,8 @@ def build_run(self, build_id):
 
         logger.debug("Check for duplicates")
         if models.Build.objects.filter(
-            request=build.request,
             version=build.version,
+            flow=build.flow,
             status=models.Status.success,
         ).exclude(
             pk=build.pk
