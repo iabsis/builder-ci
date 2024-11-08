@@ -178,3 +178,4 @@ REDMINE_URL = os.getenv('REDMINE_URL')
 REDMINE_KEY = os.getenv('REDMINE_KEY')
 
 STATIC_ROOT = 'statics'
+LOGOUT_REDIRECT_URL = '/'
