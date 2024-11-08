@@ -118,10 +118,17 @@ def build_run(self, build_id):
         sources_path = os.path.join(tmpdirname, "sources")
         version_file = os.path.join(sources_path, build.flow.version_file)
 
-        with open(version_file, 'r') as f:
-            content = f.read()
-            logger.debug(f"File content: {content}")
-            build.version = build.flow.get_version(content)
+        try:
+            with open(version_file, 'r') as f:
+                content = f.read()
+                logger.debug(f"File content: {content}")
+                build.version = build.flow.get_version(content)
+        except:
+            if build.flow.version_mandatory:
+                build.status = models.Status.failed
+                build.save()
+                return
+            logger.debug("Unable to determine version, but not mandatory, continuing")
 
         logger.debug("Check for duplicates")
         if models.Build.objects.filter(

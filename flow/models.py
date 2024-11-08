@@ -32,6 +32,7 @@ class Flow(models.Model):
     name = models.CharField(max_length=40)
     version_file = models.CharField(max_length=100)
     version_regex = models.CharField(max_length=150, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
+    version_mandatory = models.BooleanField(default=True, help_text="Define if build failes if version is not found")
 
     def get_version(self, content):
         pattern = regex.compile(self.version_regex)
