@@ -1,3 +1,10 @@
+builder-ci (2.0.24) bookworm; urgency=medium
+
+  * Fix issue with name of the container
+  * Duplicate on flow and not method
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 23:26:01 +0100
+
 builder-ci (2.0.23) bookworm; urgency=medium
 
   * Adding missing migration
