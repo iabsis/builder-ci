@@ -1,5 +1,7 @@
+import regex
 from django.db import models
 from . import validator
+from build.models import Build
 from jinja2 import Template, StrictUndefined
 
 # Create your models here.
@@ -10,15 +12,6 @@ class Method(models.Model):
     script = models.TextField(help_text="Define the Dockerfile content, use {{var}} for automatic replacement for key defined in options. {{name}} can be used for the project name, {{url}} and {{branch}} are replaced by git respective info")
     stop_on_failure = models.BooleanField(default=False)
     secrets = models.ManyToManyField('secret.Secret', blank=True, help_text="Secrets will be exposed as environement variable with same name")
-
-    def render_script(self, build):
-        if build:
-            options = build.request.computed_options
-        else:
-            options = {}
-
-        template = Template(self.script, undefined=StrictUndefined)
-        return template.render(**options).replace('\r', '')
 
     def __str__(self):
         return self.name
@@ -40,5 +33,15 @@ class Flow(models.Model):
     version_file = models.CharField(max_length=100)
     version_regex = models.CharField(max_length=150, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
 
+    def get_version(self, content):
+        pattern = regex.compile(self.version_regex)
+        m = regex.search(pattern, content)
+        if not m:
+            raise Exception("Regex didn't matched anything")
+        return m.group(1)
+
     def __str__(self):
         return self.name
+    
+    class Meta:
+        ordering = ['pk']

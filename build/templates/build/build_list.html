@@ -42,30 +42,21 @@
                         {% for obj in object_list %}
                         <tr>
                             <td>{{ obj.pk }}</td>
-                            <td>{{ obj.request }}</td>
-                            <td>{{ obj.flow }}</td>
+                            <td>
+                                <a href="{% url 'request' %}?name={{ obj.request.name }}">
+                                    {{ obj.request }}</td>
+                                </a>
+                            <td>
+                                <a href="{% url 'flow_update' obj.flow.pk %}">
+                                    {{ obj.flow }}
+                                </a>
+                            </td>
                             <td>{{ obj.version }}</td>
                             <td>{{ obj.status|status_badge }}</td>
                             <td>{{ obj.created_at }}</td>
                             <td>{{ obj.started_at }}</td>
                             <td>{{ obj.finished_at }}</td>
                             <td>
-                                {% if update_url %}
-                                <a href="{% url update_url obj.pk %}" class="btn btn-primary btn-icon-split">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-pencil"></i>
-                                    </span>
-                                    <span class="text">Edit</span>
-                                </a>
-                                {% endif %}
-                                {% if delete_url %}
-                                <a href="{% url delete_url obj.pk %}" class="btn btn-danger btn-icon-split">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-trash"></i>
-                                    </span>
-                                    <span class="text">Delete</span>
-                                </a>
-                                {% endif %}
                                 {% if view_url %}
                                 <a href="{% url view_url obj.pk %}" class="btn btn-info btn-icon-split">
                                     <span class="icon text-white-50">
@@ -82,6 +73,22 @@
                                         Run again
                                     </span>
                                 </a>
+                                {% if update_url %}
+                                <a href="{% url update_url obj.pk %}" class="btn btn-primary btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-pencil"></i>
+                                    </span>
+                                    <span class="text">Edit</span>
+                                </a>
+                                {% endif %}
+                                {% if delete_url %}
+                                <a href="{% url delete_url obj.pk %}" class="btn btn-danger btn-icon-split">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                    <span class="text">Delete</span>
+                                </a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

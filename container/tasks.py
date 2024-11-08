@@ -15,30 +15,36 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 logger = logging.getLogger(__name__)
 
 @app.task
-def build_image(container_id: int, options: dict):
+def build_image(container_id: int, options: dict, force=False) -> models.BuiltContainer:
 
     podman_url = settings.PODMAN_URL
 
-    image_obj = models.Container.objects.get(pk=container_id)
-    dockerfile = image_obj.render_dockerfile(options)
-    tag = image_obj.get_target_tag(options)
+    container = models.Container.objects.get(pk=container_id)
 
-    builtcontainer, _ = models.BuiltContainer.objects.get_or_create(
-        name=tag,
-        container=image_obj
+    temp_builtcontainer = models.BuiltContainer(
+        options=options,
+        container=container,
     )
 
+    builtcontainer, created = models.BuiltContainer.objects.get_or_create(
+        name=temp_builtcontainer.name,
+        container=container,
+    )
+
+    if not created and not force:
+        return builtcontainer.name
+
     builtcontainer.status = models.Status.running
-    builtcontainer.variables = options
+    builtcontainer.options = options
     builtcontainer.save()
 
     try:
         with PodmanClient(base_url=podman_url) as client:
             image, logs = client.images.build(
-                        fileobj=StringIO(dockerfile),
-                        tag=tag,
-                        pull=True,
-                    )
+                fileobj=StringIO(builtcontainer.dockerfile),
+                tag=builtcontainer.name,
+                pull=True,
+            )
     except BuildError as e:
         builtcontainer.logs = "".join([line.decode() for line in e.build_log])
         builtcontainer.status = models.Status.failed
@@ -50,4 +56,6 @@ def build_image(container_id: int, options: dict):
     
     builtcontainer.hash = image.id
     builtcontainer.save()
+
+    return builtcontainer.name
 

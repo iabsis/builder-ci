@@ -13,7 +13,7 @@ class ReBuildContainer(LoginRequiredMixin, RedirectView):
         builtcontainer = get_object_or_404(models.BuiltContainer, pk=kwargs['pk'])
         builtcontainer.status = models.Status.queued
         builtcontainer.save()
-        options = builtcontainer.variables
-        tasks.build_image.delay(builtcontainer.container.pk, options)
+        options = builtcontainer.options
+        tasks.build_image.delay(builtcontainer.container.pk, options, force=True)
         messages.success(self.request, f"Rebuild container {builtcontainer} triggered successfully")
         return super().get(request, *args)

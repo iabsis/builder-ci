@@ -5,3 +5,4 @@ from . import models
 
 admin.site.register(models.Build)
 admin.site.register(models.BuildRequest)
+admin.site.register(models.BuildTask)

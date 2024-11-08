@@ -1,4 +1,63 @@
+<<<<<<< HEAD
 builder-ci (2.0.2) bookworm; urgency=medium
+=======
+builder-ci (2.0.11) bookworm; urgency=medium
+
+  * Small fix to rebuild container
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 15:49:30 +0100
+
+builder-ci (2.0.10) bookworm; urgency=medium
+
+  * Fix cleanup
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:48:11 +0100
+
+builder-ci (2.0.9) bookworm; urgency=medium
+
+  * Fix bug + add automigrate
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:37:56 +0100
+
+builder-ci (2.0.8) bookworm; urgency=medium
+
+  * Way more clean properties
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 14:34:37 +0100
+
+builder-ci (2.0.7) bookworm; urgency=medium
+
+  * Forcefully run container as root to prevent run script permission issue
+  * Way more clean template method
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 12:52:39 +0100
+
+builder-ci (2.0.6) bookworm; urgency=medium
+
+  * Fix no internet in podman inception
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 15:49:22 +0100
+
+builder-ci (2.0.5) bookworm; urgency=medium
+
+  * Fix typo
+  * Now use settings for PODMAN_PATH bind
+  * Remove print
+  * Add test regex feature
+  * Few polishing
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 14:48:53 +0100
+
+builder-ci (2.0.4) bookworm; urgency=medium
+
+  * Fix user adding
+  * Fix clone process
+  * Fix build issue with Git
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 11:04:28 +0100
+
+builder-ci (2.0.3) bookworm; urgency=medium
+>>>>>>> 58717447c56b32a26b23f56a58c49ebd5e68ed09
 
   * Update rules
   * Update dependancies
@@ -8,8 +67,10 @@ builder-ci (2.0.2) bookworm; urgency=medium
   * Build for bookworm
   * Fix build.yml
   * Add missing statics
+  * Add redirect for the home page
+  * More url path cleanup
 
- -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 01:25:41 +0100
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 09:04:14 +0100
 
 builder-ci (2.0.1) bookworm; urgency=medium
 

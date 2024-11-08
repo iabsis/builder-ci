@@ -91,7 +91,7 @@ def build_run(self, build_id):
 
     # Remove all previous built tasks if existing
     build = models.Build.objects.get(pk=build_id)
-    for task in build.tasks.all():
+    for task in build.buildtask_set.all():
         task.delete()
     build.started_at = timezone.now()
 
@@ -104,8 +104,7 @@ def build_run(self, build_id):
         logger.info(f'created temporary directory: {tmpdirname}')
 
         # TODO: add support for other source
-        repo = Repo()
-        cloned_repo = repo.clone_from(
+        cloned_repo = Repo.clone_from(
             build.request.url, os.path.join(tmpdirname, "sources"), depth=1)
         
         build.meta['commit_id'] = cloned_repo.head.object.hexsha
@@ -115,60 +114,43 @@ def build_run(self, build_id):
 
         ### VERSION FETCHING ##
         logger.info(f"Regex to use: {build.flow.version_regex}")
-        pattern = regex.compile(build.flow.version_regex)
 
         sources_path = os.path.join(tmpdirname, "sources")
         version_file = os.path.join(sources_path, build.flow.version_file)
 
         with open(version_file, 'r') as f:
-            c = f.read()
-            logger.debug(f"File content: {c}")
-            m = regex.search(pattern, c)
-            logger.debug(f"Matched regex: {m}")
-            build.version = m.group(1)
-    
-
-        # Load from yaml as well
-        for file in ['builder.yml', 'builder.yaml', 'build.yml', 'build.yaml']:
-            full_path_file = os.path.join(sources_path, file)
-            if os.path.exists(full_path_file):
-                try:
-                    with open(full_path_file, 'r') as f:
-                        logger.info(f"Attempt to load {full_path_file}")
-                        c = f.read()
-                        data = load(c, Loader=Loader)
-                        build.meta['yaml'] = data
-                        break
-                except Exception as e:
-                    logger.error(f"Error loading xml")
-                    pass
+            content = f.read()
+            logger.debug(f"File content: {content}")
+            build.version = build.flow.get_version(content)
 
         logger.info(f"Found version: {build.version}")
         build.save()
 
-        ### TASKS RUNNING ##
+        ### TASKS DEFINITION ##
         for task in Task.objects.filter(flow=build.flow).order_by('priority'):
 
+            build_task = models.BuildTask.objects.create(
+                build=build,
+                flow=task.flow,
+                method=task.method,
+                order=task.priority,
+                status=models.Status.queued
+            )
+
+        ### TASKS DEFINITION ##
+        for build_task in models.BuildTask.objects.filter(build=build).order_by('order'):
             try:
                 send_notification(build)
             except Exception as e:
                 logger.warning(f"Unable to send notify: {e}")
 
-
-            build_task = models.BuildTask(
-                flow=task.flow,
-                method=task.method,
-                order=task.priority,
-                status=models.Status.running
-            )
-
+            build_task.status = models.Status.running
             build_task.save()
-            build.tasks.add(build_task)
 
             # Create executable script and make it executable
             script_file = os.path.join(sources_path, 'run')
             with open(script_file, '+w') as f:
-                f.write(build_task.method.render_script(build))
+                f.write(build_task.script)
             os.chmod(script_file, 0o755)
 
             with PodmanClient(base_url=settings.PODMAN_URL) as client:
@@ -182,31 +164,27 @@ def build_run(self, build_id):
                     {
                         "target": "/run/podman/podman.sock",
                         "read_only": False,
-                        "source": '/run/user/1000/podman/podman.sock',
+                        "source": settings.PODMAN_PATH,
                         "type": "bind"
                     }
                 ]
 
-                image = build_task.method.container.get_target_tag(build.request.computed_options)
-                
-                if not container.models.BuiltContainer.objects.filter(name=image).exists():
-                    logger.info(f"Container {image} doesn't exist, building")
-                    ## TODO: add try here in event build failes and catch logs
-                    container.tasks.build_image(
-                        build_task.method.container.pk, build.request.options)
-
-                logger.info(f"Running image: {image}")
+                ## TODO: add try here in event build failes and catch logs
+                builtcontainer_name = container.tasks.build_image(
+                    build_task.method.container.pk, build_task.options)
                 
                 try:
                     output = client.containers.run(
                         privileged=True,
-                        image=image,
+                        image=builtcontainer_name,
                         remove=True,
                         environment=task.method.serialized_secrets,
                         stderr=True,
                         mounts=mounts,
+                        network_mode="host",
                         entrypoint=['/build/sources/run'],
                         working_dir='/build/sources/',
+                        user='0',
                     )
                     build_task.logs = output.decode()
                     build_task.status = models.Status.success

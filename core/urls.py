@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('', RedirectView.as_view(pattern_name='build')),
     path('admin/', admin.site.urls),
     path('accounts/', include("sbadmin2.urls")),
     path('container/', include("container.urls")),
@@ -25,5 +27,4 @@ urlpatterns = [
     path('build/', include("build.urls")),
     path('secret/', include("secret.urls")),
     path('api/', include("api.urls")),
-    # path('example/', include("sbadmin2.example.urls")),
 ]
