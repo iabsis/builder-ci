@@ -37,6 +37,10 @@ class BuildView(View):
 
         print(Flow.objects.all())
 
+        if not flows:
+            tasks.build_request.delay(build_request.pk)
+            return JsonResponse({"status": "ERROR", "message": f"No flows provided, trying all..."})
+
         for flow_name in flows:
             try:
                 flow = Flow.objects.get(name=flow_name)

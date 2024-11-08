@@ -27,6 +27,7 @@ if committer_name:
 
 def trigger_build():
     repo = Repo(os.getcwd())
+    yaml_content = None
     for file in ['builder.yml', 'builder.yaml', 'build.yml', 'build.yaml']:
         commit = repo.commit(newrev)
         try:
@@ -48,19 +49,35 @@ def trigger_build():
 
 
 def post_builder(yaml_content):
+    try:
+        flows = yaml_content.get('flows')
+    except:
+        flows = None
+        print(f"Hum, I can't find the key 'flows', the builder will try all possible flows" )
+    
+    try:
+        options = yaml_content.get('flows')
+    except:
+        options = None
+        print(f"Hum, I can't find the key 'options', the builder will build with default values if possible" )
+
     req = {
-        "url": "http://builder/api/build",
+        "url": "https://builder.iabsis.com/api/build",
         "json": {
             "name": project_name,
             "url": f"http://redmine/git/{project_name}",
             "branch": "master",
-            "flows": yaml_content.get('flows'),
-            "options": yaml_content.get('options')
+            "flows": flows,
+            "options": options
         }
     }
 
-    res = requests.post(**req)
 
+    res = requests.post(**req)
+    if res.status_code != 200:
+        print(f"Arg, I received an unexpected error: {res.text}")
+    else:
+        print(f"Seems all good: {res.text}")
     
 
 
@@ -68,28 +85,3 @@ if __name__ == "__main__":
     trigger_build()
 
 
-
-print("Hello")
-print(sys.argv)
-print(os.environ)
-print(os.path.dirname(os.path.realpath(__file__)))
-print(os.getcwd())
-
-print(fileinput.input())
-
-
-
-fileinput.nextfile()
-
-print(fileinput.input())
-
-print(fileinput.filename())
-
-
-
-
-print()
-
-
-
-print(file_content)

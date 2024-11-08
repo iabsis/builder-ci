@@ -1,11 +1,8 @@
-<<<<<<< HEAD
-builder-ci (2.0.2) bookworm; urgency=medium
-=======
-builder-ci (2.0.11) bookworm; urgency=medium
+builder-ci (2.0.12) bookworm; urgency=medium
 
   * Small fix to rebuild container
 
- -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 07 Nov 2024 15:49:30 +0100
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 08 Nov 2024 08:33:40 +0100
 
 builder-ci (2.0.10) bookworm; urgency=medium
 
@@ -57,7 +54,6 @@ builder-ci (2.0.4) bookworm; urgency=medium
  -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 06 Nov 2024 11:04:28 +0100
 
 builder-ci (2.0.3) bookworm; urgency=medium
->>>>>>> 58717447c56b32a26b23f56a58c49ebd5e68ed09
 
   * Update rules
   * Update dependancies
