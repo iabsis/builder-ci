@@ -67,7 +67,7 @@ def post_builder(yaml_content=None):
         print(f"Hum, I can't find the key 'flows', the builder will try all possible flows" )
     
     try:
-        options = yaml_content.get('flows')
+        options = yaml_content.get('options')
     except:
         options = None
         print(f"Hum, I can't find the key 'options', the builder will build with default values if possible" )
