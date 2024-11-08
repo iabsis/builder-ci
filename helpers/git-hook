@@ -12,9 +12,9 @@ import fileinput
 from git import Repo
 
 redmine_url = "http://redmine"
-redmine_api = "28ab845575801439cf7390023995defaecfffe0f"
+redmine_api = ""
 weblate_url = "https://translate.iabsis.com"
-weblate_api = "GI3mQQB90EWM6pXuupkaKsq8gUNeWqULHfT6uE9L"
+weblate_api = ""
 builder_url = "https://builder.iabsis.com"
 builder_api = ""
 old_builder_url = "https://builder"
