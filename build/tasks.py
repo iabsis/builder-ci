@@ -93,6 +93,7 @@ def build_run(self, build_id):
     for task in build.buildtask_set.all():
         task.delete()
     build.started_at = timezone.now()
+    build.status = models.Status.running
 
     # Get the current task ID and attach to the requested Build
     build.celery_task = TaskResult.objects.get(task_id=self.request.id)
@@ -208,9 +209,9 @@ def build_run(self, build_id):
                     build_task.save()
                     if build_task.method.stop_on_failure:
                         break
-        build.status = None
-        build.save()
 
-    send_notification(build)
+    # Set to None will automatically detect the status
+    build.status = None
     build.finished_at = timezone.now()
+    send_notification(build)
     build.save()

@@ -1,5 +1,6 @@
 from django.template.loader import get_template
 from django import template
+from ..models import Status
 
 register = template.Library()
 
@@ -7,13 +8,13 @@ register = template.Library()
 def status_badge(status):
     template = get_template("components/badge.html")
     color = 'secondary'
-    if status == 'failed':
+    if status == Status.failed:
         color = 'danger'
-    if status == 'success':
+    if status == Status.success:
         color = 'success'
-    if status == 'warning':
+    if status in [Status.warning, Status.duplicate]:
         color = 'warning'
-    if status == 'queued':
+    if status == Status.queued:
         color = 'primary'
 
     return template.render({"text": status, "color": color})

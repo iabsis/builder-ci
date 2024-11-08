@@ -41,7 +41,15 @@
                     <tbody>
                         {% for obj in object_list %}
                         <tr>
-                            <td>{{ obj.pk }}</td>
+                            <td>
+                                {% if view_url %}
+                                    <a href="{% url view_url obj.pk %}">
+                                        {{ obj.pk }}
+                                    </a>
+                                {% else %}
+                                    {{ obj.pk }}
+                                {% endif %}
+                            </td>
                             <td>
                                 <a href="{% url 'request' %}?name={{ obj.request.name }}">
                                     {{ obj.request }}</td>
