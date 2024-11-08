@@ -32,14 +32,11 @@ class BuildView(View):
             branch=branch,
         )
 
-        for flow in build_request.flows.all():
-            flow.delete()
-
-        print(Flow.objects.all())
+        build_request.flow_set.clear()
 
         if not flows:
             tasks.build_request.delay(build_request.pk)
-            return JsonResponse({"status": "ERROR", "message": f"No flows provided, trying all..."})
+            return JsonResponse({"status": "WARNING", "message": f"No flows provided, trying all..."})
 
         for flow_name in flows:
             try:
