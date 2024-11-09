@@ -26,6 +26,7 @@ class BuildRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     options = models.JSONField(default=dict, null=True, blank=True, validators=[validations.validate_dict])
+    requested_by = models.SlugField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.name

@@ -82,7 +82,8 @@ def post_builder(yaml_content=None):
             "url": f"http://redmine/git/{project_name}",
             "branch": "master",
             "flows": flows,
-            "options": options
+            "options": options,
+            "requested_by": committer_name,
         }
     }
 

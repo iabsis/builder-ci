@@ -8,7 +8,7 @@ class BuildRequestSerializer(serializers.HyperlinkedModelSerializer):
     flows = serializers.SerializerMethodField()
     class Meta:
         model = BuildRequest
-        fields = ['name', 'url', 'branch', 'flows', 'options']
+        fields = ['name', 'url', 'branch', 'flows', 'options', 'requested_by']
 
     def get_flows(self, obj):
         return [flow.name for flow in obj.flows.all()]
