@@ -1,3 +1,11 @@
+builder-ci (2.0.24) bookworm; urgency=medium
+
+  * Fix where to load
+  * Cleanup
+  * Rewrite API with clean rest_framework and add authentication
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sat, 09 Nov 2024 15:55:53 +0100
+
 builder-ci (2.0.23) bookworm; urgency=medium
 
   * Adding missing migration
