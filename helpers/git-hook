@@ -80,7 +80,7 @@ def post_builder(yaml_content=None):
         "json": {
             "name": project_name,
             "url": f"http://redmine/git/{project_name}",
-            "branch": "master",
+            "branch": refname,
             "flows": flows,
             "options": options,
             "requested_by": committer_name,
