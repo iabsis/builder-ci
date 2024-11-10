@@ -21,7 +21,8 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='build')),
     path('admin/', admin.site.urls),
-    path('accounts/', include("sbadmin2.urls")),
+    # path('accounts/', include("sbadmin2.urls")),
+    path('accounts/', include('allauth.urls')),
     path('container/', include("container.urls")),
     path('flow/', include("flow.urls")),
     path('build/', include("build.urls")),

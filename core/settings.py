@@ -53,9 +53,17 @@ INSTALLED_APPS = [
     'build',
     'secret',
     'sbadmin2',
+    'allauth',
+    'allauth.account',
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.openid_connect',
     'rest_framework',
     'rest_framework.authtoken',
 ]
+
+if os.getenv('OPENID_ID') and os.getenv('OPENID_ID') != '':
+    INSTALLED_APPS.append('allauth.socialaccount')
+    INSTALLED_APPS.append('allauth.socialaccount.providers.openid_connect')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -179,6 +188,11 @@ PODMAN_PATH = os.getenv('PODMAN_PATH') if os.getenv(
 REDMINE_URL = os.getenv('REDMINE_URL')
 REDMINE_KEY = os.getenv('REDMINE_KEY')
 
+MATRIX_HOME_SERVER = os.getenv('MATRIX_HOME_SERVER')
+MATRIX_USERNAME = os.getenv('MATRIX_USERNAME')
+MATRIX_PASSWORD = os.getenv('MATRIX_PASSWORD')
+MATRIX_DOMAIN = os.getenv('MATRIX_DOMAIN')
+
 STATIC_ROOT = 'statics'
 LOGOUT_REDIRECT_URL = '/'
 
@@ -192,3 +206,25 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+SOCIALACCOUNT_PROVIDERS = {
+    "openid_connect": {
+        "APPS": [
+            {
+                "provider_id": os.getenv('OPENID_ID'),
+                "name": os.getenv('OPENID_NAME'),
+                "client_id": os.getenv('OPENID_CLIENT_ID'),
+                "secret": os.getenv('OPENID_SECRET'),
+                "settings": {
+                    "server_url": os.getenv('OPENID_CONFIGURATION_URL'),
+                },
+            }
+        ]
+    }
+}
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_ADAPTER = 'core.auth.NoNewUsersAccountAdapter'
