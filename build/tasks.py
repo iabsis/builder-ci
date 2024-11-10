@@ -118,7 +118,7 @@ def build_run(self, build_id):
 
         try:
             cloned_repo = Repo.clone_from(
-                build.request.url, os.path.join(tmpdirname, "sources"), depth=1)
+                build.request.url, os.path.join(tmpdirname, "sources"), depth=1, branch=build.request.branch)
         except Exception as e:
             build_task.logs = f"Got exception during clone: {e}"
             build_task.status = models.Status.failed
@@ -167,8 +167,8 @@ def build_run(self, build_id):
 
         logger.debug("Check for duplicates")
         if models.Build.objects.filter(
+            request=build.request,
             version=build.version,
-            flow=build.flow,
             status=models.Status.success,
         ).exclude(
             pk=build.pk

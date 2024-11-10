@@ -12,11 +12,11 @@ import fileinput
 from git import Repo
 
 redmine_url = "http://redmine"
-redmine_api = ""
+redmine_key = ""
 weblate_url = "https://translate.iabsis.com"
-weblate_api = ""
+weblate_key = ""
 builder_url = "https://builder.iabsis.com"
-builder_api = ""
+builder_key = ""
 old_builder_url = "https://builder"
 
 project_name = os.getcwd().split("/")[-1]
@@ -52,7 +52,7 @@ def trigger_build():
             yaml_content = {}
         
         if yaml_content.get('builder'):
-            print(f"Deprecation warning, the file builder.yaml contain old data, please read https://projects.iabsis.com/projects/iabsis-ch/wiki/Configure_builder#Deprecation-warning")
+            print("Deprecation warning, the file builder.yaml contain old data, please read https://projects.iabsis.com/projects/iabsis-ch/wiki/Configure_builder#Deprecation-warning")
             post_old_builder()
         else:
             post_builder(yaml_content)
@@ -64,22 +64,26 @@ def post_builder(yaml_content=None):
         flows = yaml_content.get('flows')
     except:
         flows = None
-        print(f"Hum, I can't find the key 'flows', the builder will try all possible flows" )
+        print("Hum, I can't find the key 'flows', the builder will try all possible flows" )
     
     try:
         options = yaml_content.get('options')
     except:
         options = None
-        print(f"Hum, I can't find the key 'options', the builder will build with default values if possible" )
+        print("Hum, I can't find the key 'options', the builder will build with default values if possible" )
 
     req = {
+        "headers": {
+            "Authorization": f"Token {builder_key}"
+        },
         "url": f"{builder_url}/api/build",
         "json": {
             "name": project_name,
             "url": f"http://redmine/git/{project_name}",
-            "branch": "master",
+            "branch": refname,
             "flows": flows,
-            "options": options
+            "options": options,
+            "requested_by": committer_name,
         }
     }
 
@@ -117,7 +121,7 @@ def post_weblate():
     req = {
         "url": f"{redmine_url}/projects/{project_name}.json",
         "headers": {
-            "X-Redmine-API-Key": redmine_api
+            "X-Redmine-API-Key": redmine_key
         }
     }
     res = requests.get(**req)
@@ -134,7 +138,7 @@ def post_weblate():
     req = {
         "url": f"{weblate_url}/api/components/{weblate_project}/repository/",
         "headers": {
-            "Authorization": f"Token {weblate_api}",
+            "Authorization": f"Token {weblate_key}",
             "Content-Type": "application/json"
         },
         "json": {
