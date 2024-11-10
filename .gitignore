@@ -11,3 +11,4 @@ builder-ci/
 build-folder/
 old/
 .env
+sbadmin2/node_modules/
