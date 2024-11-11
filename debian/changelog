@@ -1,3 +1,9 @@
+builder-ci (2.0.28) bookworm; urgency=medium
+
+  * Fix tasks
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 11 Nov 2024 12:28:28 +0100
+
 builder-ci (2.0.27) bookworm; urgency=medium
 
   * Fix import of missing file
