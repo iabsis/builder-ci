@@ -1,3 +1,17 @@
+builder-ci (2.0.26) bookworm; urgency=medium
+
+  * Initial commit for full rewrite Django
+  * Fix issue with name of the container
+  * Duplicate on flow and not method
+  * New release
+  * Handle missing branch
+  * Handle missing branch
+  * Adding SSO
+  * Fix styling
+  * Attempt to catch all critical exception
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 11 Nov 2024 12:14:31 +0100
+
 builder-ci (2.0.25) bookworm; urgency=medium
 
   * Add field requested_by
