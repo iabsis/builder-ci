@@ -7,7 +7,7 @@ import celery
 from django.conf import settings
 from django.utils import timezone
 import container.models
-from . import models, exceptions
+from . import models
 from flow.models import Flow, Task
 from podman import PodmanClient
 from podman.errors import ContainerError
