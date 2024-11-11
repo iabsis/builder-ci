@@ -178,6 +178,7 @@ def build_run(self, build_id):
             else:
                 build_task.status = models.Status.ignored
                 build_task.logs = error_msg
+                build_task.save()
 
         logger.debug("Check for duplicates")
         if models.Build.objects.filter(
