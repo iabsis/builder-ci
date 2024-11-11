@@ -30,7 +30,8 @@ class TiggerBuildRequestView(LoginRequiredMixin, RedirectView):
     pattern_name = 'request'
 
     def get(self, request, *args, **kwargs):
-        request = get_object_or_404(models.BuildRequest, pk=kwargs['pk'])
-        tasks.build_request.delay(request.pk)
-        messages.success(self.request, f"Build {request.name} triggered successfully")
-        return super().get(request, *args)
+        buildrequest = get_object_or_404(models.BuildRequest, pk=kwargs['pk'])
+        tasks.build_request.delay(buildrequest.pk)
+        messages.success(
+            self.request, f"Build {buildrequest.name} triggered successfully")
+        return super().get(buildrequest, *args)

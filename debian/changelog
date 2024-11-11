@@ -1,3 +1,10 @@
+builder-ci (2.0.29) bookworm; urgency=medium
+
+  * Commit save build_task when ignored
+  * Fix redirect view
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 11 Nov 2024 14:11:14 +0100
+
 builder-ci (2.0.28) bookworm; urgency=medium
 
   * Fix tasks
