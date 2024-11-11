@@ -82,7 +82,8 @@ def send_notification(build):
         # response.raise_for_status()
 
 
-def build_request(build_request_id):
+@app.task(bind=True, base=BuildTask)
+def build_request(self, build_request_id):
     build_request = models.BuildRequest.objects.get(pk=build_request_id)
     if build_request.flows.exists():
         flows = build_request.flows.all()
