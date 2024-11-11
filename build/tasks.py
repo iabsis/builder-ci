@@ -1,27 +1,34 @@
 import logging
 import container
-import regex
 import os
 import tempfile
 import requests
-from celery import Celery
+import celery
 from django.conf import settings
 from django.utils import timezone
-
 import container.models
-from . import models
+from . import models, exceptions
 from flow.models import Flow, Task
-from io import StringIO
 from podman import PodmanClient
 from podman.errors import ContainerError
 from django_celery_results.models import TaskResult
 from git import Repo
 from celery import shared_task
 
-app = Celery('tasks', broker='redis://localhost')
+
+app = celery.Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 logger = logging.getLogger(__name__)
+
+
+class BuildTask(celery.Task):
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        # exc (Exception) - The exception raised by the task.
+        # args (Tuple) - Original arguments for the task that failed.
+        # kwargs (Dict) - Original keyword arguments for the task that failed.
+        print('{0!r} failed: {1!r}'.format(task_id, exc))
 
 def send_notification(build):
     
@@ -74,7 +81,7 @@ def send_notification(build):
             logger.error(f"Unable to notify Redmine: {response.text}, {req['json']}")
         # response.raise_for_status()
 
-@app.task
+
 def build_request(build_request_id):
     build_request = models.BuildRequest.objects.get(pk=build_request_id)
     if build_request.flows.exists():
@@ -90,7 +97,8 @@ def build_request(build_request_id):
 
     build_request.save()
 
-@shared_task(bind=True)
+
+@app.task(bind=True, base=BuildTask)
 def build_run(self, build_id):
 
     # Remove all previous built tasks if existing
@@ -120,14 +128,17 @@ def build_run(self, build_id):
             cloned_repo = Repo.clone_from(
                 build.request.url, os.path.join(tmpdirname, "sources"), depth=1, branch=build.request.branch)
         except Exception as e:
-            build_task.logs = f"Got exception during clone: {e}"
             build_task.status = models.Status.failed
+            build_task.logs = f"exception occured during Git clone: {e}"
             build_task.save()
-            raise Exception("Error during cloning repository")
+            build.status = models.Status.failed
+            build.save()
+            return
+
 
         build.meta['commit_id'] = cloned_repo.head.object.hexsha
         
-        build_task.logs = f"Cloned successfully "
+        build_task.logs = "Cloned successfully "
         build_task.status = models.Status.success
         build_task.save()
         
@@ -154,16 +165,18 @@ def build_run(self, build_id):
                 build.version = build.flow.get_version(content)
             build_task.status = models.Status.success
             build_task.save()
-        except:
-            build_task.status = models.Status.ignored
+        except Exception as e:
+            error_msg = f"Unable to parse version with regex: {e}"
             if build.flow.version_mandatory or not build.flow:
-                build_task.logs = "Unable to parse version with regex, build fails"
                 build_task.status = models.Status.failed
+                build_task.logs = f"exception occured during getting version: {e}"
                 build_task.save()
                 build.status = models.Status.failed
                 build.save()
                 return
-            logger.debug("Unable to determine version, but not mandatory, continuing")
+            else:
+                build_task.status = models.Status.ignored
+                build_task.logs = error_msg
 
         logger.debug("Check for duplicates")
         if models.Build.objects.filter(
@@ -195,7 +208,7 @@ def build_run(self, build_id):
                 status=models.Status.queued
             )
 
-        ### TASKS DEFINITION ##
+        ### TASKS RUNNING ##
         for build_task in models.BuildTask.objects.filter(build=build, flow__isnull=False).order_by('order'):
 
             logger.debug(build_task)
@@ -248,14 +261,17 @@ def build_run(self, build_id):
                     build_task.status = models.Status.success
                     build_task.save()
                 except ContainerError as e:
-                    build_task.logs = "".join([line.decode() for line in e.stderr])
                     build_task.status = models.Status.failed
+                    logs = "".join([line.decode() for line in e.stderr])
+                    build_task.logs = f"exception occured executing task: {e}\n {logs}"
                     build_task.save()
                     if build_task.method.stop_on_failure:
-                        break
+                        build.status = models.Status.failed
+                        build.save()
+                        return
 
     # Set to None will automatically detect the status
-    build.status = None
+    build.status = models.Status.success
     build.finished_at = timezone.now()
     build.save()
     send_notification(build)
