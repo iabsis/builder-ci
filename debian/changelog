@@ -1,3 +1,10 @@
+builder-ci (2.0.30) bookworm; urgency=medium
+
+  * Change order
+  * Fix duplicates
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 12 Nov 2024 22:04:41 +0100
+
 builder-ci (2.0.29) bookworm; urgency=medium
 
   * Commit save build_task when ignored
