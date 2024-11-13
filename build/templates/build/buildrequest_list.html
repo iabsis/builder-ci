@@ -8,6 +8,7 @@
         <th>Fetch method</th>
         <th>URL</th>
         <th>Branch</th>
+        <th>Is tag</th>
         <th>Build count</th>
         <th>Created at</th>
         <th>Updated at</th>
@@ -23,6 +24,7 @@
         <td>{{ obj.fetch_method }}</td>
         <td>{{ obj.url }}</td>
         <td>{{ obj.branch }}</td>
+        <td>{{ obj.is_tag }}</td>
         <td>
             <a href="{% url 'build' %}?request={{obj.pk}}">
                 {{ obj.build_set.count }}
