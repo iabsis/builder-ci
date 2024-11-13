@@ -1,3 +1,16 @@
+builder-ci (2.0.31) bookworm; urgency=medium
+
+  * Handle tags on build
+  * Improve code deduplication
+  * Show tags
+  * Tags handling in DB
+  * Clean way to save build if failing
+  * Fix future build
+  * Adding git dependancy
+  * Refactor and way more clena task
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 13 Nov 2024 16:18:20 +0100
+
 builder-ci (2.0.30) bookworm; urgency=medium
 
   * Change order
