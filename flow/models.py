@@ -1,4 +1,4 @@
-import regex
+import re
 from django.db import models
 from . import validator
 from django.forms import ValidationError
@@ -34,12 +34,31 @@ class Flow(models.Model):
     version_regex = models.CharField(max_length=150, null=True, blank=True, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
     version_mandatory = models.BooleanField(default=True, help_text="Define if build failes if version is not found")
 
-    def get_version(self, content):
-        pattern = regex.compile(self.version_regex)
-        m = regex.search(pattern, content)
-        if not m:
-            raise Exception("Regex didn't matched anything")
-        return m.group(1)
+    def get_version(self, version_file):
+        with open(version_file, 'r') as f:
+            content = f.read()
+            pattern = re.compile(self.version_regex)
+            m = re.search(pattern, content)
+            print(content)
+            if not m:
+                raise Exception("Regex didn't matched anything")
+            return m.group(1)
+
+    def replace_version(self, version_file, new_version):
+        with open(version_file, 'r') as f:
+            content = f.read()
+
+        pattern = re.compile(self.version_regex)
+
+        def replace_group_1(match):
+            return match.group(0).replace(match.group(1), new_version)
+    
+        updated_content = re.sub(pattern, replace_group_1, content, count=1)
+
+        with open(version_file, 'w') as f:
+            f.write(updated_content)
+        
+        return self.get_version(version_file)
 
     def __str__(self):
         return self.name
