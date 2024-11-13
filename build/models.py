@@ -2,12 +2,13 @@ from django.db import models
 from django_celery_results.models import TaskResult
 from jinja2 import Template, StrictUndefined
 from . import validations
+from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
-    ONE_TIME = 'ONE_TIME', 'One time'
+    ON_VERSION = 'ON_VERSION', 'On new version'
     NIGHTLY = 'NIGHTLY', 'Nightly'
-    ON_TAG = 'ON_TAG', 'On tag'
+    ON_TAG = 'ON_TAG', 'On new tag'
 
 class BuildRequestStatus(models.TextChoices):
     failed = 'failed', 'Failed'
@@ -21,7 +22,7 @@ class BuildRequest(models.Model):
     fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
     url = models.CharField(max_length=150)
     refname = models.CharField(max_length=50)
-    mode = models.CharField(choices=BuildRequestMode.choices, max_length=50, default=BuildRequestMode.ONE_TIME)
+    modes = ArrayField(models.CharField(choices=BuildRequestMode.choices, max_length=50), default=list, help_text=f"Coma separated value of {",".join([x[0] for x in BuildRequestMode.choices])}")
     flows = models.ManyToManyField('flow.Flow', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

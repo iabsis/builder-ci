@@ -1,8 +1,7 @@
 import regex
 from django.db import models
 from . import validator
-from build.models import Build
-from jinja2 import Template, StrictUndefined
+from django.forms import ValidationError
 
 # Create your models here.
 
@@ -31,8 +30,8 @@ class Task(models.Model):
 
 class Flow(models.Model):
     name = models.CharField(max_length=40)
-    version_file = models.CharField(max_length=100)
-    version_regex = models.CharField(max_length=150, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
+    version_file = models.CharField(max_length=100, null=True, blank=True)
+    version_regex = models.CharField(max_length=150, null=True, blank=True, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
     version_mandatory = models.BooleanField(default=True, help_text="Define if build failes if version is not found")
 
     def get_version(self, content):
@@ -47,3 +46,10 @@ class Flow(models.Model):
     
     class Meta:
         ordering = ['pk']
+
+    def clean(self):
+        super().clean()
+        if self.version_mandatory:
+            if not self.version_file or not self.version_regex:
+                raise ValidationError(
+                    "When version is mandatory, you must define Version file and Version Regex", code="invalid")

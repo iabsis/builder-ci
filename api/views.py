@@ -1,5 +1,5 @@
 
-from build.models import BuildRequest
+from build.models import BuildRequest, BuildRequestMode
 from build import tasks
 from flow.models import Flow
 from rest_framework import permissions, viewsets
@@ -22,11 +22,12 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
         build_request, _ = BuildRequest.objects.update_or_create(
             name=request.data.get('name'),
             url=request.data.get('url'),
-            branch=request.data.get('branch'),
+            refname=request.data.get('refname'),
             requested_by=request.data.get('requested_by'),
             options=request.data.get('options', {}),
         )
 
+        build_request.modes=request.data.get('modes', "ON_VERSION"),
         flows = Flow.objects.filter(name__in=flow_names)
         build_request.flows.set(flows)
         build_request.save()

@@ -125,6 +125,14 @@ def build_run(self, build_id):
             status=models.Status.queued
         )
 
+        # Stop build if the buildrequest is due to a tag but build is not supposed
+        # to build when it's tag.
+        if models.BuildRequestMode.ON_TAG not in build.request.modes and build.is_tag:
+            build_task.status = models.Status.failed
+            build_task.logs = "Not building because it's not a tag"
+            build.status = models.Status.ignored
+            build.save()
+
         try:
             cloned_repo = Repo.clone_from(
                 build.request.url, os.path.join(tmpdirname, "sources"), depth=1, branch=build.request.branch)

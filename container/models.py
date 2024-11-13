@@ -1,6 +1,5 @@
 from django.db import models
 from . import validator
-from build.models import Build
 from django.forms import ValidationError
 from jinja2 import Template, StrictUndefined, UndefinedError
 

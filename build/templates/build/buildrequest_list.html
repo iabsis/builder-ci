@@ -9,6 +9,7 @@
         <th>URL</th>
         <th>Branch</th>
         <th>Is tag</th>
+        <th>Modes</th>
         <th>Build count</th>
         <th>Created at</th>
         <th>Updated at</th>
@@ -25,6 +26,7 @@
         <td>{{ obj.url }}</td>
         <td>{{ obj.branch }}</td>
         <td>{{ obj.is_tag }}</td>
+        <td>{{ obj.modes }}</td>
         <td>
             <a href="{% url 'build' %}?request={{obj.pk}}">
                 {{ obj.build_set.count }}
