@@ -23,7 +23,7 @@ class BuildRequest(models.Model):
     fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
     url = models.CharField(max_length=150)
     refname = models.CharField(max_length=50)
-    modes = ArrayField(models.CharField(choices=BuildRequestMode.choices, max_length=50), default=list, help_text=f"Coma separated value of {",".join([x[0] for x in BuildRequestMode.choices])}")
+    modes = ArrayField(models.CharField(choices=BuildRequestMode.choices, max_length=50), default=list, help_text="Coma separated values")
     flows = models.ManyToManyField('flow.Flow', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
