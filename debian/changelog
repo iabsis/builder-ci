@@ -1,3 +1,9 @@
+builder-ci (2.0.33) bookworm; urgency=medium
+
+  * Working version with tag
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 13 Nov 2024 17:48:49 +0100
+
 builder-ci (2.0.32) bookworm; urgency=medium
 
   * Fix for validation
