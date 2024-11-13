@@ -2,6 +2,7 @@ from django.db import models
 from django_celery_results.models import TaskResult
 from jinja2 import Template, StrictUndefined
 from . import validations
+from tempfile import TemporaryDirectory
 from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
@@ -114,6 +115,14 @@ class Build(models.Model):
         super(Build, self).save(*args, **kwargs)
 
     @property
+    def tmpfolder(self):
+        try:
+            return self._tmpfolder
+        except:
+            self._tmpfolder = SaveBuild(self)
+        return self._tmpfolder
+
+    @property
     def options(self) -> dict:
         '''
         Return the options field in addition of
@@ -142,3 +151,15 @@ class Build(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+class SaveBuild(TemporaryDirectory):
+    def __init__(self, build: Build, *args, **kargs):
+        self.build = build
+        return super().__init__(*args, **kargs)
+        
+    def __exit__(self, exc, value, tb):
+        if exc is not None:
+            self.build.status = Status.failed
+        self.build.save()
+        return super().__exit__(exc, value, tb)

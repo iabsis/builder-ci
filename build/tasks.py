@@ -114,7 +114,7 @@ def build_run(self, build_id):
     build.save()
 
     # Execute everything in a temporary folder
-    with tempfile.TemporaryDirectory() as tmpdirname:
+    with build.tmpfolder as tmpdirname:
         logger.info(f'created temporary directory: {tmpdirname}')
 
 
