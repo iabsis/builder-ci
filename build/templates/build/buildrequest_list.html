@@ -1,103 +1,46 @@
-{% extends "layouts/base.html" %}
-{% load static %}
-{% load table %}
+{% extends "table.html" %}
 {% load build %}
 
-{% block content %}
-
-<!-- Begin Page Content -->
-<div class="container-fluid">
-
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
-
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            {% if create_url %}
-            <a href="{% url create_url %}" class="btn btn-success btn-icon-split mb-4">
-                <span class="icon text-white-50">
-                    <i class="fas fa-plus-circle"></i>
-                </span>
-                <span class="text">Create</span>
+{% block thead %}
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Fetch method</th>
+        <th>URL</th>
+        <th>Branch</th>
+        <th>Build count</th>
+        <th>Created at</th>
+        <th>Updated at</th>
+        <th></th>
+    </tr>
+{% endblock thead %}
+{% block tbody %}
+    {% for obj in object_list %}
+    <tr>
+        
+        <td>{{ obj.pk }}</td>
+        <td>{{ obj.name }}</td>
+        <td>{{ obj.fetch_method }}</td>
+        <td>{{ obj.url }}</td>
+        <td>{{ obj.branch }}</td>
+        <td>
+            <a href="{% url 'build' %}?request={{obj.pk}}">
+                {{ obj.build_set.count }}
             </a>
-            {% endif %}
-            {% include 'includes/filter.html' %}
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Fetch method</th>
-                            <th>URL</th>
-                            <th>Branch</th>
-                            <th>Build count</th>
-                            <th>Created at</th>
-                            <th>Updated at</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for obj in object_list %}
-                        <tr>
-                            
-                            <td>{{ obj.pk }}</td>
-                            <td>{{ obj.name }}</td>
-                            <td>{{ obj.fetch_method }}</td>
-                            <td>{{ obj.url }}</td>
-                            <td>{{ obj.branch }}</td>
-                            <td>
-                                <a href="{% url 'build' %}?request={{obj.pk}}">
-                                    {{ obj.build_set.count }}
-                                </a>
-                            </td>
-                            <td>{{ obj.created_at }}</td>
-                            <td>{{ obj.updated_at }}</td>
-                            <td>
-                                {% if update_url %}
-                                <a href="{% url update_url obj.pk %}" class="btn btn-primary btn-icon-split">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-pencil"></i>
-                                    </span>
-                                    <span class="text">Edit</span>
-                                </a>
-                                {% endif %}
-                                {% if delete_url %}
-                                <a href="{% url delete_url obj.pk %}" class="btn btn-danger btn-icon-split">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-trash"></i>
-                                    </span>
-                                    <span class="text">Delete</span>
-                                </a>
-                                {% endif %}
-                                {% if view_url %}
-                                <a href="{% url view_url obj.pk %}" class="btn btn-info btn-icon-split">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-eye"></i>
-                                    </span>
-                                    <span class="text">View</span>
-                                </a>
-                                {% endif %}
-                                <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-play"></i>
-                                    </span>
-                                    <span class="text">
-                                        Trigger build
-                                    </span>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% include 'includes/pagination.html' %}
-        </div>
-    </div>
-
-</div>
-<!-- /.container-fluid -->
-
-{% endblock content %}
+        </td>
+        <td>{{ obj.created_at }}</td>
+        <td>{{ obj.updated_at }}</td>
+        <td>
+            {% include 'includes/actions.html' %}
+            <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-play"></i>
+                </span>
+                <span class="text">
+                    Trigger build
+                </span>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+{% endblock tbody %}
