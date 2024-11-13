@@ -58,6 +58,8 @@ class Status(models.TextChoices):
     ignored = 'ignored', 'Ignored'
 
 class BuildTask(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     description = models.CharField(max_length=50, null=True, blank=True)
     build = models.ForeignKey('Build', on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE, null=True)
@@ -156,10 +158,13 @@ class Build(models.Model):
 class SaveBuild(TemporaryDirectory):
     def __init__(self, build: Build, *args, **kargs):
         self.build = build
-        return super().__init__(*args, **kargs)
+        super().__init__(*args, **kargs)
         
     def __exit__(self, exc, value, tb):
         if exc is not None:
             self.build.status = Status.failed
+        if self.build.status == Status.running:
+            self.build.status = Status.success
         self.build.save()
         return super().__exit__(exc, value, tb)
+    
