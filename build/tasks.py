@@ -109,15 +109,6 @@ def build_run(self, build_id):
     with build.tmpfolder as tmpdirname:
         logger.info(f'created temporary directory: {tmpdirname}')
 
-        # Stop build if the buildrequest is due to a tag but build is not supposed
-        # to build when it's tag.
-        with BuildTaskExecutor(build, "Check build sanity") as task:
-            if models.BuildRequestMode.ON_TAG not in build.request.modes and build.request.is_tag:
-                raise Exception("Not building because this push is not a tag while build mode is ON_TAG")
-            if not models.BuildRequestMode.ON_TAG not in build.request.modes and not build.request.is_tag:
-                raise Exception(
-                    "Not building because this push is not a tag while build mode is ON_TAG")
-
         with BuildTaskExecutor(build, "Cloning repository") as task:
             cloned_repo = Repo.clone_from(
                 build.request.url, os.path.join(tmpdirname, "sources"), depth=1, branch=build.request.branch, single_branch=True)
@@ -128,16 +119,17 @@ def build_run(self, build_id):
         # logger.info(cloned_repo.active_branch)
 
         ### VERSION FETCHING ##
-        with BuildTaskExecutor(build, "Version fetching") as task:
-            logger.info(f"Regex to use: {build.flow.version_regex}")
+        if models.BuildRequestMode.ON_VERSION in build.request.modes:
+            with BuildTaskExecutor(build, "Version fetching") as task:
+                logger.info(f"Regex to use: {build.flow.version_regex}")
 
-            sources_path = os.path.join(tmpdirname, "sources")
-            version_file = os.path.join(sources_path, build.flow.version_file)
+                sources_path = os.path.join(tmpdirname, "sources")
+                version_file = os.path.join(sources_path, build.flow.version_file)
 
-            with open(version_file, 'r') as f:
-                content = f.read()
-                logger.debug(f"File content: {content}")
-                build.version = build.flow.get_version(content)
+                with open(version_file, 'r') as f:
+                    content = f.read()
+                    logger.debug(f"File content: {content}")
+                    build.version = build.flow.get_version(content)
 
         ### DUPLICATES CHECK ##
         with BuildTaskExecutor(build, "Duplicates check") as task:

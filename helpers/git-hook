@@ -24,7 +24,8 @@ project_name = os.getcwd().split("/")[-1]
 ## Extract info from stdin
 for line in fileinput.input():
     oldrev, newrev, refname = line.split(" ")
-#    refname = refname.replace('refs/heads/', '').replace('\n', '')
+    branch = refname.replace('refs/heads/', '').replace('\n', '')
+    refname = refname.replace('\n', '')
 
 ## Gretting
 committer_name = os.environ.get("GIT_COMMITTER_NAME")
@@ -86,7 +87,7 @@ def post_builder(yaml_content=None):
         "json": {
             "name": project_name,
             "url": f"http://redmine/git/{project_name}",
-            "branch": refname,
+            "refname": refname,
             "flows": flows,
             "options": options,
             "requested_by": committer_name,
@@ -109,7 +110,7 @@ def post_old_builder():
                 "method": "git",
                 "options": {
                     "url": f"{redmine_url}/git/{project_name}",
-                    "branch": refname
+                    "branch": branch
                 }
             },
             "notify": {

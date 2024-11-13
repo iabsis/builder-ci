@@ -4,6 +4,7 @@ from jinja2 import Template, StrictUndefined
 from . import validations
 from tempfile import TemporaryDirectory
 from django.contrib.postgres.fields import ArrayField
+from django.forms import ValidationError
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -47,6 +48,12 @@ class BuildRequest(models.Model):
 
     class Meta:
         ordering = ["-updated_at"]
+
+    def clean(self):
+        super().clean()
+        if BuildRequestMode.ON_TAG not in self.modes and self.is_tag:
+            raise ValidationError(
+                "Build request not accepted with tag but not build ON_TAG", code="invalid")
 
 class Status(models.TextChoices):
     queued = 'queued', 'Queued'
