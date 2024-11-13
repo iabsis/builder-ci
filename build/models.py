@@ -20,13 +20,25 @@ class BuildRequest(models.Model):
     name = models.SlugField(max_length=150)
     fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
     url = models.CharField(max_length=150)
-    branch = models.CharField(max_length=50)
+    refname = models.CharField(max_length=50)
     mode = models.CharField(choices=BuildRequestMode.choices, max_length=50, default=BuildRequestMode.ONE_TIME)
     flows = models.ManyToManyField('flow.Flow', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     options = models.JSONField(default=dict, null=True, blank=True, validators=[validations.validate_dict])
     requested_by = models.SlugField(max_length=50, null=True, blank=True)
+
+    @property
+    def branch(self):
+        if self.is_tag:
+            return self.refname.replace('refs/tags/', '')
+        return self.refname.replace('refs/heads/', '')
+
+    @property
+    def is_tag(self):
+        if 'tags' in self.refname:
+            return True
+        return False
 
     def __str__(self):
         return self.name
