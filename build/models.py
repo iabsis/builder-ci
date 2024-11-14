@@ -170,7 +170,8 @@ class SaveBuild(TemporaryDirectory):
         
     def __exit__(self, exc, value, tb):
         if exc is not None:
-            self.build.status = Status.failed
+            if self.build.status == Status.running:
+                self.build.status = Status.failed
         if self.build.status == Status.running:
             self.build.status = Status.success
         self.build.save()

@@ -17,7 +17,7 @@ weblate_url = "https://translate.iabsis.com"
 weblate_key = ""
 builder_url = "https://builder.iabsis.com"
 builder_key = ""
-old_builder_url = "https://builder"
+old_builder_url = "http://builder"
 
 project_name = os.getcwd().split("/")[-1]
 
@@ -31,7 +31,7 @@ for line in fileinput.input():
 committer_name = os.environ.get("GIT_COMMITTER_NAME")
 if committer_name:
     print(
-        f"Hello {committer_name}, thanks for your commit into {project_name} !!")
+        f"Hello {committer_name}, thanks for your commit into {project_name} !!", flush=True)
 
 def trigger_build():
     repo = Repo(os.getcwd())
@@ -46,7 +46,7 @@ def trigger_build():
         except Exception as e:
             continue
 
-        print(f"I found file {file}, I will check it...")
+        print(f"I found file {file}, I will check it...", flush=True)
 
         try:
             yaml_content = load(file_content, Loader=Loader)
@@ -55,7 +55,7 @@ def trigger_build():
             yaml_content = {}
         
         if yaml_content.get('builder'):
-            print("Deprecation warning, the file builder.yaml contain old data, please read https://projects.iabsis.com/projects/iabsis-ch/wiki/Configure_builder#Deprecation-warning")
+            print("Deprecation warning, the file builder.yaml contain old data, please read https://projects.iabsis.com/projects/iabsis-ch/wiki/Configure_builder#Deprecation-warning", flush=True)
             post_old_builder()
         else:
             post_builder(yaml_content)
@@ -71,13 +71,13 @@ def post_builder(yaml_content=None):
         flows = yaml_content.get('flows')
     except:
         flows = None
-        print("Hum, I can't find the key 'flows', the builder will try all possible flows" )
+        print("Hum, I can't find the key 'flows', the builder will try all possible flows" , flush=True)
     
     try:
         options = yaml_content.get('options')
     except:
         options = {}
-        print("Hum, I can't find the key 'options', the builder will build with default values if possible" )
+        print("Hum, I can't find the key 'options', the builder will build with default values if possible" , flush=True)
 
     req = {
         "headers": {
@@ -97,9 +97,9 @@ def post_builder(yaml_content=None):
 
     res = requests.post(**req)
     if res.status_code != 200:
-        print(f"Arg, I received an unexpected error: {res.text}")
+        print(f"Arg, I received an unexpected error: {res.text}", flush=True)
     else:
-        print(f"Seems all good: {res.text}")
+        print(f"Seems all good: {res.text}", flush=True)
     
 def post_old_builder():
     req = {
@@ -120,9 +120,9 @@ def post_old_builder():
     }
     res = requests.post(**req)
     if res.status_code != 200:
-        print(f"Arg, I received an unexpected error: {res.text}")
+        print(f"Arg, I received an unexpected error: {res.text}", flush=True)
     else:
-        print(f"Seems all good: {res.text}")
+        print(f"Seems all good: {res.text}", flush=True)
 
 def post_weblate():
     req = {
@@ -139,7 +139,7 @@ def post_weblate():
             break
 
     if weblate_project == "":
-        print(f"Weblate field not defined for this project")
+        print(f"Weblate field not defined for this project", flush=True)
         return
 
     req = {
@@ -156,9 +156,9 @@ def post_weblate():
 
 
     if res.status_code == 200 and res.json()['result']:
-        print(f"Weblate notified successfully, good translations !!")
+        print(f"Weblate notified successfully, good translations !!", flush=True)
     else:
-        print(f"An error has occured while notifing weblate: {res.text}")
+        print(f"An error has occured while notifing weblate: {res.text}", flush=True)
 
 
 if __name__ == "__main__":

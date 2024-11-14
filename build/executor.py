@@ -29,7 +29,8 @@ class BuildTaskExecutor:
 
     def __exit__(self, exc, value, tb):
         if exc is not None:
-            self.task.status = models.Status.failed
+            if self.task.status == models.Status.running:
+                self.task.status = models.Status.failed
             if not self.task.logs:
                 self.task.logs = ''.join(
                     traceback.format_exception(exc, value, tb))
