@@ -141,6 +141,7 @@ class Build(models.Model):
         options['name'] = self.request.name
         options['url'] = self.request.url
         options['branch'] = self.request.branch
+        options['version'] = self.version
         return options
 
     @property

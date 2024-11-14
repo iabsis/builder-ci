@@ -119,20 +119,24 @@ def build_run(self, build_id):
         # logger.info(cloned_repo.active_branch)
 
         ### VERSION FETCHING ##
-        with BuildTaskExecutor(build, "Version fetching") as task:
-            version_file = os.path.join(tmpdirname, "sources", build.flow.version_file)
-            if models.BuildRequestMode.ON_VERSION in build.request.modes and not build.request.is_tag:
-                logger.info(f"Regex to use: {build.flow.version_regex}")
-                build.version = build.flow.get_version(version_file)
+        try:
+            with BuildTaskExecutor(build, "Version fetching") as task:
+                version_file = os.path.join(tmpdirname, "sources", build.flow.version_file)
+                if models.BuildRequestMode.ON_VERSION in build.request.modes and not build.request.is_tag:
+                    logger.info(f"Regex to use: {build.flow.version_regex}")
+                    build.version = build.flow.get_version(version_file)
 
-            if models.BuildRequestMode.ON_TAG in build.request.modes and build.request.is_tag:
-                logger.info(f"Regex to use: {build.flow.version_regex}")
-                build.version = build.flow.replace_version(version_file, build.request.branch)
-            
-            if not build.version and build.flow.version_mandatory:
-                raise Exception("Version is missing while flow requires a version")
-        
-        build.save()
+                if models.BuildRequestMode.ON_TAG in build.request.modes and build.request.is_tag:
+                    logger.info(f"Regex to use: {build.flow.version_regex}")
+                    build.version = build.flow.replace_version(version_file, build.request.branch)
+                
+                if not build.version and build.flow.version_mandatory:
+                    raise Exception("Version is missing while flow requires a version")
+        except Exception as e:
+            message = f"Version is missing while flow requires a version: {e}"
+            task.logs = message
+            if build.flow.version_mandatory:
+                raise Exception(message)
 
         ### DUPLICATES CHECK ##
         with BuildTaskExecutor(build, "Duplicates check") as task:
