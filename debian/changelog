@@ -1,3 +1,10 @@
+builder-ci (2.0.36) bookworm; urgency=medium
+
+  * Prevent override state and update only if running
+  * Readd missing version saving
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 14 Nov 2024 12:00:16 +0100
+
 builder-ci (2.0.35) bookworm; urgency=medium
 
   * Put version variables and make version really optional
