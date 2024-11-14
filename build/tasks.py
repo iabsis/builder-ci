@@ -123,18 +123,10 @@ def build_run(self, build_id):
             version_file = os.path.join(tmpdirname, "sources", build.flow.version_file)
             if models.BuildRequestMode.ON_VERSION in build.request.modes and not build.request.is_tag:
                 logger.info(f"Regex to use: {build.flow.version_regex}")
-
-                with open(version_file, 'r') as f:
-                    content = f.read()
-                    logger.debug(f"File content: {content}")
-                    build.version = build.flow.get_version(content)
+                build.version = build.flow.get_version(version_file)
 
             if models.BuildRequestMode.ON_TAG in build.request.modes and build.request.is_tag:
                 logger.info(f"Regex to use: {build.flow.version_regex}")
-
-                version_file = os.path.join(tmpdirname, "sources",
-                    build.flow.version_file)
-
                 build.version = build.flow.replace_version(version_file, build.request.branch)
             
             if not build.version and build.flow.version_mandatory:
