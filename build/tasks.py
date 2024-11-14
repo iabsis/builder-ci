@@ -135,6 +135,7 @@ def build_run(self, build_id):
         except Exception as e:
             message = f"Version is missing while flow requires a version: {e}"
             task.logs = message
+            task.status = models.Status.ignored
             if build.flow.version_mandatory:
                 raise Exception(message)
             
