@@ -1,3 +1,9 @@
+builder-ci (2.0.34) bookworm; urgency=medium
+
+  * Send file location instead of content
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 14 Nov 2024 07:55:20 +0100
+
 builder-ci (2.0.33) bookworm; urgency=medium
 
   * Working version with tag
