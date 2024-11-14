@@ -137,6 +137,8 @@ def build_run(self, build_id):
             task.logs = message
             if build.flow.version_mandatory:
                 raise Exception(message)
+            
+        build.save()
 
         ### DUPLICATES CHECK ##
         with BuildTaskExecutor(build, "Duplicates check") as task:
