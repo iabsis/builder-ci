@@ -1,3 +1,9 @@
+builder-ci (2.0.41) bookworm; urgency=medium
+
+  * Fix array store
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 15 Nov 2024 23:39:51 +0100
+
 builder-ci (2.0.40) bookworm; urgency=medium
 
   * Fix test with modes
