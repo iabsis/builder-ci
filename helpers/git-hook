@@ -90,6 +90,7 @@ def post_builder(yaml_content=None):
             "refname": refname,
             "flows": flows,
             "options": options,
+            "modes": yaml_content.get('modes'),
             "requested_by": committer_name,
         }
     }
