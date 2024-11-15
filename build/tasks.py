@@ -122,11 +122,11 @@ def build_run(self, build_id):
         try:
             with BuildTaskExecutor(build, "Version fetching") as task:
                 version_file = os.path.join(tmpdirname, "sources", build.flow.version_file)
-                if models.BuildRequestMode.ON_VERSION in build.request.modes and not build.request.is_tag:
+                if models.BuildRequestMode.ON_VERSION in build.request.modes[0] and not build.request.is_tag:
                     logger.info(f"Regex to use: {build.flow.version_regex}")
                     build.version = build.flow.get_version(version_file)
 
-                if models.BuildRequestMode.ON_TAG in build.request.modes and build.request.is_tag:
+                if models.BuildRequestMode.ON_TAG in build.request.modes[0] and build.request.is_tag:
                     logger.info(f"Regex to use: {build.flow.version_regex}")
                     build.version = build.flow.replace_version(version_file, build.request.branch)
                 
