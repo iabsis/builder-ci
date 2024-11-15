@@ -1,3 +1,11 @@
+builder-ci (2.0.39) bookworm; urgency=medium
+
+  * Fix duplicate query
+  * Add missing modes
+  * Add time limit and change order of build image
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 15 Nov 2024 22:40:45 +0100
+
 builder-ci (2.0.38) bookworm; urgency=medium
 
   * Forgot to save task status
