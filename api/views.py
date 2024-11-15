@@ -27,7 +27,7 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
             options=request.data.get('options', {}),
         )
 
-        build_request.modes=request.data.get('modes', "ON_VERSION"),
+        build_request.modes=request.data.get('modes', "ON_VERSION")
         flows = Flow.objects.filter(name__in=flow_names)
         build_request.flows.set(flows)
         build_request.save()
