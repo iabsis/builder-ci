@@ -14,7 +14,7 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 
 logger = logging.getLogger(__name__)
 
-@app.task
+@app.task(time_limit=180)
 def build_image(container_id: int, options: dict, force=False) -> models.BuiltContainer:
 
     podman_url = settings.PODMAN_URL

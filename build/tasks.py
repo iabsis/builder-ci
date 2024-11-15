@@ -91,7 +91,7 @@ def build_request(self, build_request_id):
     build_request.save()
 
 
-@app.task(bind=True)
+@app.task(bind=True, time_limit=900)
 def build_run(self, build_id):
 
     # Remove all previous built tasks if existing
@@ -171,6 +171,14 @@ def build_run(self, build_id):
         ### TASKS RUNNING ##
         for build_task in models.BuildTask.objects.filter(build=build, flow__isnull=False).order_by('order'):
 
+            with BuildTaskExecutor(build, "Check for container sanity or build") as _:
+                try:
+                    builtcontainer_name = container.tasks.build_image(
+                        build_task.method.container.pk, build_task.options)
+                except Exception as e:
+                    logger.debug(e)
+                    raise Exception(e)
+    
             with BuildTaskExecutor(buildtask=build_task) as task:
             
                 send_notification(build)
@@ -180,6 +188,7 @@ def build_run(self, build_id):
                 with open(script_file, '+w') as f:
                     f.write(build_task.script)
                 os.chmod(script_file, 0o755)
+
 
                 with PodmanClient(base_url=settings.PODMAN_URL) as client:
                     mounts = [
@@ -199,10 +208,6 @@ def build_run(self, build_id):
 
                     try:
 
-                        with BuildTaskExecutor(build, "Check for container sanity or build") as _:
-                            builtcontainer_name = container.tasks.build_image(
-                                build_task.method.container.pk, build_task.options)
-
                         output = client.containers.run(
                             privileged=True,
                             image=builtcontainer_name,
@@ -216,11 +221,14 @@ def build_run(self, build_id):
                             user='0',
                         )
                         task.logs = output.decode()
-
+                    
+                    except ContainerError as e:
+                        logger.error(e.stderr)
+                        logs = "".join([line.decode() for line in e.stderr])
+                        build_task.logs = f"exception occured executing task: {e}, {logs}"
                     except Exception as e:
                         build_task.status = models.Status.failed
-                        logs = "".join([line.decode() for line in e.stderr])
-                        build_task.logs = f"exception occured executing task: {e}\n {logs}"
+                        build_task.logs = f"exception occured executing task: {e}"
                         if build_task.method.stop_on_failure:
                             raise Exception("A mandatory task failed, stopping")
 
