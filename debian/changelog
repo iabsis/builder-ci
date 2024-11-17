@@ -1,3 +1,9 @@
+builder-ci (2.0.44) bookworm; urgency=medium
+
+  * Fix test
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sun, 17 Nov 2024 19:28:37 +0100
+
 builder-ci (2.0.43) bookworm; urgency=medium
 
   * Add missing migration
