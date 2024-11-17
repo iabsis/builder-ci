@@ -226,9 +226,14 @@ def build_run(self, build_id):
                         logger.error(e.stderr)
                         logs = "".join([line.decode() for line in e.stderr])
                         build_task.logs = f"exception occured executing task: {e}, {logs}"
+                        build_task.status = models.Status.failed
+                        build.save()
+                        if build_task.method.stop_on_failure:
+                            raise Exception("A mandatory task failed, stopping")
                     except Exception as e:
                         build_task.status = models.Status.failed
                         build_task.logs = f"exception occured executing task: {e}"
+                        build.save()
                         if build_task.method.stop_on_failure:
                             raise Exception("A mandatory task failed, stopping")
 
