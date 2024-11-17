@@ -75,7 +75,6 @@ function detectModeFromShebang(content) {
 document.addEventListener('DOMContentLoaded', function() {
   var codeEditors = [document.querySelector("#id_script")];
   codeEditors.forEach(function(textarea) {
-    // var mode = textarea.getAttribute('data-mode') || 'python';
     var content = textarea.value;
     var mode = detectModeFromShebang(content);
     var editor = CodeMirror.fromTextArea(textarea, {
@@ -85,14 +84,14 @@ document.addEventListener('DOMContentLoaded', function() {
       autoCloseBrackets: true,
     });
 
+    editor.setSize('100%', 500);
+
     editor.on('change', function(instance, changeObj) {
       var newContent = instance.getValue();
       var newMode = detectModeFromShebang(newContent);
 
-      // Si le mode a changé, mettre à jour le mode de l'éditeur
       if (newMode !== instance.getOption('mode')) {
         instance.setOption('mode', newMode);
-        console.log('Mode mis à jour :', newMode);
       }
     });
 
