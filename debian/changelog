@@ -1,3 +1,11 @@
+builder-ci (2.0.47) bookworm; urgency=medium
+
+  * Attempt with CM6.
+  * Working and clean version
+  * Make field a bit bigger
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sun, 17 Nov 2024 22:09:15 +0100
+
 builder-ci (2.0.46) bookworm; urgency=medium
 
   * Fix default value considered as None
