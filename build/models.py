@@ -55,6 +55,11 @@ class BuildRequest(models.Model):
             raise ValidationError(
                 "Build request not accepted with tag but not build ON_TAG", code="invalid")
 
+    def save(self, *args, **kwargs):
+        if not self.options:
+            self.options = {}
+        super(BuildRequest, self).save(*args, **kwargs)
+
 class Status(models.TextChoices):
     queued = 'queued', 'Queued'
     success = 'success', 'Success'
@@ -108,8 +113,6 @@ class Build(models.Model):
     status = models.CharField(choices=Status.choices, max_length=10, default=Status.queued)
 
     def save(self, *args, **kwargs):
-        if not self.options:
-            self.options = {}
         if not self.status:
             if self.celery_task and self.celery_task.status == 'FAILURE':
                 self.status = Status.failed
