@@ -6,6 +6,7 @@ from rest_framework import permissions, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from . import serializers
+from rest_framework import status
 # Create your views here.
 
 
@@ -30,7 +31,12 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
         build_request.modes=request.data.get('modes', "ON_VERSION")
         flows = Flow.objects.filter(name__in=flow_names)
         build_request.flows.set(flows)
-        build_request.save()
+        try:
+            build_request.save()
+        except Exception as e:
+            return Response({"detail": f"Something wrong happened: {e}."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
         tasks.build_request.delay(build_request.pk)
 
