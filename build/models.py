@@ -108,6 +108,8 @@ class Build(models.Model):
     status = models.CharField(choices=Status.choices, max_length=10, default=Status.queued)
 
     def save(self, *args, **kwargs):
+        if not self.options:
+            self.options = {}
         if not self.status:
             if self.celery_task and self.celery_task.status == 'FAILURE':
                 self.status = Status.failed
