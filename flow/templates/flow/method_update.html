@@ -1,0 +1,92 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form id="parent-form" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                
+                <hr>
+                {% if child_formset %}
+                    {{child_formset.management_form}}
+                    {% for formset in child_formset %}
+                    <div class="child-form">
+                        {{formset|crispy}}
+                        <hr>
+                    </div>
+                    {% endfor %}
+                    <button id="add-item" class="btn btn-secondary">Add item</button>
+                    <hr>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <!-- Submit and reset buttons -->
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+ 
+{% endblock content %}
+
+{% block scripts %}
+
+<script src="{% static 'cm6/cm6-all-yjs.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.10/mode/shell/shell.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@codemirror/legacy-modes"></script>
+
+<script type="module">
+
+    const textarea = document.querySelector("#id_script");
+
+    import { shell } from "@codemirror/legacy-modes/mode/shell";
+  
+    // Initialize the editor
+    const editor = new CM6.EditorView({
+      doc: textarea.value, // Sync initial value
+      extensions: [
+        CM6.basicSetup,
+        CM6.autocompletion({
+          override: [
+            async (context) => {
+              const value = context.state.doc.toString();
+              const detectedLanguage = detectLanguage(value); // Your detection logic
+              if (detectedLanguage) {
+                return detectedLanguage;
+              }
+              return null;
+            },
+          ],
+        }),
+      ],
+      parent: textarea.parentNode,
+    });
+  
+    // Example language detection function
+    function detectLanguage(value) {
+      if (value.startsWith("#!/usr/bin/env bash")) {
+        return new CM6.LanguageSupport(CM6.bash());
+      } else if (value.startsWith("#!/usr/bin/env python3")) {
+        return new CM6.LanguageSupport(CM6.python());
+      }
+      return CM6.docker; // Default: No language
+    }
+
+    document.querySelector("form").addEventListener("submit", () => {
+        textarea.value = editor.state.doc.toString(); // Synchronize editor content with textarea
+    });
+  </script>
+
+{% endblock scripts %}
