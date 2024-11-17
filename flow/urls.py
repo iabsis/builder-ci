@@ -8,5 +8,6 @@ urlpatterns = [
     path('test/<int:pk>/', views.FlowTestView.as_view(), name='flow_test'),
     path('update/<int:pk>/', views.FlowUpdateView.as_view(), name='flow_update'),
     *generate_crud_urls('method', 'method', models.Method),
+    path('documentation', views.FlowDocumentationView.as_view(), name='flow_documentation')
     # *generate_crud_urls('task', 'task', models.Task),
 ]

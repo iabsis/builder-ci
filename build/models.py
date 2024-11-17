@@ -9,7 +9,7 @@ from django.forms import ValidationError
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
     ON_VERSION = 'ON_VERSION', 'On new version'
-    NIGHTLY = 'NIGHTLY', 'Nightly'
+    # NIGHTLY = 'NIGHTLY', 'Nightly'
     ON_TAG = 'ON_TAG', 'On new tag'
 
 class BuildRequestStatus(models.TextChoices):

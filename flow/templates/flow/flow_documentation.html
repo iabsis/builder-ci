@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Documentation</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            {% for flow in flows %}
+                <h4>Flow <span class="text-dark">{{flow}}</span></h4>
+
+                {% for task in flow.task_set.all %}
+                    <h5>Step {{forloop.counter}}: {{task.method.name}}</h5>
+                    <p class="mb-0">Description: {{task.method.description}}</p>
+                    <p class="mb-0">Container: {{task.method.container.name}}</p>
+                    <p class="mb-0">Options: {{task.method.options}}</p>
+                {% endfor %}
+                <h4>Example</h4>
+                <code>
+                    flows:<br>
+                    - {{flow.name}}<br>
+                    {% if flow.options %}
+                    options:<br>
+                        {% for k in flow.options %}
+                            - {{k}}: 'abcd'<br>
+                        {%endfor%}
+                    {% endif %}
+                    modes:<br>
+                    {% for mode in modes %}
+                    - {{mode.0}}<br>
+                    {% endfor %}
+                </code>
+
+                <div class="mb-4"></div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+{% endblock content %}

@@ -2,6 +2,7 @@ import re
 from django.db import models
 from . import validator
 from django.forms import ValidationError
+from jinja2 import Environment, meta
 
 # Create your models here.
 
@@ -15,6 +16,16 @@ class Method(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def options(self):
+        env = Environment()
+        parsed_content = env.parse(self.script)
+        undeclared_variables = meta.find_undeclared_variables(parsed_content)
+        for var in ['name', 'url', 'branch', 'version']:
+            if var in undeclared_variables:
+                undeclared_variables.remove(var)
+        return [k for k in undeclared_variables] + self.container.options
 
     @property
     def serialized_secrets(self):
@@ -33,6 +44,16 @@ class Flow(models.Model):
     version_file = models.CharField(max_length=100, null=True, blank=True)
     version_regex = models.CharField(max_length=150, null=True, blank=True, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
     version_mandatory = models.BooleanField(default=True, help_text="Define if build failes if version is not found")
+
+    @property
+    def options(self):
+        options = []
+        for task in self.task_set.all():
+            options += task.method.options
+        for var in ['name', 'url', 'branch', 'version']:
+            if var in options:
+                options.remove(var)
+        return options
 
     def get_version_content(self, version_content):
         pattern = re.compile(self.version_regex)

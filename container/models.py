@@ -1,8 +1,7 @@
 from django.db import models
 from . import validator
 from django.forms import ValidationError
-from jinja2 import Template, StrictUndefined, UndefinedError
-
+from jinja2 import Template, StrictUndefined, UndefinedError, Environment, meta
 # Create your models here.
 
 class Variable(models.Model):
@@ -17,6 +16,18 @@ class Container(models.Model):
     target_tag = models.CharField(max_length=50, default='builder-{{image}}-{{tag}}')
     default_options = models.JSONField(default=dict, null=True, blank=True)
     options_are_mandatory = models.BooleanField(default=False, help_text="Define if {{var}} defined in are mandatory in build request, otherwise fallback to default options that must be defined.")
+
+    @property
+    def options(self):
+        env = Environment()
+        parsed_content = env.parse(self.dockerfile)
+        undeclared_in_content = [k for k in meta.find_undeclared_variables(parsed_content)]
+
+        env = Environment()
+        parsed_name = env.parse(self.name)
+        undeclared_in_name = [k for k in meta.find_undeclared_variables(parsed_name)]
+        undeclared_variables = undeclared_in_content + undeclared_in_name
+        return undeclared_variables
 
     def clean(self):
         super().clean()

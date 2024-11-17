@@ -1,5 +1,5 @@
 from . import models, forms
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
+from build.models import BuildRequestMode
 
 class FlowCreateView(GenericViewFormCreate):
     model = models.Flow
@@ -80,3 +81,12 @@ class FlowTestView(LoginRequiredMixin, SuccessMessageMixin, FormView):
             messages.success(
                 request, f"Success! The version has been founded: {version}")
             return HttpResponseRedirect(self.get_success_url())
+
+class FlowDocumentationView(LoginRequiredMixin, TemplateView):
+    template_name = 'flow/flow_documentation.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['flows'] = models.Flow.objects.all
+        context['modes'] = BuildRequestMode.choices
+        return context
