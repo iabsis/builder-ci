@@ -29,7 +29,24 @@ $(document).ready(function () {
 
 import "./css/styles.css";
 
+import CodeMirror from 'codemirror';
+
+// Import CodeMirror CSS
+import 'codemirror/lib/codemirror.css';
+
+// Import themes if desired
+import 'codemirror/theme/material.css';
+
+// Import modes
+import 'codemirror/mode/python/python.js';
+import 'codemirror/mode/shell/shell.js';
+import 'codemirror/mode/dockerfile/dockerfile.js';
+import 'codemirror/addon/edit/closebrackets.js';
+
+
+
 // Your custom JavaScript code
 $(document).ready(function () {
   console.log("Libs are ready!");
 });
+

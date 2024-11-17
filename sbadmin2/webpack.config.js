@@ -48,6 +48,13 @@ module.exports = {
           exposes: "Chart",
         },
       },
+      {
+        test: require.resolve("codemirror"),
+        loader: "expose-loader",
+        options: {
+          exposes: "CodeMirror",
+        },
+      },
     ],
   },
   mode: "production",

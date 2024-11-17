@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'sbadmin2',
     'allauth',
     'allauth.account',
-    'django_codemirror6',
     'rest_framework',
     'rest_framework.authtoken',
 ]
