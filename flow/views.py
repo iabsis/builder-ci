@@ -73,7 +73,7 @@ class FlowTestView(LoginRequiredMixin, SuccessMessageMixin, FormView):
         if form.is_valid():
             data_to_test = form.cleaned_data['data_to_test']
             try:
-                version = flow.get_version(data_to_test)
+                version = flow.get_version_content(data_to_test)
             except Exception as e:
                 form.add_error(None, f"This data didn't returned version: {e}")
                 return render(request, self.template_name, {'form': form})
