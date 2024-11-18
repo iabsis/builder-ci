@@ -56,16 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
       autoCloseBrackets: true,
     });
 
-    editor.setSize('100%', 500);
-
-    editor.on('change', function(instance, changeObj) {
-      var newContent = instance.getValue();
-      var newMode = detectModeFromShebang(newContent);
-
-      if (newMode !== instance.getOption('mode')) {
-        instance.setOption('mode', newMode);
-      }
-    });
+    editor.setSize('100%', 300);
 
   });
 });
