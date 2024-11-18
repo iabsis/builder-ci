@@ -166,9 +166,21 @@ class Build(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-
+        permissions = [
+            ("change_build", "Can create/edit/delete Builds"),
+        ]
 
 class SaveBuild(TemporaryDirectory):
+    """
+    A class used to store build source code in a temporary directory,
+    destroyed in same time than build encountered a fatal error or
+    just finished.
+    
+    Attributes
+    ----------
+    build : Build
+        the build object where source code will stored
+    """
     def __init__(self, build: Build, *args, **kargs):
         self.build = build
         super().__init__(*args, **kargs)
