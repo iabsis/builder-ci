@@ -146,6 +146,7 @@ def build_run(self, build_id):
         ### DUPLICATES CHECK ##
         with BuildTaskExecutor(build, "Duplicates check") as task:
             if models.Build.objects.filter(
+                request__name=build.request.name,
                 flow=build.flow,
                 version=build.version,
                 status=models.Status.success,
