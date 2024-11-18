@@ -1,0 +1,76 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form id="parent-form" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                
+                <hr>
+                {% if child_formset %}
+                    {{child_formset.management_form}}
+                    {% for formset in child_formset %}
+                    <div class="child-form">
+                        {{formset|crispy}}
+                        <hr>
+                    </div>
+                    {% endfor %}
+                    <button id="add-item" class="btn btn-secondary">Add item</button>
+                    <hr>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <!-- Submit and reset buttons -->
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+ 
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+  var codeEditors = [document.querySelector("#id_dockerfile")];
+  codeEditors.forEach(function(textarea) {
+    var content = textarea.value;
+    var mode = 'dockerfile';
+    var editor = CodeMirror.fromTextArea(textarea, {
+      lineNumbers: true,
+      mode: mode,
+      theme: 'material',
+      autoCloseBrackets: true,
+    });
+
+    editor.setSize('100%', 500);
+
+    editor.on('change', function(instance, changeObj) {
+      var newContent = instance.getValue();
+      var newMode = detectModeFromShebang(newContent);
+
+      if (newMode !== instance.getOption('mode')) {
+        instance.setOption('mode', newMode);
+      }
+    });
+
+  });
+});
+  </script>
+
+
+
+{% endblock scripts %}
