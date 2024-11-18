@@ -5,10 +5,11 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from . import models, tasks
 from django.http import HttpResponseRedirect
+from sbadmin2.permission import DynamicPermissionMixin
 
 # Create your views here.
 
-class RunBuildView(LoginRequiredMixin, RedirectView):
+class RunBuildView(DynamicPermissionMixin, LoginRequiredMixin, RedirectView):
     pattern_name = 'build'
 
     def get(self, request, *args, **kwargs):
@@ -26,7 +27,7 @@ class RunBuildView(LoginRequiredMixin, RedirectView):
             return HttpResponseRedirect(referer)
         return super().get(request, *args)
 
-class TiggerBuildRequestView(LoginRequiredMixin, RedirectView):
+class TriggerBuildRequestView(DynamicPermissionMixin, LoginRequiredMixin, RedirectView):
     pattern_name = 'request'
 
     def get(self, request, *args, **kwargs):

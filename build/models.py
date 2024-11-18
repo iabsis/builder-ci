@@ -166,9 +166,6 @@ class Build(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-        permissions = [
-            ("change_build", "Can create/edit/delete Builds"),
-        ]
 
 class SaveBuild(TemporaryDirectory):
     """
