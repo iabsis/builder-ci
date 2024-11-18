@@ -150,8 +150,9 @@ def build_run(self, build_id):
                 version=build.version,
                 status=models.Status.success,
             ).exclude(
-                version__isnull=True,
-                pk=build.pk
+                version=''
+            ).exclude(
+                version__isnull=True
             ).exists():
                 build.status = models.Status.duplicate
                 raise Exception("Same success version found, stopping")
