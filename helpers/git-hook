@@ -139,7 +139,7 @@ def post_weblate():
             weblate_project = field['value']
             break
 
-    if weblate_project == "":
+    if not weblate_project or weblate_project == "":
         print(f"Weblate field not defined for this project", flush=True)
         return
 
