@@ -1,4 +1,4 @@
-{% load static %}
+{% load static sidebar %}
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
@@ -24,15 +24,16 @@
         </a>
         <div id="collapseBuild" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{% url 'request' %}">Request</a>
-                <a class="collapse-item" href="{% url 'build' %}">Builds</a>
-                <a class="collapse-item" href="{% url 'builtcontainer' %}">Containers</a>
-                <a class="collapse-item" href="{% url 'secret' %}">Secret</a>
+                {% sidebar_item 'Request' 'request' 'build.view_buildrequest' %}
+                {% sidebar_item 'Builds' 'build' 'build.view_build' %}
+                {% sidebar_item 'Containers' 'builtcontainer' 'container.view_builtcontainer' %}
+                {% sidebar_item 'Secret' 'secret' 'secret.view_secret' %}
             </div>
         </div>
     </li>
 
     <!-- Nav Item - Pages Collapse Menu -->
+    {% if perms.container.view_container or perms.flow.view_method or perms.flow.view_flow %}
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseConfig" aria-expanded="true"
             aria-controls="collapseConfig">
@@ -41,11 +42,12 @@
         </a>
         <div id="collapseConfig" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="{% url 'container' %}">Containers</a>
-                <a class="collapse-item" href="{% url 'method' %}">Methods</a>
-                <a class="collapse-item" href="{% url 'flow' %}">Flows</a>
+                {% sidebar_item 'Containers' 'container' 'container.view_container' %}
+                {% sidebar_item 'Method' 'method' 'flow.view_method' %}
+                {% sidebar_item 'Flows' 'flow' 'flow.view_flow' %}
             </div>
         </div>
     </li>
+    {% endif %}
 
 </ul>
