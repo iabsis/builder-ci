@@ -48,7 +48,7 @@
                             {% endfor %}
                             <td>
                                 {% if update_url %}
-                                <a href="{% url update_url obj.pk %}" class="btn btn-primary btn-icon-split">
+                                <a href="{% url update_url obj.pk %}" class="btn btn-primary btn-icon-split mb-1">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-pencil"></i>
                                     </span>
@@ -56,7 +56,7 @@
                                 </a>
                                 {% endif %}
                                 {% if delete_url %}
-                                <a href="{% url delete_url obj.pk %}" class="btn btn-danger btn-icon-split">
+                                <a href="{% url delete_url obj.pk %}" class="btn btn-danger btn-icon-split mb-1">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-trash"></i>
                                     </span>
@@ -64,14 +64,14 @@
                                 </a>
                                 {% endif %}
                                 {% if view_url %}
-                                <a href="{% url view_url obj.pk %}" class="btn btn-info btn-icon-split">
+                                <a href="{% url view_url obj.pk %}" class="btn btn-info btn-icon-split mb-1">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-eye"></i>
                                     </span>
                                     <span class="text">View</span>
                                 </a>
                                 {% endif %}
-                                <a href="{% url 'flow_test' obj.pk %}" class="btn btn-success btn-icon-split">
+                                <a href="{% url 'flow_test' obj.pk %}" class="btn btn-success btn-icon-splitmb-1 ">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-play"></i>
                                     </span>

@@ -33,7 +33,7 @@
         <td>{{ obj.updated_at|naturaltime }}</td>
         <td>
             {% include 'includes/actions.html' %}
-            <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split">
+            <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split mb-1">
                 <span class="icon text-white-50">
                     <i class="fas fa-play"></i>
                 </span>

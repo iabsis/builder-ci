@@ -24,18 +24,16 @@
 
             {% include 'includes/filter.html' %}
 
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            {% block thead %}{% endblock thead %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% block tbody %}{% endblock tbody %}
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-hover" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        {% block thead %}{% endblock thead %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% block tbody %}{% endblock tbody %}
+                </tbody>
+            </table>
             {% include 'includes/pagination.html' %}
         </div>
     </div>

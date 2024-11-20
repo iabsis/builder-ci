@@ -50,7 +50,7 @@
                             <td>{{ obj.updated_at|naturaltime }}</td>
                             <td>
                                 {% include 'includes/actions.html' %}
-                                <a href="{% url 'builtconainer_rebuild' obj.pk %}" class="btn btn-primary btn-icon-split">
+                                <a href="{% url 'builtconainer_rebuild' obj.pk %}" class="btn btn-primary btn-icon-split mb-1">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-refresh"></i>
                                     </span>
