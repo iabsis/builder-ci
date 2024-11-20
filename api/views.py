@@ -24,14 +24,14 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
             name=request.data.get('name'),
             url=request.data.get('url'),
             refname=request.data.get('refname'),
-            requested_by=request.data.get('requested_by'),
             options=request.data.get('options', {}),
         )
 
-        build_request.modes=request.data.get('modes', "ON_VERSION")
-        flows = Flow.objects.filter(name__in=flow_names)
-        build_request.flows.set(flows)
         try:
+            build_request.modes=request.data.get('modes', "ON_VERSION")
+            flows = Flow.objects.filter(name__in=flow_names)
+            build_request.flows.set(flows)
+            build_request.requested_by = request.data.get('requested_by'),
             build_request.save()
         except Exception as e:
             return Response({"detail": f"Something wrong happened: {e}."},
