@@ -1,5 +1,6 @@
 {% extends "table.html" %}
 {% load build %}
+{% load humanize %}
 
 {% block thead %}
 <tr>
@@ -38,8 +39,8 @@
         </td>
         <td>{{ obj.version }}</td>
         <td>{{ obj.status|status_badge }}</td>
-        <td>{{ obj.created_at }}</td>
-        <td>{{ obj.started_at }}</td>
+        <td>{{ obj.created_at|naturaltime }}</td>
+        <td>{{ obj.started_at|naturaltime }}</td>
         <td>{{ obj.finished_at }}</td>
         <td>
             {% include 'includes/actions.html' %}

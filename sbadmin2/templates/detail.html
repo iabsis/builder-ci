@@ -1,7 +1,7 @@
 {% extends "layouts/base.html" %}
 {% load static %}
 {% load table %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags build %}
 
 {% block content %}
 
@@ -24,7 +24,7 @@
                         {{field}}
                     </div>
                     <div class="mb-0 text-gray-800">
-                        {{object|get_field_value:field|linebreaks}}
+                        {{object|get_field_value:field|view_field|safe|linebreaks}}
                     </div>
                 </div>                
                 {% endfor %}

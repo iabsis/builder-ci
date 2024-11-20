@@ -9,7 +9,7 @@ from sbadmin2.permission import DynamicPermissionMixin
 
 # Create your views here.
 
-class RunBuildView(DynamicPermissionMixin, LoginRequiredMixin, RedirectView):
+class RunBuildView(LoginRequiredMixin, RedirectView):
     pattern_name = 'build'
 
     def get(self, request, *args, **kwargs):
@@ -27,7 +27,7 @@ class RunBuildView(DynamicPermissionMixin, LoginRequiredMixin, RedirectView):
             return HttpResponseRedirect(referer)
         return super().get(request, *args)
 
-class TriggerBuildRequestView(DynamicPermissionMixin, LoginRequiredMixin, RedirectView):
+class TriggerBuildRequestView(LoginRequiredMixin, RedirectView):
     pattern_name = 'request'
 
     def get(self, request, *args, **kwargs):

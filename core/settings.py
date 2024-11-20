@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_results',
+    'django.contrib.humanize',
     'crispy_forms',
     'crispy_bootstrap4',
     'sbadmin2.example',

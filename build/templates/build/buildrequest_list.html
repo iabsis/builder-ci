@@ -1,14 +1,13 @@
 {% extends "table.html" %}
 {% load build %}
+{% load humanize %}
 
 {% block thead %}
     <tr>
         <th>Id</th>
         <th>Name</th>
-        <th>Fetch method</th>
         <th>URL</th>
         <th>Branch</th>
-        <th>Is tag</th>
         <th>Modes</th>
         <th>Build count</th>
         <th>Created at</th>
@@ -22,18 +21,16 @@
         
         <td>{{ obj.pk }}</td>
         <td>{{ obj.name }}</td>
-        <td>{{ obj.fetch_method }}</td>
         <td>{{ obj.url }}</td>
-        <td>{{ obj.branch }}</td>
-        <td>{{ obj.is_tag }}</td>
-        <td>{{ obj.modes }}</td>
+        <td>{{ obj.branch }}<br>{% if obj.is_tag %}(tag){% else %}(branch){% endif %}</td>
+        <td>{{ obj.modes|view_field|safe }}</td>
         <td>
             <a href="{% url 'build' %}?request={{obj.pk}}">
                 {{ obj.build_set.count }}
             </a>
         </td>
-        <td>{{ obj.created_at }}</td>
-        <td>{{ obj.updated_at }}</td>
+        <td>{{ obj.created_at|naturaltime }}</td>
+        <td>{{ obj.updated_at|naturaltime }}</td>
         <td>
             {% include 'includes/actions.html' %}
             <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split">

@@ -19,3 +19,13 @@ def status_badge(status):
 
     return template.render({"text": status, "color": color})
 
+
+@register.filter
+def view_field(list_field):
+    if isinstance(list_field, list):
+        template = get_template("components/badge.html")
+        rendered_output = "".join(
+            [template.render({"text": item, "color": "primary"}) for item in list_field]
+        )
+        return rendered_output
+    return list_field
