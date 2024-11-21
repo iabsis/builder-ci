@@ -14,7 +14,7 @@
     {% for obj in object_list %}
     <tr>
         {% for field in field_list %}
-        <td>{{ obj|get_field_value:field|view_field|safe|linebreaks }}</td>
+        <td>{{ obj|get_field_value:field|view_field|safe }}</td>
         {% endfor %}    
         <td>
             {% include 'includes/actions.html' %}

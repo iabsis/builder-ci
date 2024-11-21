@@ -37,7 +37,7 @@
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Version</div>
                     <div class="h5 mb-0 text-gray-800">
-                        {{object.version}}
+                        {{object.version|view_field}}
                     </div>
                 </div>
                 <div class="col mr-2">
@@ -61,7 +61,7 @@
                         Metadata
                     </div>
                     <div class="h6 mb-0 text-gray-800">
-                        <pre>{{object.meta}}</pre>
+                        <pre>{{object.meta|view_field}}</pre>
                     </div>
                 </div>
 
@@ -70,7 +70,7 @@
                         Options
                     </div>
                     <div class="h6 mb-0 text-gray-800">
-                        <pre>{{object.options}}</pre>
+                        <pre>{{object.options|view_field}}</pre>
                     </div>
                 </div>
             </div>
