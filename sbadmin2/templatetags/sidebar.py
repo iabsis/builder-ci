@@ -7,8 +7,6 @@ register = template.Library()
 def sidebar_item(context, name, reverse_url, permission=None):
     request = context['request']
     user = request.user
-    permission_name = f'view_{name}'
-
     has_permission = user.has_perm(permission)
 
     return {

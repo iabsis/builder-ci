@@ -6,11 +6,9 @@
     <tr>
         <th>Id</th>
         <th>Name</th>
-        <th>URL</th>
-        <th>Branch</th>
+        <th>Git</th>
         <th>Modes</th>
         <th>Build count</th>
-        <th>Created at</th>
         <th>Updated at</th>
         <th></th>
     </tr>
@@ -21,15 +19,15 @@
         
         <td>{{ obj.pk }}</td>
         <td>{{ obj.name }}</td>
-        <td>{{ obj.url }}</td>
-        <td>{{ obj.branch }}<br>{% if obj.is_tag %}(tag){% else %}(branch){% endif %}</td>
+        <td>
+            {{ obj.url }}<br>
+            {% if obj.is_tag %}tag{% else %}branch{% endif %}: {{ obj.branch }}</td>
         <td>{{ obj.modes|view_field|safe }}</td>
         <td>
             <a href="{% url 'build' %}?request={{obj.pk}}">
                 {{ obj.build_set.count }}
             </a>
         </td>
-        <td>{{ obj.created_at|naturaltime }}</td>
         <td>{{ obj.updated_at|naturaltime }}</td>
         <td>
             {% include 'includes/actions.html' %}
