@@ -24,7 +24,7 @@
         </a>
         <div id="collapseBuild" class="collapse {% if request.resolver_match.url_name|show_menu:'builds' %}show{% endif %}" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                {% sidebar_item 'Request' 'request' 'build.view_buildrequest' %}
+                {% sidebar_item 'Requests' 'request' 'build.view_buildrequest' %}
                 {% sidebar_item 'Builds' 'build' 'build.view_build' %}
                 {% sidebar_item 'Containers' 'builtcontainer' 'container.view_builtcontainer' %}
             </div>
