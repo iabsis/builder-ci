@@ -6,9 +6,11 @@ import requests
 logger = logging.getLogger(__name__)
 
 def send_notification(build):
-    send_redmine_notification(build)
-    send_matrix_notification(build)
-
+    try:
+        send_redmine_notification(build)
+        send_matrix_notification(build)
+    except Exception as e:
+        logger.error(f"Received error during notification: {e}")
 
 def send_redmine_notification(build):
     # TODO : make configurable notification
@@ -30,6 +32,12 @@ def send_redmine_notification(build):
         status = 'Failed'
 
     if settings.REDMINE_KEY and settings.REDMINE_URL:
+
+        if build.status == 'running' and build.progress != None:
+            flow = f"{build.flow.name} (eta: {build.eta_at.strftime("%H:%M:%S")})"
+        else:
+            flow = build.flow.name
+        
         req = {
             "headers": {
                 'Content-Type': 'application/json',
@@ -41,7 +49,7 @@ def send_redmine_notification(build):
                 "release": build.version,
                 "commit": build.meta.get('commit_id'),
                 "target": 'undefined',
-                "builder": build.flow.name,
+                "builder": flow,
                 "logs": build.logs,
             }
         }
@@ -62,7 +70,7 @@ def send_redmine_notification(build):
         else:
             build.meta['redmine_id'] = response.text
             build.save(notify=False)
-        # response.raise_for_status()
+        response.raise_for_status()
 
 def send_matrix_notification(build):
     pass

@@ -174,7 +174,7 @@ class Build(models.Model):
     @property
     def eta_total(self):
         try:
-            build = Build.objects.filter(Status.success).latest('pk')
+            build = Build.objects.filter(request__name=self.request.name, status=Status.success).latest('pk')
         except Build.DoesNotExist:
             return
         
@@ -183,6 +183,7 @@ class Build(models.Model):
     @property
     def eta_at(self):
         if self.eta_total:
+            print(self.eta_total)
             return self.started_at + self.eta_total
 
     @property
@@ -192,7 +193,10 @@ class Build(models.Model):
     @property
     def progress(self):
         if self.eta_total:
-            return round(self.eta_total / self.time_elapsed * 100, -1)
+            eta_total = round(self.time_elapsed / self.eta_total * 100, -1)
+            if eta_total > 100:
+                return 100
+            return eta_total
 
 
 class SaveBuild(TemporaryDirectory):
