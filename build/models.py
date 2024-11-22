@@ -5,6 +5,7 @@ from . import validations
 from tempfile import TemporaryDirectory
 from django.contrib.postgres.fields import ArrayField
 from django.forms import ValidationError
+from .notification import send_notification
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -126,6 +127,7 @@ class Build(models.Model):
                 self.status = Status.warning
             else:
                 self.status = Status.success
+        send_notification(self)
         super(Build, self).save(*args, **kwargs)
 
     @property
