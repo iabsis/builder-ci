@@ -35,4 +35,7 @@ class TriggerBuildRequestView(LoginRequiredMixin, RedirectView):
         tasks.build_request.delay(buildrequest.pk)
         messages.success(
             self.request, f"Build {buildrequest.name} triggered successfully")
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return HttpResponseRedirect(referer)
         return super().get(buildrequest, *args)

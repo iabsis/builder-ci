@@ -42,6 +42,14 @@
             <h6 class="m-0 font-weight-bold text-primary">Latest builds</h6>
         </div>
         <div class="card-body">
+            <a href="{% url 'buildrequest_trigger' object.pk %}" class="btn btn-success btn-icon-split mb-3">
+                <span class="icon text-white-50">
+                    <i class="fas fa-play"></i>
+                </span>
+                <span class="text">
+                    Trigger build
+                </span>
+            </a>
             <table class="table table-hover" width="100%" cellspacing="0">
                 <thead>
                     <tr>
@@ -97,7 +105,12 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% include 'includes/actions.html' %}
+                            <a href="{% url 'build_view' obj.pk %}" class="btn btn-info btn-icon-split mb-1">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                                <span class="text">View</span>
+                            </a>
                             <a href="{% url 'build_run' obj.pk %}" class="btn btn-primary btn-icon-split mb-1">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-refresh"></i>
