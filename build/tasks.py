@@ -101,6 +101,7 @@ def build_run(self, build_id):
                 version__isnull=True
             ).exists():
                 build.status = models.Status.duplicate
+                send_notification(build)
                 raise Exception("Same success version found, stopping")
 
 
