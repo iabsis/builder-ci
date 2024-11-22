@@ -1,3 +1,11 @@
+builder-ci (2.0.56) bookworm; urgency=medium
+
+  * Fix titles
+  * Add better view of build attached to build request
+  * Button to trigger build
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 22 Nov 2024 15:54:45 +0100
+
 builder-ci (2.0.55) bookworm; urgency=medium
 
   * Notify when duplicate
