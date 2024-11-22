@@ -6,7 +6,11 @@ import requests
 logger = logging.getLogger(__name__)
 
 def send_notification(build):
-    
+    send_redmine_notification(build)
+    send_matrix_notification(build)
+
+
+def send_redmine_notification(build):
     # TODO : make configurable notification
 
     if build.status == models.Status.queued:
@@ -59,3 +63,6 @@ def send_notification(build):
             if redmine_id:
                 build.meta['redmine_id'] = response.text
         # response.raise_for_status()
+
+def send_matrix_notification(build):
+    pass
