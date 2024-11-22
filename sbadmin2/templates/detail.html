@@ -1,7 +1,11 @@
 {% extends "layouts/base.html" %}
 {% load static %}
 {% load table %}
-{% load crispy_forms_tags build %}
+{% load crispy_forms_tags build page %}
+
+{% block title %}
+{{title|title}}
+{% endblock title %}
 
 {% block content %}
 
@@ -9,7 +13,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+    <h1 class="h3 mb-2 text-gray-800">{{title|title}}</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">

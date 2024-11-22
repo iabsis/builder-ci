@@ -2,7 +2,7 @@
 {% load static %}
 {% load table %}
 {% load crispy_forms_tags %}
-{% load build humanize %}
+{% load build humanize page %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+    <h1 class="h3 mb-2 text-gray-800">{{title|title}}</h1>
 
     <!-- DataTales Example -->
 

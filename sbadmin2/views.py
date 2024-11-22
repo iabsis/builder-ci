@@ -191,6 +191,7 @@ class GenericViewDetail(DynamicPermissionMixin, LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = self.model.__name__
         context['field_list'] = [
             field.name for field in self.model._meta.fields]
         return context
