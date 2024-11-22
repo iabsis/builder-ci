@@ -2,6 +2,7 @@ from django.db import models
 from django_celery_results.models import TaskResult
 from jinja2 import Template, StrictUndefined
 from . import validations
+from django.utils import timezone
 from tempfile import TemporaryDirectory
 from django.contrib.postgres.fields import ArrayField
 from django.forms import ValidationError
@@ -113,7 +114,7 @@ class Build(models.Model):
     finished_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(choices=Status.choices, max_length=10, default=Status.queued)
 
-    def save(self, *args, **kwargs):
+    def save(self, notify=True, *args, **kwargs):
         if not self.status:
             if self.celery_task and self.celery_task.status == 'FAILURE':
                 self.status = Status.failed
@@ -127,7 +128,8 @@ class Build(models.Model):
                 self.status = Status.warning
             else:
                 self.status = Status.success
-        send_notification(self)
+        if notify:
+            send_notification(self)
         super(Build, self).save(*args, **kwargs)
 
     @property
@@ -168,6 +170,30 @@ class Build(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+    
+    @property
+    def eta_total(self):
+        try:
+            build = Build.objects.filter(Status.success).latest('pk')
+        except Build.DoesNotExist:
+            return
+        
+        return build.finished_at - build.started_at
+    
+    @property
+    def eta_at(self):
+        if self.eta_total:
+            return self.started_at + self.eta_total
+
+    @property
+    def time_elapsed(self):
+        return timezone.now() - self.started_at
+
+    @property
+    def progress(self):
+        if self.eta_total:
+            return round(self.eta_total / self.time_elapsed * 100, -1)
+
 
 class SaveBuild(TemporaryDirectory):
     """

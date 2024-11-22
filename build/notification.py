@@ -60,8 +60,8 @@ def send_redmine_notification(build):
             logger.error(f"Unable to notify Redmine: {response.text} with error {response.status_code}")
             logger.debug(req)
         else:
-            if redmine_id:
-                build.meta['redmine_id'] = response.text
+            build.meta['redmine_id'] = response.text
+            build.save(notify=False)
         # response.raise_for_status()
 
 def send_matrix_notification(build):

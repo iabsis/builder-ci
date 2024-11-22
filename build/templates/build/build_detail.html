@@ -18,45 +18,42 @@
             <h6 class="m-0 font-weight-bold text-primary">Build information</h6>
         </div>
         <div class="card-body">
-            <div class="row no-gutters align-items-center">
-                <div class="col mr-2">
+            <div class="row no-gutters">
+                <div class="col-2">
+
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         ID</div>
-                    <div class="h4 mb-0 text-gray-800">{{object.pk}}</div>
-                </div>
-                <div class="col mr-2">
+                    <div class="h5 text-gray-800">{{object.pk}}</div>
+
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Request</div>
-                    <div class="h5 mb-0 text-gray-800">
+                    <div class="h5 text-gray-800">
                         <a href="{% url 'request_update' object.request.pk %}">
                             {{object.request.name}}
                         </a>
                     </div>
-                </div>
-                <div class="col mr-2">
+
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Version</div>
-                    <div class="h5 mb-0 text-gray-800">
+                    <div class="h5 text-gray-800">
                         {{object.version|view_field}}
                     </div>
-                </div>
-                <div class="col mr-2">
+
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Status</div>
-                    <div class="h5 mb-0 text-gray-800">{{object.status|status_badge}}</div>
-                </div>
-                <div class="col mr-2">
+                    <div class="h5 text-gray-800">{{object.status|status_badge}}</div>
+
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Flow
                     </div>
-                    <div class="h5 mb-0 text-gray-800">
+                    <div class="h5 text-gray-800">
                         <a href="{% url 'flow_update' object.flow.pk %}">
                             {{object.flow}}
                         </a>
                     </div>
                 </div>
 
-                <div class="col-12 mt-3">
+                <div class="col-4 mt-3">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Metadata
                     </div>
@@ -65,7 +62,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 mt-3">
+                <div class="col-4 mt-3">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         Options
                     </div>
