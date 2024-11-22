@@ -1,0 +1,121 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load table humanize %}
+{% load crispy_forms_tags build page %}
+
+{% block title %}
+{{title|title}}
+{% endblock title %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">{{title|title}}</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Details</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+            {% for field in field_list %}
+                <div class="col-4">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                        {{field}}
+                    </div>
+                    <div class="mb-0 text-gray-800">
+                        {{object|get_field_value:field|view_field|safe|linebreaks}}
+                    </div>
+                </div>                
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% with object.build_set.all as object_list %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Latest builds</h6>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <tr>
+                            <th>Id</th>
+                            <th>Request</th>
+                            <th>Flow</th>
+                            <th>Version</th>
+                            <th>Status</th>
+                            <th>Created at</th>
+                            <th>Started at</th>
+                            <th>Finished at</th>
+                            <th>Progress</th>
+                            <th></th>
+                        </tr>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in object_list %}
+                    <tr>
+                        <td>
+                            {% if view_url %}
+                                <a href="{% url view_url obj.pk %}">
+                                    {{ obj.pk }}
+                                </a>
+                            {% else %}
+                                {{ obj.pk }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'request' %}?name={{ obj.request.name }}">
+                                {{ obj.request }}</td>
+                            </a>
+                        <td>
+                            <a href="{% url 'flow_update' obj.flow.pk %}">
+                                {{ obj.flow }}
+                            </a>
+                        </td>
+                        <td>{{ obj.version }}</td>
+                        <td>{{ obj.status|status_badge }}</td>
+                        <td>{{ obj.created_at|naturaltime }}</td>
+                        <td>{{ obj.started_at|naturaltime }}</td>
+                        <td>{{ obj.finished_at }}</td>
+                        <td>
+                            {% if obj.status == 'running' and obj.progress != None %}
+                            <div class="row no-gutters align-items-center mb-3">
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: {{obj.progress}}%" aria-valuenow="{{obj.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% include 'includes/actions.html' %}
+                            <a href="{% url 'build_run' obj.pk %}" class="btn btn-primary btn-icon-split mb-1">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-refresh"></i>
+                                </span>
+                                <span class="text">
+                                    Run again
+                                </span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endwith %}
+
+</div>
+
+
+{% endblock content %}

@@ -69,6 +69,16 @@
                                 {% endif %}
                             {% endif %}
 
+                            {% if object.build_duration %}
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Build duration
+                            </div>
+                            <div class="h6 text-gray-800">
+                                <pre>{{object.build_duration}}</pre>
+                            </div>
+                            {% endif %}
+
+
                             {% if object.status == 'running' and object.progress != None %}
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Progress

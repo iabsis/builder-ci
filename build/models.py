@@ -170,7 +170,12 @@ class Build(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-    
+
+    @property
+    def build_duration(self):
+        if self.finished_at and self.started_at:
+            return self.finished_at - self.started_at
+
     @property
     def eta_total(self):
         try:
