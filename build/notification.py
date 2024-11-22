@@ -34,7 +34,7 @@ def send_redmine_notification(build):
     if settings.REDMINE_KEY and settings.REDMINE_URL:
 
         if build.status == 'running' and build.progress != None:
-            flow = f"{build.flow.name} (eta: {build.eta_at.strftime("%H:%M:%S")})"
+            flow = f"{build.flow.name} (eta: {build.eta_at.strftime('%H:%M:%S')})"
         else:
             flow = build.flow.name
         

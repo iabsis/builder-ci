@@ -174,7 +174,11 @@ class Build(models.Model):
     @property
     def eta_total(self):
         try:
-            build = Build.objects.filter(request__name=self.request.name, status=Status.success).latest('pk')
+            build = Build.objects.filter(
+                request__name=self.request.name,
+                status=Status.success,
+                flow=self.flow
+            ).latest('pk')
         except Build.DoesNotExist:
             return
         

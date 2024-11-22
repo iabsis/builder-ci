@@ -18,16 +18,15 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BuildRequestSerializer
 
     def create(self, request, *args, **kwargs):
-        flow_names = request.data.get('flows', [])
-
-        build_request, _ = BuildRequest.objects.update_or_create(
-            name=request.data.get('name'),
-            url=request.data.get('url'),
-            refname=request.data.get('refname'),
-            options=request.data.get('options', {}),
-        )
-
         try:
+            flow_names = request.data.get('flows', [])
+            build_request, _ = BuildRequest.objects.update_or_create(
+                name=request.data.get('name'),
+                url=request.data.get('url'),
+                refname=request.data.get('refname'),
+                options=request.data.get('options', {}),
+            )
+
             build_request.modes=request.data.get('modes', "ON_VERSION")
             flows = Flow.objects.filter(name__in=flow_names)
             build_request.flows.set(flows)
