@@ -18,6 +18,15 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BuildRequestSerializer
 
     def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response({"detail": f"Something wrong happened: {e}."},
+                            status=status.HTTP_400_BAD_REQUEST
+                            )
+
         flow_names = request.data.get('flows', [])
 
         build_request, _ = BuildRequest.objects.update_or_create(
