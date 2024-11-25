@@ -1,3 +1,9 @@
+builder-ci (2.0.57) bookworm; urgency=medium
+
+  * Fix API validation
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 25 Nov 2024 09:15:41 +0100
+
 builder-ci (2.0.56) bookworm; urgency=medium
 
   * Fix titles
