@@ -1,0 +1,3 @@
+{% if has_permission%}
+<a class="collapse-item {% if reverse_url in request.resolver_match.url_name %}active{% endif %}" href="{% url reverse_url %}">{{name}}</a>
+{% endif %}

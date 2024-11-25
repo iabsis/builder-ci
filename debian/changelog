@@ -1,3 +1,51 @@
+builder-ci (2.0.56) bookworm; urgency=medium
+
+  * Fix titles
+  * Add better view of build attached to build request
+  * Button to trigger build
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 22 Nov 2024 15:54:45 +0100
+
+builder-ci (2.0.55) bookworm; urgency=medium
+
+  * Notify when duplicate
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 22 Nov 2024 10:41:27 +0100
+
+builder-ci (2.0.54) bookworm; urgency=medium
+
+  * Quick fix
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 22 Nov 2024 10:31:08 +0100
+
+builder-ci (2.0.53) bookworm; urgency=medium
+
+  * Fix notification
+  * Many UI and notification improvements
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 22 Nov 2024 10:12:52 +0100
+
+builder-ci (2.0.52) bookworm; urgency=medium
+
+  * Fix duplicate again
+  * Fix code mirror
+  * Add comments Docstring
+  * Use generic permission
+  * Adding custom 403 and 404 error
+  * Add default permission
+  * Many UI improvement and secret hiding
+  * Fix sidebar with permissions
+  * Fix sidebar with permissions
+  * Fix error on build requests, prevent HTML
+  * Fix some more UI
+  * New we have perfect sidebar
+  * Fix typo
+  * Fix filter etc..
+  * Fix redmine notifications
+  * Add empty matrix function
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 22 Nov 2024 08:46:13 +0100
+
 builder-ci (2.0.51) bookworm; urgency=medium
 
   * Update for weblate issue

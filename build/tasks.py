@@ -1,9 +1,7 @@
 import logging
 import container
 import os
-import requests
 import celery
-from django.conf import settings
 from django.utils import timezone
 import container.models
 from . import models
@@ -12,67 +10,14 @@ from podman import PodmanClient
 from podman.errors import ContainerError
 from django_celery_results.models import TaskResult
 from git import Repo
-from celery import shared_task
+from django.conf import settings
 from .executor import BuildTaskExecutor
-
+from .notification import send_notification
 
 app = celery.Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 logger = logging.getLogger(__name__)
-
-
-def send_notification(build):
-    
-    # TODO : make configurable notification
-
-    if build.status == models.Status.queued:
-        status = 'New'
-    elif build.status == models.Status.failed:
-        status = 'Failed'
-    elif build.status == models.Status.success:
-        status = 'Success'
-    elif build.status == models.Status.running:
-        status = 'Running'
-    elif build.status == models.Status.warning:
-        status = 'New'
-    elif build.status == models.Status.duplicate:
-        status = 'Duplicate'
-    else:
-        logger.debug(f"Received unknow status: {build.status}")
-        status = 'Failed'
-
-    if settings.REDMINE_KEY and settings.REDMINE_URL:
-        req = {
-            "headers": {
-                'Content-Type': 'application/json',
-                'X-Redmine-Api-Key': settings.REDMINE_KEY
-            },
-            "json": {
-                "project": build.name,
-                "status": status,
-                "release": build.version,
-                "commit": build.meta.get('commit_id'),
-                "target": 'undefined',
-                "builder": build.flow.name,
-                "logs": build.logs,
-            }
-        }
-
-        if build.started_at:
-            req["json"]["started_at"] = build.started_at.strftime("%Y-%m-%d_%H:%M:%S") if build.started_at else None
-        if build.started_at:
-            req["json"]["finished_at"] = build.finished_at.strftime("%Y-%m-%d_%H:%M:%S") if build.finished_at else None
-
-
-        redmine_id = build.meta.get('redmine_id')
-        req['url'] = f"{settings.REDMINE_URL}/builds/{redmine_id}.json" if redmine_id else f"{settings.REDMINE_URL}/builds/new.json"
-
-        response = requests.post(**req)
-        if response.status_code != 200:
-            logger.error(f"Unable to notify Redmine: {response.text}, {req['json']}")
-        # response.raise_for_status()
-
 
 @app.task(bind=True)
 def build_request(self, build_request_id):
@@ -146,6 +91,7 @@ def build_run(self, build_id):
         ### DUPLICATES CHECK ##
         with BuildTaskExecutor(build, "Duplicates check") as task:
             if models.Build.objects.filter(
+                request__name=build.request.name,
                 flow=build.flow,
                 version=build.version,
                 status=models.Status.success,
@@ -155,6 +101,7 @@ def build_run(self, build_id):
                 version__isnull=True
             ).exists():
                 build.status = models.Status.duplicate
+                send_notification(build)
                 raise Exception("Same success version found, stopping")
 
 
@@ -172,6 +119,8 @@ def build_run(self, build_id):
         ### TASKS RUNNING ##
         for build_task in models.BuildTask.objects.filter(build=build, flow__isnull=False).order_by('order'):
 
+            send_notification(build)
+
             with BuildTaskExecutor(build, "Check for container sanity or build") as _:
                 try:
                     builtcontainer_name = container.tasks.build_image(
@@ -181,8 +130,6 @@ def build_run(self, build_id):
                     raise Exception(e)
     
             with BuildTaskExecutor(buildtask=build_task) as task:
-            
-                send_notification(build)
 
                 # Create executable script and make it executable
                 script_file = os.path.join(tmpdirname, "sources", 'run')

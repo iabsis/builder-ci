@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_results',
+    'django.contrib.humanize',
     'crispy_forms',
     'crispy_bootstrap4',
     'sbadmin2.example',
@@ -59,7 +60,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ]
 
-if os.getenv('OPENID_ID') and os.getenv('OPENID_ID') != '':
+if os.getenv('OPENID_NAME'):
     INSTALLED_APPS.append('allauth.socialaccount')
     INSTALLED_APPS.append('allauth.socialaccount.providers.openid_connect')
 
@@ -225,4 +226,6 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_ADAPTER = 'core.auth.NoNewUsersAccountAdapter'
+# ACCOUNT_ADAPTER = 'core.auth.NoNewUsersAccountAdapter'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+LOGIN_REDIRECT_URL='/'

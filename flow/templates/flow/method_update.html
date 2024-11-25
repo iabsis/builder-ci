@@ -45,62 +45,60 @@
 <script>
 
 
-function detectModeFromShebang(content) {
-    var firstLine = content.split('\n')[0].trim();
-    
-    var shebangRegex = /^#!\s*\/[^\s]+\s*(\w+)/;
-    var match = shebangRegex.exec(firstLine);
-    
-    if (match) {
-        var interpreter = match[0];
-    console.log(interpreter)
-        
-    if (/bash|sh/.test(interpreter)) {
-      return 'shell';
-    } else if (/python/.test(interpreter)) {
-      return 'python';
-    } else if (/perl/.test(interpreter)) {
-      return 'perl';
-    } else if (/ruby/.test(interpreter)) {
-      return 'ruby';
-    } else if (/node|nodejs/.test(interpreter)) {
-      return 'javascript';
-    }
-    // Ajouter d'autres interpréteurs si nécessaire
-  }
-
-  return 'plaintext';
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  var codeEditors = [document.querySelector("#id_script")];
-  codeEditors.forEach(function(textarea) {
-    // var mode = textarea.getAttribute('data-mode') || 'python';
-    var content = textarea.value;
-    var mode = detectModeFromShebang(content);
-    var editor = CodeMirror.fromTextArea(textarea, {
-      lineNumbers: true,
-      mode: mode,
-      theme: 'material',
-      autoCloseBrackets: true,
-    });
-
-    editor.setSize('100%', 500);
-
-    editor.on('change', function(instance, changeObj) {
-      var newContent = instance.getValue();
-      var newMode = detectModeFromShebang(newContent);
-
-      // Si le mode a changé, mettre à jour le mode de l'éditeur
-      if (newMode !== instance.getOption('mode')) {
-        instance.setOption('mode', newMode);
-        console.log('Mode mis à jour :', newMode);
+  function detectModeFromShebang(content) {
+      var firstLine = content.split('\n')[0].trim();
+      
+      var shebangRegex = /^#!\s*\/[^\s]+\s*(\w+)/;
+      var match = shebangRegex.exec(firstLine);
+      
+      if (match) {
+          var interpreter = match[0];
+      console.log(interpreter)
+          
+      if (/bash|sh/.test(interpreter)) {
+        return 'shell';
+      } else if (/python/.test(interpreter)) {
+        return 'python';
+      } else if (/perl/.test(interpreter)) {
+        return 'perl';
+      } else if (/ruby/.test(interpreter)) {
+        return 'ruby';
+      } else if (/node|nodejs/.test(interpreter)) {
+        return 'javascript';
       }
+      // Ajouter d'autres interpréteurs si nécessaire
+    }
+  
+    return 'plaintext';
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    var codeEditors = [document.querySelector("#id_script")];
+    codeEditors.forEach(function(textarea) {
+      var content = textarea.value;
+      var mode = detectModeFromShebang(content);
+      var editor = CodeMirror.fromTextArea(textarea, {
+        lineNumbers: true,
+        mode: mode,
+        theme: 'material',
+        autoCloseBrackets: true,
+      });
+  
+      editor.setSize('100%', 500);
+  
+      editor.on('change', function(instance, changeObj) {
+        var newContent = instance.getValue();
+        var newMode = detectModeFromShebang(newContent);
+  
+        if (newMode !== instance.getOption('mode')) {
+          instance.setOption('mode', newMode);
+        }
+      });
+  
     });
-
   });
-});
-  </script>
+  
+</script>
 
 
 

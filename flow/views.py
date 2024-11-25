@@ -13,6 +13,7 @@ from build.models import BuildRequestMode
 
 class FlowCreateView(GenericViewFormCreate):
     model = models.Flow
+    permission_required = "flow.configure_flow"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,6 +40,7 @@ class FlowCreateView(GenericViewFormCreate):
 
 class FlowUpdateView(GenericViewFormUpdate):
     model = models.Flow
+    permission_required = "flow.configure_flow"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

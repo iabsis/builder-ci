@@ -8,40 +8,58 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Documentation</h1>
+    <p class="mb-4">Here a list of all available flows and there variables. This flow must
+        be configured into <code>builder.yml</code> file in root of your Git project.
+        Flows can be combined together into one builder.yml file.
+    </p>
 
-    <!-- DataTales Example -->
-    <div class="card shadow mb-4">
-        <div class="card-body">
-            {% for flow in flows %}
-                <h4>Flow <span class="text-dark">{{flow}}</span></h4>
+    <div class="row">
+        {% for flow in flows %}
+        <div class="col-4">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h6 class="m-0 font-weight-bold text-primary">{{flow}}</h6>
+                </div>
+                <div class="card-body">
+                        {% for task in flow.task_set.all %}
+                            <div class="card border-left-primary">
+                                <div class="card-body">
+                                    <h5>Step #{{forloop.counter}}: {{task.method.name}}</h5>
+                                    <p class="mb-0">Description: {{task.method.description}}</p>
+                                    <p class="mb-0">Container: {{task.method.container.name}}</p>
+                                    <p class="mb-0">Options: {{task.method.options}}</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="card border-left-danger">
+                                <div class="card-body">
+                                    No method configured for this flow !
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <h6 class="mt-3">Example</h6>
+                        <code>
+                            flows:<br>
+                            - {{flow.name}}<br>
+                            {% if flow.options %}
+                            options:<br>
+                                {% for k in flow.options %}
+                                    &nbsp;{{k}}: 'abcd'<br>
+                                {%endfor%}
+                            {% endif %}
+                            modes:<br>
+                            {% for mode in modes %}
+                            - {{mode.0}}<br>
+                            {% endfor %}
+                        </code>
 
-                {% for task in flow.task_set.all %}
-                    <h5>Step {{forloop.counter}}: {{task.method.name}}</h5>
-                    <p class="mb-0">Description: {{task.method.description}}</p>
-                    <p class="mb-0">Container: {{task.method.container.name}}</p>
-                    <p class="mb-0">Options: {{task.method.options}}</p>
-                {% endfor %}
-                <h4>Example</h4>
-                <code>
-                    flows:<br>
-                    - {{flow.name}}<br>
-                    {% if flow.options %}
-                    options:<br>
-                        {% for k in flow.options %}
-                            &nbsp;{{k}}: 'abcd'<br>
-                        {%endfor%}
-                    {% endif %}
-                    modes:<br>
-                    {% for mode in modes %}
-                    - {{mode.0}}<br>
-                    {% endfor %}
-                </code>
-
-                <div class="mb-4"></div>
-            {% endfor %}
-        </div>
+                        <div class="mb-4"></div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-
+        
 </div>
 <!-- /.container-fluid -->
 

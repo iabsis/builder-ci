@@ -1,7 +1,11 @@
 {% extends "layouts/base.html" %}
 {% load static %}
 {% load table %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags build page %}
+
+{% block title %}
+{{title|title}}
+{% endblock title %}
 
 {% block content %}
 
@@ -9,7 +13,7 @@
 <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">{{title}}</h1>
+    <h1 class="h3 mb-2 text-gray-800">{{title|title}}</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -19,12 +23,12 @@
         <div class="card-body">
             <div class="row">
             {% for field in field_list %}
-                <div class="col mr-2">
+                <div class="col-4">
                     <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                         {{field}}
                     </div>
                     <div class="mb-0 text-gray-800">
-                        {{object|get_field_value:field|linebreaks}}
+                        {{object|get_field_value:field|view_field|safe|linebreaks}}
                     </div>
                 </div>                
                 {% endfor %}

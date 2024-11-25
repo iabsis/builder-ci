@@ -2,9 +2,11 @@ from django.db import models
 from django_celery_results.models import TaskResult
 from jinja2 import Template, StrictUndefined
 from . import validations
+from django.utils import timezone
 from tempfile import TemporaryDirectory
 from django.contrib.postgres.fields import ArrayField
 from django.forms import ValidationError
+from .notification import send_notification
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -112,7 +114,7 @@ class Build(models.Model):
     finished_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(choices=Status.choices, max_length=10, default=Status.queued)
 
-    def save(self, *args, **kwargs):
+    def save(self, notify=True, *args, **kwargs):
         if not self.status:
             if self.celery_task and self.celery_task.status == 'FAILURE':
                 self.status = Status.failed
@@ -126,6 +128,8 @@ class Build(models.Model):
                 self.status = Status.warning
             else:
                 self.status = Status.success
+        if notify:
+            send_notification(self)
         super(Build, self).save(*args, **kwargs)
 
     @property
@@ -167,8 +171,54 @@ class Build(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+    @property
+    def build_duration(self):
+        if self.finished_at and self.started_at:
+            return self.finished_at - self.started_at
+
+    @property
+    def eta_total(self):
+        try:
+            build = Build.objects.filter(
+                request__name=self.request.name,
+                status=Status.success,
+                flow=self.flow
+            ).latest('pk')
+        except Build.DoesNotExist:
+            return
+        
+        return build.finished_at - build.started_at
+    
+    @property
+    def eta_at(self):
+        if self.eta_total:
+            print(self.eta_total)
+            return self.started_at + self.eta_total
+
+    @property
+    def time_elapsed(self):
+        return timezone.now() - self.started_at
+
+    @property
+    def progress(self):
+        if self.eta_total:
+            eta_total = round(self.time_elapsed / self.eta_total * 100, -1)
+            if eta_total > 100:
+                return 100
+            return eta_total
+
 
 class SaveBuild(TemporaryDirectory):
+    """
+    A class used to store build source code in a temporary directory,
+    destroyed in same time than build encountered a fatal error or
+    just finished.
+    
+    Attributes
+    ----------
+    build : Build
+        the build object where source code will stored
+    """
     def __init__(self, build: Build, *args, **kargs):
         self.build = build
         super().__init__(*args, **kargs)

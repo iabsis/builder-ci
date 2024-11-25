@@ -9,6 +9,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.conf import settings
 from django_filters.views import FilterView, filterset_factory
 from django.db import models
+from .permission import DynamicPermissionMixin
 import logging
 # Create your views here.
 
@@ -23,7 +24,7 @@ def named_url_exist(name):
 # class GenericFilterViewList(LoginRequiredMixin, FilterView):
 
 
-class GenericViewList(LoginRequiredMixin, FilterView):
+class GenericViewList(DynamicPermissionMixin, LoginRequiredMixin, FilterView):
     paginate_by = 10
     show_filter = True
 
@@ -93,7 +94,7 @@ class GenericViewList(LoginRequiredMixin, FilterView):
             return ['list.html']
 
 
-class GenericViewFormUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class GenericViewFormUpdate(DynamicPermissionMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     template_name = 'form.html'
     success_message = "Update successful"
     fields = "__all__"
@@ -126,7 +127,7 @@ class GenericViewFormUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView)
             return ['form.html']
 
 
-class GenericViewFormCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class GenericViewFormCreate(DynamicPermissionMixin, LoginRequiredMixin, SuccessMessageMixin, CreateView):
     success_message = "Create successful"
     fields = "__all__"
 
@@ -157,7 +158,7 @@ class GenericViewFormCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView)
                 logger.info(f"{default_template_name} not found, falling to default")
             return ['form.html']
 
-class GenericViewDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class GenericViewDelete(DynamicPermissionMixin, LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     success_message = "Deletion successful"
 
     @property
@@ -186,10 +187,11 @@ class GenericViewDelete(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
                 logger.info(f"{default_template_name} not found, falling to default")
             return ['delete.html']
 
-class GenericViewDetail(LoginRequiredMixin, DetailView):
+class GenericViewDetail(DynamicPermissionMixin, LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = self.model.__name__
         context['field_list'] = [
             field.name for field in self.model._meta.fields]
         return context

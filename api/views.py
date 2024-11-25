@@ -18,29 +18,22 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.BuildRequestSerializer
 
     def create(self, request, *args, **kwargs):
-
-        serializer = self.get_serializer(data=request.data)
         try:
+            serializer = self.get_serializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-        except Exception as e:
-            return Response({"detail": f"Something wrong happened: {e}."},
-                            status=status.HTTP_400_BAD_REQUEST
-                            )
 
-        flow_names = request.data.get('flows', [])
+            flow_names = request.data.get('flows', [])
+            build_request, _ = BuildRequest.objects.update_or_create(
+                name=request.data.get('name'),
+                url=request.data.get('url'),
+                refname=request.data.get('refname'),
+                options=request.data.get('options', {}),
+            )
 
-        build_request, _ = BuildRequest.objects.update_or_create(
-            name=request.data.get('name'),
-            url=request.data.get('url'),
-            refname=request.data.get('refname'),
-            requested_by=request.data.get('requested_by'),
-            options=request.data.get('options', {}),
-        )
-
-        build_request.modes=request.data.get('modes', "ON_VERSION")
-        flows = Flow.objects.filter(name__in=flow_names)
-        build_request.flows.set(flows)
-        try:
+            build_request.modes=request.data.get('modes', "ON_VERSION")
+            flows = Flow.objects.filter(name__in=flow_names)
+            build_request.flows.set(flows)
+            build_request.requested_by = request.data.get('requested_by'),
             build_request.save()
         except Exception as e:
             return Response({"detail": f"Something wrong happened: {e}."},
