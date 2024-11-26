@@ -149,6 +149,14 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Live stream</h6>
+        </div>
+        <div id="stream" class="card-body">
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Tasks info</h6>
         </div>
         <div class="card-body">
@@ -245,5 +253,59 @@
 {% endblock content %}
 
 {% block scripts %}
-<script src="{% static 'cm6/cm6-all-yjs.min.js' %}"></script>
+<script>
+
+    function addTask(taskId, taskTitle) {
+        const tasksContainer = document.getElementById("stream");
+    
+        const taskHTML = `
+            <div class="accordion-item" id="task-${taskId}">
+                <h2 class="accordion-header" id="heading-${taskId}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${taskId}" aria-expanded="true" aria-controls="collapse-${taskId}">
+                        ${taskTitle}
+                    </button>
+                </h2>
+                <div id="collapse-${taskId}" class="accordion-collapse collapse show" aria-labelledby="heading-${taskId}" data-bs-parent="#tasks-container">
+                    <div class="accordion-body">
+                        Task details for ${taskTitle}.
+                    </div>
+                </div>
+            </div>
+        `;
+
+        tasksContainer.insertAdjacentHTML("beforeend", taskHTML);
+    }
+    
+    const buildPk = {{object.pk}};
+
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/logs/'
+        + buildPk
+        + '/'
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        document.getElementById('stream').innerHTML += ('<p>' + data.message + '</p>');
+        console.log(data)
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Logs socket closed unexpectedly');
+    };
+
+    function closeTask(taskId) {
+        const collapseElement = document.getElementById(`collapse-${taskId}`);
+    
+        if (collapseElement) {
+            const collapseInstance = new bootstrap.Collapse(collapseElement, {
+                toggle: false
+            });
+            collapseInstance.hide();
+        }
+    }
+
+</script>
 {% endblock %}

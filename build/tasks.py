@@ -112,7 +112,6 @@ def build_run(self, build_id):
                 build=build,
                 flow=task.flow,
                 method=task.method,
-                order=task.priority,
                 status=models.Status.queued
             )
 
@@ -121,7 +120,7 @@ def build_run(self, build_id):
 
             send_notification(build)
 
-            with BuildTaskExecutor(build, "Check for container sanity or build") as _:
+            with BuildTaskExecutor(build, "Check for container sanity or construct") as _:
                 try:
                     builtcontainer_name = container.tasks.build_image(
                         build_task.method.container.pk, build_task.options)

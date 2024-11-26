@@ -78,7 +78,7 @@ class BuildTask(models.Model):
     build = models.ForeignKey('Build', on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE, null=True)
     method = models.ForeignKey('flow.Method', on_delete=models.CASCADE, null=True)
-    order = models.IntegerField()
+    order = models.IntegerField(default=0)
     logs = models.TextField(null=True, blank=True)
     status = models.CharField(
         choices=Status.choices, null=True, blank=True, max_length=10)
@@ -86,6 +86,9 @@ class BuildTask(models.Model):
     def save(self, *args, **kwargs):
         if not self.description and self.method:
             self.description = self.method.description
+        if not self.order:
+            last_task = BuildTask.objects.filter(build=self.build).order_by('-order').first()
+            self.order = (last_task.order + 1) if last_task else 1
         super(BuildTask, self).save(*args, **kwargs)
 
     @property

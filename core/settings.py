@@ -38,6 +38,7 @@ APPEND_SLASH = True
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -229,3 +230,13 @@ AUTHENTICATION_BACKENDS = [
 # ACCOUNT_ADAPTER = 'core.auth.NoNewUsersAccountAdapter'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 LOGIN_REDIRECT_URL='/'
+
+ASGI_APPLICATION = "core.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
