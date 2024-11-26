@@ -108,11 +108,18 @@ def build_run(self, build_id):
         ### TASKS DEFINITION ##
         for task in Task.objects.filter(flow=build.flow).order_by('priority'):
 
+            image_task = models.BuildTask.objects.create(
+                build=build,
+                description="Check for container sanity or construct",
+                status=models.Status.queued
+            )
+
             build_task = models.BuildTask.objects.create(
                 build=build,
                 flow=task.flow,
                 method=task.method,
-                status=models.Status.queued
+                status=models.Status.queued,
+                image_task=image_task
             )
 
         ### TASKS RUNNING ##
@@ -120,7 +127,7 @@ def build_run(self, build_id):
 
             send_notification(build)
 
-            with BuildTaskExecutor(build, "Check for container sanity or construct") as _:
+            with BuildTaskExecutor(buildtask=build_task.image_task) as _:
                 try:
                     builtcontainer_name = container.tasks.build_image(
                         build_task.method.container.pk, build_task.options)

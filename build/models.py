@@ -78,6 +78,7 @@ class BuildTask(models.Model):
     build = models.ForeignKey('Build', on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE, null=True)
     method = models.ForeignKey('flow.Method', on_delete=models.CASCADE, null=True)
+    image_task = models.ForeignKey('BuildTask', on_delete=models.CASCADE, null=True)
     order = models.IntegerField(default=0)
     logs = models.TextField(null=True, blank=True)
     status = models.CharField(
