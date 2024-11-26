@@ -11,7 +11,7 @@ class LogsConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
         await self.accept()
-        await self.send(text_data=json.dumps({"message": "Hello !"}))
+        # await self.send(text_data=json.dumps({"message": "Hello !"}))
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -24,8 +24,5 @@ class LogsConsumer(AsyncWebsocketConsumer):
             self.room_group_name, {"type": "chat.message", "message": message}
         )
 
-    async def log_message(self, event):
-        message = event["message"]
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))
+    async def task(self, event):
+        await self.send(text_data=json.dumps(event))

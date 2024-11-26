@@ -255,19 +255,40 @@
 {% block scripts %}
 <script>
 
-    function addTask(taskId, taskTitle) {
+    function addTask(data) {
         const tasksContainer = document.getElementById("stream");
     
         const taskHTML = `
-            <div class="accordion-item" id="task-${taskId}">
-                <h2 class="accordion-header" id="heading-${taskId}">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${taskId}" aria-expanded="true" aria-controls="collapse-${taskId}">
-                        ${taskTitle}
-                    </button>
-                </h2>
-                <div id="collapse-${taskId}" class="accordion-collapse collapse show" aria-labelledby="heading-${taskId}" data-bs-parent="#tasks-container">
-                    <div class="accordion-body">
-                        Task details for ${taskTitle}.
+            <div class="col-12">
+                <div id="accordion">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-${data.task}" aria-expanded="true" aria-controls="collapse-${data.task}">
+                                    TASK #${data.task} <span id="badge-${data.task}" class="ml-1 badge badge-success">${data.status}</span>
+                                </button>
+                                <span class="text-xs">${data.description}</span>
+                            </h5>
+                        </div>
+                
+                        <div id="collapse-${data.task}" class="collapse" aria-labelledby="heading-${data.task}" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Options</div>
+                                        <div class="mb-0 text-gray-800"></div>
+                                    </div>
+                                    <div class="col-12 mr-2 mt-3">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Task log
+                                        </div>
+                                        <pre class="text-xs"></pre>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -275,10 +296,25 @@
 
         tasksContainer.insertAdjacentHTML("beforeend", taskHTML);
     }
+
+    function toogleTask(taskId, state) {
+        const collapseElement = document.getElementById(`collapse-${taskId}`);
+    
+        if (collapseElement) {
+            const collapseInstance = new Bootstrap.Collapse(collapseElement, {
+                toggle: false
+            });
+            if (state === "show") {
+                collapseInstance.show();
+            } else {
+                collapseInstance.hide();
+            }
+        }
+    }
     
     const buildPk = {{object.pk}};
 
-    const chatSocket = new WebSocket(
+    const taskSocket = new WebSocket(
         'ws://'
         + window.location.host
         + '/ws/logs/'
@@ -286,26 +322,24 @@
         + '/'
     );
 
-    chatSocket.onmessage = function(e) {
+    taskSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        document.getElementById('stream').innerHTML += ('<p>' + data.message + '</p>');
+        if (data.action === "create_task") {
+            addTask(data);
+        //} else if (data.action === "update_task") {
+        //    toogleTask(data.task, 'show');
+        } else if (data.action === "open_task") {
+            toogleTask(data.task, 'show');
+        } else if (data.action === "close_task") {
+            toogleTask(data.task, 'hide');
+        }
+        // document.getElementById('stream').innerHTML += ('<p>' + data.description + '</p>');
         console.log(data)
     };
 
-    chatSocket.onclose = function(e) {
+    taskSocket.onclose = function(e) {
         console.error('Logs socket closed unexpectedly');
     };
-
-    function closeTask(taskId) {
-        const collapseElement = document.getElementById(`collapse-${taskId}`);
-    
-        if (collapseElement) {
-            const collapseInstance = new bootstrap.Collapse(collapseElement, {
-                toggle: false
-            });
-            collapseInstance.hide();
-        }
-    }
 
 </script>
 {% endblock %}

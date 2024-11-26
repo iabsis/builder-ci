@@ -55,6 +55,13 @@ module.exports = {
           exposes: "CodeMirror",
         },
       },
+      {
+        test: require.resolve("bootstrap"),
+        loader: "expose-loader",
+        options: {
+          exposes: "Bootstrap",
+        },
+      },
     ],
   },
   mode: "production",

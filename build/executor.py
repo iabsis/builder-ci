@@ -26,11 +26,13 @@ class BuildTaskExecutor:
     def __enter__(self):
         self.task.status = models.Status.running
         self.task.save()
-        self.send_socket_msg(f"Running: {self.task.description}")
+        self.create_task()
+        self.open_task()
         return self.task
 
     def __exit__(self, exc, value, tb):
-        self.send_socket_msg(f"Finished: {self.task.description}")
+        self.update_task()
+        self.close_task()
         if exc is not None:
             if self.task.status == models.Status.running:
                 self.task.status = models.Status.failed
@@ -41,12 +43,49 @@ class BuildTaskExecutor:
             self.task.status = models.Status.success
         self.task.save()
 
-    def send_socket_msg(self, message):
+    def create_task(self):
+        self.send_socket_msg(
+            {
+                "type": "task",
+                "action": "create_task",
+                "description": self.task.description,
+                "task": self.task.order,
+                "status": self.task.status
+            }
+        )
+
+    def update_task(self):
+        self.send_socket_msg(
+            {
+                "type": "task",
+                "action": "update_task",
+                "description": self.task.description,
+                "task": self.task.order,
+                "status": self.task.status
+            }
+        )
+
+    def open_task(self):
+        self.send_socket_msg(
+            {
+                "type": "task",
+                "action": "open_task",
+                "task": self.task.order
+            }
+        )
+
+    def close_task(self):
+        self.send_socket_msg(
+            {
+                "type": "task",
+                "action": "close_task",
+                "task": self.task.order
+            }
+        )
+
+    def send_socket_msg(self, event):
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"logs_{self.task.build.pk}",
-            {
-                "type": "log_message",
-                "message": message,
-            }
+            event
         )
