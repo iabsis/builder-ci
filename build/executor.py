@@ -20,6 +20,7 @@ class BuildTaskExecutor:
         return self
 
     def __exit__(self, exc, value, tb):
+        self.task.refresh_from_db()
         if exc is not None:
             if self.task.status == models.Status.running:
                 self.task.status = models.Status.failed
@@ -63,6 +64,7 @@ class BuildTaskExecutor:
         )
 
     def add_logs(self, message):
+        logger.debug(message)
         self.send_socket_msg(
             {
                 "type": "task",

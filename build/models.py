@@ -233,6 +233,7 @@ class SaveBuild(TemporaryDirectory):
         super().__init__(*args, **kargs)
         
     def __exit__(self, exc, value, tb):
+        self.build.refresh_from_db()
         if exc is not None:
             if self.build.status == Status.running:
                 self.build.status = Status.failed

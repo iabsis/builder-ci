@@ -26,12 +26,15 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
     try:
         version_file = os.path.join(builddir, "sources", task.build.flow.version_file)
         if models.BuildRequestMode.ON_VERSION in task.build.request.modes and not task.build.request.is_tag:
-            logger.info(f"Regex to use: {task.build.flow.version_regex}")
+            task_executor.add_logs(f"Regex to use (get): {task.build.flow.version_regex}")
             task.build.version = task.build.flow.get_version(version_file)
+            task.build.save()
+            task_executor.add_logs(f"Got version: {task.build.version}")
 
         if models.BuildRequestMode.ON_TAG in task.build.request.modes and task.build.request.is_tag:
-            logger.info(f"Regex to use: {task.build.flow.version_regex}")
+            task_executor.add_logs(f"Regex to use (replace): {task.build.flow.version_regex}")
             task.build.version = task.build.flow.replace_version(version_file, task.build.request.branch)
+            task.build.save()
     except Exception as e:
         exception = e
         
@@ -48,7 +51,7 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
         task.save()
 
 def duplicates_check(task_executor: BuildTaskExecutor, builddir):
-    # task.add_logs("Check for duplicates")
+    task_executor.add_logs("Check for duplicates")
     task = task_executor.task
     if models.Build.objects.filter(
         request__name=task.build.request.name,
@@ -60,9 +63,13 @@ def duplicates_check(task_executor: BuildTaskExecutor, builddir):
     ).exclude(
         version__isnull=True
     ).exists():
+        logger.debug(f"BASDDD: {task.build.pk}")
         task.build.status = models.Status.duplicate
+        task.build.save()
+        message = "Same success version found, stopping"
+        task_executor.add_logs(message)
         send_notification(task.build)
-        raise Exception("Same success version found, stopping")
+        raise Exception(message)
 
 def build_container_image(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
