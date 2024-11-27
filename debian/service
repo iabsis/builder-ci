@@ -7,7 +7,8 @@ User=buider
 Environment=VIRTUAL_ENV=/usr/share/builder-ci/venv
 EnvironmentFile=/etc/builder-ci/builder-ci.conf
 WorkingDirectory=/usr/share/builder-ci/
-ExecStart=/usr/share/builder-ci/venv/bin/gunicorn core.wsgi:application
+#ExecStart=/usr/share/builder-ci/venv/bin/gunicorn core.wsgi:application
+ExecStart=/usr/share/builder-ci/venv/bin/daphne -p 8000 core.asgi:application
 
 [Install]
 WantedBy=multi-user.target
