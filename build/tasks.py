@@ -97,19 +97,19 @@ def build_run(self, build_id):
             logger.info(f"Running: {build_task}")
 
             if build_task.action:
-                with BuildTaskExecutor(buildtask=build_task) as task:
+                with BuildTaskExecutor(buildtask=build_task) as task_executor:
                     func = getattr(actions, build_task.action)
-                    func(task, tmpdirname)
+                    func(task_executor, tmpdirname)
                     continue
             
             if build_task.image_task:
-                with BuildTaskExecutor(buildtask=build_task) as task:
-                    actions.build_action(task, tmpdirname)
+                with BuildTaskExecutor(buildtask=build_task) as task_executor:
+                    actions.build_action(task_executor, tmpdirname)
                 continue
 
             logger.debug(f"Task: {build_task}")
-            with BuildTaskExecutor(buildtask=build_task) as task:
-                build_task.image_name = actions.build_container_image(build_task, tmpdirname)
+            with BuildTaskExecutor(buildtask=build_task) as task_executor:
+                build_task.image_name = actions.build_container_image(task_executor, tmpdirname)
     
     
     build.status = models.Status.success

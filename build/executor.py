@@ -7,20 +7,8 @@ from asgiref.sync import async_to_sync
 logger = logging.getLogger(__name__)
 
 class BuildTaskExecutor:
-    def __init__(self, build: models.Build=None, description=None, buildtask=None):
-        if not description and not buildtask:
-            raise Exception("You must specify at least one of description or buildtask")
-        if description:
-            if not build:
-                raise Exception(
-                    "You must specify build with description")
-            self.task = models.BuildTask.objects.create(
-                description=description,
-                build=build,
-                status=models.Status.queued
-            )
-        else:
-            self.task = buildtask
+    def __init__(self, buildtask: models.BuildTask):
+        self.task = buildtask
         self.logs = None
 
     def __enter__(self):
@@ -29,7 +17,7 @@ class BuildTaskExecutor:
         self.update_task()
         self.open_task()
         self.add_logs("Hello !")
-        return self.task
+        return self
 
     def __exit__(self, exc, value, tb):
         if exc is not None:

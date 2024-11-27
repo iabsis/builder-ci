@@ -10,14 +10,17 @@ from git import Repo
 
 logger = logging.getLogger(__name__)
 
-def clone_repository(task, builddir):
+def clone_repository(task_executor, builddir):
+    task = task_executor.task
+    task_executor.add_logs(f"Cloning repository: {task.build.request.url}")
     logger.info(f'created temporary directory: {builddir}')
     cloned_repo = Repo.clone_from(
         task.build.request.url, os.path.join(builddir, "sources"), depth=1, branch=task.build.request.branch, single_branch=True)
 
     task.build.meta['commit_id'] = cloned_repo.head.object.hexsha
 
-def fetch_version(task, builddir):
+def fetch_version(task_executor, builddir):
+    task = task_executor.task
     exception = None
     try:
         version_file = os.path.join(builddir, "sources", task.build.flow.version_file)
@@ -43,7 +46,9 @@ def fetch_version(task, builddir):
         task.logs = message
         task.save()
 
-def duplicates_check(task, builddir):
+def duplicates_check(task_executor, builddir):
+    # task.add_logs("Check for duplicates")
+    task = task_executor.task
     if models.Build.objects.filter(
         request__name=task.build.request.name,
         flow=task.build.flow,
@@ -58,7 +63,8 @@ def duplicates_check(task, builddir):
         send_notification(task.build)
         raise Exception("Same success version found, stopping")
 
-def build_container_image(task, builddir):
+def build_container_image(task_executor, builddir):
+    task = task_executor.task
     try:
         return container.tasks.build_image(
             task.buildtask.method.container.pk, task.buildtask.options)
@@ -66,8 +72,9 @@ def build_container_image(task, builddir):
         logger.debug(e)
         raise Exception(e)
 
-def build_action(task, builddir):
-# Create executable script and make it executable
+def build_action(task_executor, builddir):
+    task = task_executor.task
+    # Create script and make it executable
     script_file = os.path.join(builddir, "sources", 'run')
     with open(script_file, '+w') as f:
         f.write(task.script)
@@ -102,7 +109,11 @@ def build_action(task, builddir):
                 entrypoint=['/build/sources/run'],
                 working_dir='/build/sources/',
                 user='0',
+                # detach=True,
             )
+            # for log in container.logs(stream=True):
+            #     task.add_logs(log)
+
             task.logs = output.decode()
         
         except ContainerError as e:
