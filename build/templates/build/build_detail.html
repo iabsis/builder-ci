@@ -260,7 +260,10 @@
         if (status == 'queued') {
             return 'badge-primary'
         }
-        return 'secondary'
+        if (status == 'running') {
+            return 'badge-primary'
+        }
+        return 'badge-secondary'
     }
 
     function toogleTask(taskId, state) {
@@ -298,8 +301,6 @@
 
     taskSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        //if (data.action === "create_task") {
-        //    addTask(data);
         if (data.action === "update_task") {
             updateTask(data);
         } else if (data.action === "open_task") {
@@ -307,7 +308,6 @@
         } else if (data.action === "close_task") {
             toogleTask(data.task, 'hide');
         }
-        // document.getElementById('stream').innerHTML += ('<p>' + data.description + '</p>');
         console.log(data)
     };
 

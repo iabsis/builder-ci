@@ -26,7 +26,7 @@ class BuildTaskExecutor:
     def __enter__(self):
         self.task.status = models.Status.running
         self.task.save()
-        self.create_task()
+        self.update_task()
         self.open_task()
         return self.task
 
@@ -42,17 +42,6 @@ class BuildTaskExecutor:
         self.update_task()
         self.close_task()
         self.task.save()
-
-    def create_task(self):
-        self.send_socket_msg(
-            {
-                "type": "task",
-                "action": "create_task",
-                "description": self.task.description,
-                "task": self.task.order,
-                "status": self.task.status
-            }
-        )
 
     def update_task(self):
         self.send_socket_msg(
