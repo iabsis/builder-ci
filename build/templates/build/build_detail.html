@@ -299,8 +299,9 @@
     
     const buildPk = {{object.pk}};
 
+    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const taskSocket = new WebSocket(
-        'ws://'
+        protocol
         + window.location.host
         + '/ws/logs/'
         + buildPk
