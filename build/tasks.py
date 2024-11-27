@@ -88,7 +88,7 @@ def build_run(self, build_id):
             send_notification(build)
 
             with BuildTaskExecutor(buildtask=build_task.image_task) as task:
-                builtcontainer_name = actions.build_container_image(build_task.image_task, tmpdirname)
+                builtcontainer_name = actions.build_container_image(build_task, tmpdirname)
     
             with BuildTaskExecutor(buildtask=build_task) as task:
                 actions.build_action(task, builtcontainer_name, tmpdirname)
