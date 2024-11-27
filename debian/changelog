@@ -1,3 +1,9 @@
+builder-ci (2.0.59) bookworm; urgency=medium
+
+  * Small bug with exception not displayed
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 27 Nov 2024 22:31:23 +0100
+
 builder-ci (2.0.58) bookworm; urgency=medium
 
   * Introduce websocket but invalid build numerotation
