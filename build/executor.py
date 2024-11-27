@@ -16,7 +16,7 @@ class BuildTaskExecutor:
         self.task.save()
         self.update_task()
         self.open_task()
-        self.add_logs("Hello !")
+        # self.add_logs("Hello !")
         return self
 
     def __exit__(self, exc, value, tb):
@@ -26,6 +26,7 @@ class BuildTaskExecutor:
             if not self.task.logs:
                 self.task.logs = ''.join(
                     traceback.format_exception(exc, value, tb))
+            self.add_logs(self.task.logs)
         else:
             self.task.status = models.Status.success
             self.close_task()
