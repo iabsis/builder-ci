@@ -149,14 +149,6 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Live stream</h6>
-        </div>
-        <div id="stream" class="card-body">
-        </div>
-    </div>
-
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Tasks info</h6>
         </div>
         <div class="card-body">
@@ -175,11 +167,11 @@
                 <div class="col-12">
                     <div id="accordion">
                             <div class="card">
-                                <div class="card-header" id="headingOne">
+                                <div class="card-header" id="heading-{{task.order}}">
                                     <h5 class="mb-0">
-                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.pk}}" aria-expanded="false"
-                                            aria-controls="collapseOne">
-                                            TASK #{{task.order}} {{task.status|status_badge}}
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.order}}" aria-expanded="false"
+                                            aria-controls="collapse-{{task.order}}">
+                                            TASK #{{task.order}} <span id="badge-{{task.order}}">{{task.status|status_badge}}</span>
                                             {% if task.method %}
                                                 {% if not task.method.stop_on_failure %}
                                                     (Optional)
@@ -190,7 +182,7 @@
                                     </h5>
                                 </div>
                         
-                                <div id="collapse-{{task.pk}}" class="collapse {% if task.status == 'failed' %}show{% endif %}" aria-labelledby="headingOne" data-parent="#accordion">
+                                <div id="collapse-{{task.order}}" class="collapse {% if task.status == 'failed' %}show{% endif %}" aria-labelledby="heading-{{task.order}}" data-parent="#accordion">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
@@ -255,46 +247,20 @@
 {% block scripts %}
 <script>
 
-    function addTask(data) {
-        const tasksContainer = document.getElementById("stream");
-    
-        const taskHTML = `
-            <div class="col-12">
-                <div id="accordion">
-                    <div class="card">
-                        <div class="card-header" id="headingOne">
-                            <h5 class="mb-0">
-                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-${data.task}" aria-expanded="true" aria-controls="collapse-${data.task}">
-                                    TASK #${data.task} <span id="badge-${data.task}" class="ml-1 badge badge-success">${data.status}</span>
-                                </button>
-                                <span class="text-xs">${data.description}</span>
-                            </h5>
-                        </div>
-                
-                        <div id="collapse-${data.task}" class="collapse" aria-labelledby="heading-${data.task}" data-parent="#accordion">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Options</div>
-                                        <div class="mb-0 text-gray-800"></div>
-                                    </div>
-                                    <div class="col-12 mr-2 mt-3">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Task log
-                                        </div>
-                                        <pre class="text-xs"></pre>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        tasksContainer.insertAdjacentHTML("beforeend", taskHTML);
+    function getColorBadge(status) {
+        if (status == 'success') {
+            return 'badge-success'
+        }
+        if (status == 'failed') {
+            return 'badge-danger'
+        }
+        if (status == 'warning') {
+            return 'badge-warning'
+        }
+        if (status == 'queued') {
+            return 'badge-primary'
+        }
+        return 'secondary'
     }
 
     function toogleTask(taskId, state) {
@@ -311,6 +277,14 @@
             }
         }
     }
+
+    function updateTask(task) {
+        const badgeElement = document.getElementById(`badge-${task.task}`);
+        const targetDiv = badgeElement.getElementsByClassName('badge')[0]
+        targetDiv.innerHTML = task.status
+        badgeColor = getColorBadge(task.status)
+        targetDiv.className = 'badge ' + badgeColor
+    }
     
     const buildPk = {{object.pk}};
 
@@ -324,10 +298,10 @@
 
     taskSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        if (data.action === "create_task") {
-            addTask(data);
-        //} else if (data.action === "update_task") {
-        //    toogleTask(data.task, 'show');
+        //if (data.action === "create_task") {
+        //    addTask(data);
+        if (data.action === "update_task") {
+            updateTask(data);
         } else if (data.action === "open_task") {
             toogleTask(data.task, 'show');
         } else if (data.action === "close_task") {

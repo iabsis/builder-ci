@@ -31,8 +31,6 @@ class BuildTaskExecutor:
         return self.task
 
     def __exit__(self, exc, value, tb):
-        self.update_task()
-        self.close_task()
         if exc is not None:
             if self.task.status == models.Status.running:
                 self.task.status = models.Status.failed
@@ -41,6 +39,8 @@ class BuildTaskExecutor:
                     traceback.format_exception(exc, value, tb))
         else:
             self.task.status = models.Status.success
+        self.update_task()
+        self.close_task()
         self.task.save()
 
     def create_task(self):
