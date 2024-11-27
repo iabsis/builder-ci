@@ -1,4 +1,4 @@
-builder-ci (2.0.57) bookworm; urgency=medium
+builder-ci (2.0.58) bookworm; urgency=medium
 
   * Introduce websocket but invalid build numerotation
   * Fix tasks order
