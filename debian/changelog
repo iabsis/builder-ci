@@ -16,8 +16,9 @@ builder-ci (2.0.57) bookworm; urgency=medium
   * Working live logs
   * Disable console log for logs
   * Switch to daphne
+  * Fix API validation
 
- -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 27 Nov 2024 22:01:27 +0100
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 25 Nov 2024 09:15:41 +0100
 
 builder-ci (2.0.56) bookworm; urgency=medium
 

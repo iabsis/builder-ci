@@ -19,6 +19,9 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
             flow_names = request.data.get('flows', [])
             build_request, _ = BuildRequest.objects.update_or_create(
                 name=request.data.get('name'),
