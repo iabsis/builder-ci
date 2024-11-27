@@ -32,16 +32,57 @@ def build_request(self, build_request_id):
 
     build_request.save()
 
-
-@app.task(bind=True, time_limit=900)
-def build_run(self, build_id):
-
-    # Remove all previous built tasks if existing
+@app.task
+def create_tasks(build_id):
     build = models.Build.objects.get(pk=build_id)
     for task in build.buildtask_set.all():
         task.delete()
+    build.status = models.Status.queued
+    send_notification(build)
+
+    models.BuildTask.objects.create(
+        build=build,
+        description="Cloning repository",
+        status=models.Status.queued,
+        action="clone_repository"
+    )
+
+    models.BuildTask.objects.create(
+        build=build,
+        description="Version fetching",
+        status=models.Status.queued,
+        action="fetch_version"
+    )
+
+    models.BuildTask.objects.create(
+        build=build,
+        description="Duplicates check",
+        status=models.Status.queued,
+        action="duplicates_check"
+    )
+
+    for task in Task.objects.filter(flow=build.flow).order_by('priority'):
+
+        image_task = models.BuildTask.objects.create(
+            build=build,
+            description="Check for container sanity or construct",
+            status=models.Status.queued
+        )
+
+        models.BuildTask.objects.create(
+            build=build,
+            flow=task.flow,
+            method=task.method,
+            status=models.Status.queued,
+            image_task=image_task
+        )
+
+@app.task(bind=True, time_limit=900)
+def build_run(self, build_id):
+    build = models.Build.objects.get(pk=build_id)
     build.started_at = timezone.now()
     build.status = models.Status.running
+    send_notification(build)
 
     # Get the current task ID and attach to the requested Build
     build.celery_task = TaskResult.objects.get(task_id=self.request.id)
@@ -49,53 +90,30 @@ def build_run(self, build_id):
 
     # Execute everything in a temporary folder
     with build.tmpfolder as tmpdirname:
-        
-        with BuildTaskExecutor(build, "Cloning repository") as task:
-            actions.clone_repository(task, tmpdirname)
-        
-        # logger.info(cloned_repo.active_branch)
+        for build_task in models.BuildTask.objects.filter(
+                                    build=build, status=models.Status.queued
+                                ).order_by('order'):
+            
+            logger.info(f"Running: {build_task}")
 
-        ### VERSION FETCHING ##
-        with BuildTaskExecutor(build, "Version fetching") as task:
-            actions.fetch_version(task, tmpdirname)
+            if build_task.action:
+                with BuildTaskExecutor(buildtask=build_task) as task:
+                    func = getattr(actions, build_task.action)
+                    func(task, tmpdirname)
+                    continue
+            
+            if build_task.image_task:
+                with BuildTaskExecutor(buildtask=build_task) as task:
+                    actions.build_action(task, tmpdirname)
+                continue
 
-        build.save()
-
-        ### DUPLICATES CHECK ##
-        with BuildTaskExecutor(build, "Duplicates check") as task:
-            actions.duplicates_check(task, tmpdirname)
-
-        ### TASKS DEFINITION ##
-        for task in Task.objects.filter(flow=build.flow).order_by('priority'):
-
-            image_task = models.BuildTask.objects.create(
-                build=build,
-                description="Check for container sanity or construct",
-                status=models.Status.queued
-            )
-
-            build_task = models.BuildTask.objects.create(
-                build=build,
-                flow=task.flow,
-                method=task.method,
-                status=models.Status.queued,
-                image_task=image_task
-            )
-
-        ### TASKS RUNNING ##
-        for build_task in models.BuildTask.objects.filter(build=build, flow__isnull=False).order_by('order'):
-
-            send_notification(build)
-
-            with BuildTaskExecutor(buildtask=build_task.image_task) as task:
-                builtcontainer_name = actions.build_container_image(build_task, tmpdirname)
-    
+            logger.debug(f"Task: {build_task}")
             with BuildTaskExecutor(buildtask=build_task) as task:
-                actions.build_action(task, builtcontainer_name, tmpdirname)
-                
-
-    # Set to None will automatically detect the status
+                build_task.image_name = actions.build_container_image(build_task, tmpdirname)
+    
+    
     build.status = models.Status.success
     build.finished_at = timezone.now()
     build.save()
     send_notification(build)
+        

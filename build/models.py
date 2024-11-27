@@ -78,8 +78,10 @@ class BuildTask(models.Model):
     build = models.ForeignKey('Build', on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE, null=True)
     method = models.ForeignKey('flow.Method', on_delete=models.CASCADE, null=True)
-    image_task = models.ForeignKey('BuildTask', on_delete=models.CASCADE, null=True)
+    image_task = models.OneToOneField('BuildTask', on_delete=models.CASCADE, null=True)
+    image_name = models.CharField(max_length=100, null=True, blank=True)
     order = models.IntegerField(default=0)
+    action = models.CharField(max_length=30, null=True, blank=True)
     logs = models.TextField(null=True, blank=True)
     status = models.CharField(
         choices=Status.choices, null=True, blank=True, max_length=10)
@@ -105,6 +107,9 @@ class BuildTask(models.Model):
 
     class Meta:
         ordering = ['order']
+    
+    def __str__(self):
+        return self.description
 
 class Build(models.Model):
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)

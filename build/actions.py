@@ -61,12 +61,12 @@ def duplicates_check(task, builddir):
 def build_container_image(task, builddir):
     try:
         return container.tasks.build_image(
-            task.method.container.pk, task.options)
+            task.buildtask.method.container.pk, task.buildtask.options)
     except Exception as e:
         logger.debug(e)
         raise Exception(e)
 
-def build_action(task, builtcontainer_name, builddir):
+def build_action(task, builddir):
 # Create executable script and make it executable
     script_file = os.path.join(builddir, "sources", 'run')
     with open(script_file, '+w') as f:
@@ -93,7 +93,7 @@ def build_action(task, builtcontainer_name, builddir):
         try:
             output = client.containers.run(
                 privileged=True,
-                image=builtcontainer_name,
+                image=task.image_task.image_name,
                 remove=True,
                 environment=task.method.serialized_secrets,
                 stderr=True,
