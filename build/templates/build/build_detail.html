@@ -102,8 +102,6 @@
                             <div class="h6 text-gray-800">
                                 <pre>{{object.meta|view_field}}</pre>   
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -193,7 +191,7 @@
                                             <div class="col-12 mr-2 mt-3">
                                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                     Task log</div>
-                                                <pre class="text-xs">{{task.logs|linebreaks}}</pre>
+                                                <pre id="logs-{{task.order}}" class="task-logs">{{task.logs|linebreaks}}</pre>
                                             </div>
                                         </div>
                                         
@@ -288,6 +286,16 @@
         badgeColor = getColorBadge(task.status)
         targetDiv.className = 'badge ' + badgeColor
     }
+
+    function cleanLogs(task) {
+        const logsElement = document.getElementById(`logs-${task.task}`);
+        logsElement.innerHTML = ''
+    }
+
+    function addLogs(task) {
+        const logsElement = document.getElementById(`logs-${task.task}`);
+        logsElement.innerHTML += task.log + '<br>'
+    }
     
     const buildPk = {{object.pk}};
 
@@ -304,9 +312,12 @@
         if (data.action === "update_task") {
             updateTask(data);
         } else if (data.action === "open_task") {
+            cleanLogs(data)
             toogleTask(data.task, 'show');
         } else if (data.action === "close_task") {
             toogleTask(data.task, 'hide');
+        } else if (data.action === "add_logs") {
+            addLogs(data);
         }
         console.log(data)
     };

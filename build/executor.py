@@ -28,6 +28,7 @@ class BuildTaskExecutor:
         self.task.save()
         self.update_task()
         self.open_task()
+        self.add_logs("Hello !")
         return self.task
 
     def __exit__(self, exc, value, tb):
@@ -69,6 +70,16 @@ class BuildTaskExecutor:
                 "type": "task",
                 "action": "close_task",
                 "task": self.task.order
+            }
+        )
+
+    def add_logs(self, message):
+        self.send_socket_msg(
+            {
+                "type": "task",
+                "action": "add_logs",
+                "task": self.task.order,
+                "log": message
             }
         )
 
