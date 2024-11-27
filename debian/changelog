@@ -1,3 +1,24 @@
+builder-ci (2.0.57) bookworm; urgency=medium
+
+  * Introduce websocket but invalid build numerotation
+  * Fix tasks order
+  * Adding tasks, but collapse works partially
+  * Save refactor but it's broken
+  * Working refactor
+  * Refactor: now all tasks are prepared first
+  * Working live state update
+  * Working status
+  * Show is instant to avoid slow transition
+  * Handling live logs
+  * Switch to wss if connection is https
+  * Add missing title on the page
+  * Rework to get task_executor object
+  * Working live logs
+  * Disable console log for logs
+  * Switch to daphne
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 27 Nov 2024 22:01:27 +0100
+
 builder-ci (2.0.56) bookworm; urgency=medium
 
   * Fix titles
