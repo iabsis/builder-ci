@@ -28,8 +28,8 @@ class BuildTaskExecutor:
                     traceback.format_exception(exc, value, tb))
         else:
             self.task.status = models.Status.success
+            self.close_task()
         self.update_task()
-        self.close_task()
         self.task.save()
 
     def update_task(self):

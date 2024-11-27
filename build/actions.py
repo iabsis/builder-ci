@@ -1,4 +1,5 @@
 from . import models
+from .executor import BuildTaskExecutor
 import os
 import logging
 from .notification import send_notification
@@ -10,7 +11,7 @@ from git import Repo
 
 logger = logging.getLogger(__name__)
 
-def clone_repository(task_executor, builddir):
+def clone_repository(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
     task_executor.add_logs(f"Cloning repository: {task.build.request.url}")
     logger.info(f'created temporary directory: {builddir}')
@@ -19,7 +20,7 @@ def clone_repository(task_executor, builddir):
 
     task.build.meta['commit_id'] = cloned_repo.head.object.hexsha
 
-def fetch_version(task_executor, builddir):
+def fetch_version(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
     exception = None
     try:
@@ -46,7 +47,7 @@ def fetch_version(task_executor, builddir):
         task.logs = message
         task.save()
 
-def duplicates_check(task_executor, builddir):
+def duplicates_check(task_executor: BuildTaskExecutor, builddir):
     # task.add_logs("Check for duplicates")
     task = task_executor.task
     if models.Build.objects.filter(
@@ -63,7 +64,7 @@ def duplicates_check(task_executor, builddir):
         send_notification(task.build)
         raise Exception("Same success version found, stopping")
 
-def build_container_image(task_executor, builddir):
+def build_container_image(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
     try:
         return container.tasks.build_image(
@@ -72,7 +73,7 @@ def build_container_image(task_executor, builddir):
         logger.debug(e)
         raise Exception(e)
 
-def build_action(task_executor, builddir):
+def build_action(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
     # Create script and make it executable
     script_file = os.path.join(builddir, "sources", 'run')
@@ -98,7 +99,7 @@ def build_action(task_executor, builddir):
         ]
 
         try:
-            output = client.containers.run(
+            container_output = client.containers.run(
                 privileged=True,
                 image=task.image_task.image_name,
                 remove=True,
@@ -109,12 +110,15 @@ def build_action(task_executor, builddir):
                 entrypoint=['/build/sources/run'],
                 working_dir='/build/sources/',
                 user='0',
-                # detach=True,
+                detach=True,
             )
-            # for log in container.logs(stream=True):
-            #     task.add_logs(log)
 
-            task.logs = output.decode()
+            task.logs = ''
+            for log in container_output.logs(stream=True):
+                task.logs += log.decode()
+                task_executor.add_logs(log.decode())
+
+            container_output.wait()
         
         except ContainerError as e:
             logger.error(e.stderr)
@@ -125,6 +129,7 @@ def build_action(task_executor, builddir):
             if task.method.stop_on_failure:
                 raise Exception("A mandatory task failed, stopping")
         except Exception as e:
+            logger.debug(f"EXCEPTION: {e}")
             task.status = models.Status.failed
             task.logs = f"exception occured executing task: {e}"
             task.build.save()

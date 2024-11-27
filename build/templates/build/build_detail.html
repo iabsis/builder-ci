@@ -249,6 +249,10 @@ Build details
 {% block scripts %}
 <script>
 
+    function scrollToBottom(element) {
+        element.scrollTop = element.scrollHeight;
+    }
+
     function getColorBadge(status) {
         if (status == 'success') {
             return 'badge-success'
@@ -298,7 +302,8 @@ Build details
 
     function addLogs(task) {
         const logsElement = document.getElementById(`logs-${task.task}`);
-        logsElement.innerHTML += task.log + '<br>'
+        logsElement.innerHTML += task.log
+        scrollToBottom(logsElement);
     }
     
     const buildPk = {{object.pk}};
