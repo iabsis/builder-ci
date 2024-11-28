@@ -1,3 +1,9 @@
+builder-ci (2.0.65) bookworm; urgency=medium
+
+  * Various fixes in build logic
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 28 Nov 2024 10:31:24 +0100
+
 builder-ci (2.0.64) bookworm; urgency=medium
 
   * Fix container logs and simplify process
