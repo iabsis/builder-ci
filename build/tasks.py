@@ -111,7 +111,8 @@ def build_run(self, build_id):
             logger.debug(f"Task: {build_task}")
             with BuildTaskExecutor(buildtask=build_task) as task_executor:
                 build_task.image_name = actions.build_container_image(task_executor, tmpdirname)
-    
+                build_task.save()
+
     build.refresh_from_db()
     build.status = models.Status.success
     build.finished_at = timezone.now()

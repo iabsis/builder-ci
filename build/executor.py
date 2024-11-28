@@ -29,7 +29,8 @@ class BuildTaskExecutor:
                     traceback.format_exception(exc, value, tb))
             self.add_logs(self.task.logs)
         else:
-            self.task.status = models.Status.success
+            if self.task.status == models.Status.running:
+                self.task.status = models.Status.success
             self.close_task()
         self.update_task()
         self.task.save()

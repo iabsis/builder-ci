@@ -105,6 +105,8 @@ def build_action(task_executor: BuildTaskExecutor, builddir):
             }
         ]
 
+        # task.image_task.image_name
+
         try:
             container_output = client.containers.run(
                 privileged=True,
