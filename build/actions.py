@@ -63,12 +63,13 @@ def duplicates_check(task_executor: BuildTaskExecutor, builddir):
         version__isnull=True
     ).exists():
         task.build.status = models.Status.duplicate
-        task.build.save()
-        message = "Same success version found, stopping"
+        message = "Same success version found, stopping\n"
         task_executor.add_logs(message)
         send_notification(task.build)
         raise Exception(message)
-    task_executor.add_logs("No duplicate version")
+    message = "No duplicate version\n"
+    task.logs = message
+    task_executor.add_logs(message)
 
 def build_container_image(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task

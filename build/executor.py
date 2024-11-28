@@ -20,14 +20,15 @@ class BuildTaskExecutor:
         return self
 
     def __exit__(self, exc, value, tb):
-        self.task.refresh_from_db()
+        # self.task.refresh_from_db()
         if exc is not None:
+            formated_traceback = ''.join(
+                    traceback.format_exception(exc, value, tb))
             if self.task.status == models.Status.running:
                 self.task.status = models.Status.failed
-            if self.task.logs:
-                self.task.logs += ''.join(
-                    traceback.format_exception(exc, value, tb))
-            self.add_logs(self.task.logs)
+            if not self.task.logs:
+                self.task.logs = formated_traceback
+                self.add_logs(formated_traceback)
         else:
             if self.task.status == models.Status.running:
                 self.task.status = models.Status.success
