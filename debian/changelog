@@ -1,3 +1,9 @@
+builder-ci (2.0.64) bookworm; urgency=medium
+
+  * Fix container logs and simplify process
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 28 Nov 2024 10:03:52 +0100
+
 builder-ci (2.0.63) bookworm; urgency=medium
 
   * Save logs to prevent stay empty after build
