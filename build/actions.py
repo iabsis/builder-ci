@@ -126,6 +126,7 @@ def build_action(task_executor: BuildTaskExecutor, builddir):
             for log in container_output.logs(stream=True):
                 task.logs += log.decode()
                 task_executor.add_logs(log.decode())
+            task.save()
 
             container_output.wait()
         
