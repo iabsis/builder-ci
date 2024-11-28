@@ -51,7 +51,6 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
         task.save()
 
 def duplicates_check(task_executor: BuildTaskExecutor, builddir):
-    task_executor.add_logs("Check for duplicates")
     task = task_executor.task
     if models.Build.objects.filter(
         request__name=task.build.request.name,
@@ -63,13 +62,13 @@ def duplicates_check(task_executor: BuildTaskExecutor, builddir):
     ).exclude(
         version__isnull=True
     ).exists():
-        logger.debug(f"BASDDD: {task.build.pk}")
         task.build.status = models.Status.duplicate
         task.build.save()
         message = "Same success version found, stopping"
         task_executor.add_logs(message)
         send_notification(task.build)
         raise Exception(message)
+    task_executor.add_logs("No duplicate version")
 
 def build_container_image(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
@@ -105,43 +104,34 @@ def build_action(task_executor: BuildTaskExecutor, builddir):
             }
         ]
 
-        # task.image_task.image_name
+        container_output = client.containers.run(
+            privileged=True,
+            image=task.image_task.image_name,
+            environment=task.method.serialized_secrets,
+            stderr=True,
+            mounts=mounts,
+            network_mode="host",
+            entrypoint=['/build/sources/run'],
+            working_dir='/build/sources/',
+            user='0',
+            detach=True,
+        )
 
-        try:
-            container_output = client.containers.run(
-                privileged=True,
-                image=task.image_task.image_name,
-                remove=True,
-                environment=task.method.serialized_secrets,
-                stderr=True,
-                mounts=mounts,
-                network_mode="host",
-                entrypoint=['/build/sources/run'],
-                working_dir='/build/sources/',
-                user='0',
-                detach=True,
-            )
+        task.logs = ''
+        for log in container_output.logs(stream=True, stdout=True, stderr=True):
+            task.logs += log.decode()
+            task_executor.add_logs(log.decode())
 
-            task.logs = ''
-            for log in container_output.logs(stream=True):
-                task.logs += log.decode()
-                task_executor.add_logs(log.decode())
-            task.save()
+        exit_code = container_output.wait()
 
-            container_output.wait()
+        container_output.remove()
         
-        except ContainerError as e:
-            logger.error(e.stderr)
-            logs = "".join([line.decode() for line in e.stderr])
-            task.logs = f"exception occured executing task: {e}, {logs}"
-            task.status = models.Status.failed
-            task.build.save()
+        if exit_code != 0:
+            task.logs += f"\nContainer exited with error code: {exit_code}"
             if task.method.stop_on_failure:
+                task.save()
                 raise Exception("A mandatory task failed, stopping")
-        except Exception as e:
-            logger.debug(f"EXCEPTION: {e}")
-            task.status = models.Status.failed
-            task.logs = f"exception occured executing task: {e}"
-            task.build.save()
-            if task.method.stop_on_failure:
-                raise Exception("A mandatory task failed, stopping")
+            else:
+                task.status = models.Status.warning
+                task.logs += f"An optional task failed, continuing anyway"
+        task.save()

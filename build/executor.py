@@ -24,8 +24,8 @@ class BuildTaskExecutor:
         if exc is not None:
             if self.task.status == models.Status.running:
                 self.task.status = models.Status.failed
-            if not self.task.logs:
-                self.task.logs = ''.join(
+            if self.task.logs:
+                self.task.logs += ''.join(
                     traceback.format_exception(exc, value, tb))
             self.add_logs(self.task.logs)
         else:
