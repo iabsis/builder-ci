@@ -28,6 +28,7 @@ def build_request(self, build_request_id):
             request=build_request,
             flow=flow
         )
+        create_tasks(build.pk)
         build_run.delay(build.pk)
 
     build_request.save()
