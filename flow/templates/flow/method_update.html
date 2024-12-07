@@ -73,11 +73,10 @@
   }
   
   document.addEventListener('DOMContentLoaded', function() {
-    var codeEditors = [document.querySelector("#id_script")];
-    codeEditors.forEach(function(textarea) {
-      var content = textarea.value;
+      var codeEditor = document.querySelector("#id_script");
+      var content = codeEditor.value;
       var mode = detectModeFromShebang(content);
-      var editor = CodeMirror.fromTextArea(textarea, {
+      var editor = CodeMirror.fromTextArea(codeEditor, {
         lineNumbers: true,
         mode: mode,
         theme: 'material',
@@ -89,6 +88,7 @@
       editor.on('change', function(instance, changeObj) {
         var newContent = instance.getValue();
         var newMode = detectModeFromShebang(newContent);
+        codeEditor.value = newContent;
   
         if (newMode !== instance.getOption('mode')) {
           instance.setOption('mode', newMode);
@@ -96,9 +96,7 @@
       });
   
     });
-  });
-  
-</script>
+    </script>
 
 
 
