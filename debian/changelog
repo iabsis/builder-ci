@@ -1,3 +1,10 @@
+builder-ci (2.0.66) bookworm; urgency=medium
+
+  * Switch to new builder
+  * Git fix editor
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sat, 07 Dec 2024 23:10:29 +0100
+
 builder-ci (2.0.65) bookworm; urgency=medium
 
   * Various fixes in build logic
