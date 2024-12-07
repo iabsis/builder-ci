@@ -1,4 +1,8 @@
-builder:
-- method: docker
-  options:
-    image: builder-bookworm
+flows:
+- deb
+- sonar
+options:
+ distrib: "debian"
+ codename: "bookworm"
+modes:
+- ON_VERSION
