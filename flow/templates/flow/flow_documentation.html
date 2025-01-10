@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static %}
+{% load flow %}
 
 {% block content %}
 
@@ -43,9 +44,11 @@
                             - {{flow.name}}<br>
                             {% if flow.options %}
                             options:<br>
-                                {% for k in flow.options %}
+                                {% with flow.options|options as options %}
+                                {% for k in options %}
                                     &nbsp;{{k}}: 'abcd'<br>
                                 {%endfor%}
+                                {% endwith %}
                             {% endif %}
                             modes:<br>
                             {% for mode in modes %}
