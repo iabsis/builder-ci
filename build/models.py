@@ -108,8 +108,6 @@ class BuildTask(models.Model):
     class Meta:
         ordering = ['order']
     
-    def __str__(self):
-        return self.description
 
 class Build(models.Model):
     request = models.ForeignKey('BuildRequest', blank=True, on_delete=models.CASCADE)

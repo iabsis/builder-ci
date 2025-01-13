@@ -16,7 +16,6 @@ class BuildTaskExecutor:
         self.task.save()
         self.update_task()
         self.open_task()
-        # self.add_logs("Hello !")
         return self
 
     def __exit__(self, exc, value, tb):

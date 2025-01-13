@@ -1,5 +1,7 @@
 import json
-
+from .models import BuildTask
+from channels.layers import get_channel_layer
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
@@ -11,7 +13,16 @@ class LogsConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
         await self.accept()
-        # await self.send(text_data=json.dumps({"message": "Hello !"}))
+        async for task in BuildTask.objects.filter(build=self.build_pk):
+            await self.send(
+                text_data=json.dumps({
+                    "type": "task",
+                    "action": "update_task",
+                    "description": task.description,
+                    "task": task.order,
+                    "status": task.status,
+                })
+            )
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
