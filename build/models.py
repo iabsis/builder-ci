@@ -11,8 +11,8 @@ from .notification import send_notification
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
     ON_VERSION = 'ON_VERSION', 'On new version'
-    # NIGHTLY = 'NIGHTLY', 'Nightly'
     ON_TAG = 'ON_TAG', 'On new tag'
+    ON_COMMIT = 'ON_COMMIT', 'On new commit'
 
 class BuildRequestStatus(models.TextChoices):
     failed = 'failed', 'Failed'

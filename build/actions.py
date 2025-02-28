@@ -35,6 +35,13 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
             task_executor.add_logs(f"Regex to use (replace): {task.build.flow.version_regex}")
             task.build.version = task.build.flow.replace_version(version_file, task.build.request.branch)
             task.build.save()
+
+        if models.BuildRequestMode.ON_COMMIT in task.build.request.modes and not task.build.request.is_tag:
+            task_executor.add_logs(f"Regex to use (replace): {task.build.flow.version_regex}")
+            task.build.version = task.build.flow.gen_version(version_file)
+            task.build.save()
+            task_executor.add_logs(f"Generated version: {task.build.version}")
+
     except Exception as e:
         exception = e
         
