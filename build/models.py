@@ -21,6 +21,11 @@ class BuildRequestStatus(models.TextChoices):
 class SourceFetchMode(models.TextChoices):
     GIT = 'GIT', 'Git'
 
+class AutoBuildMode(models.TextChoices):
+    NEVER = 'NEVER', 'Never (on API request or manual trigger)'
+    NIGHTLY = 'NIGHTLY', 'Once per day at midnight'
+    HOURLY = 'HOURLY', 'Once per hour'
+
 class BuildRequest(models.Model):
     name = models.SlugField(max_length=150)
     fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
@@ -32,6 +37,7 @@ class BuildRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     options = models.JSONField(default=dict, null=True, blank=True, validators=[validations.validate_dict])
     requested_by = models.SlugField(max_length=50, null=True, blank=True)
+    auto_build = models.CharField(choices=AutoBuildMode.choices, default=AutoBuildMode.NEVER)
 
     @property
     def branch(self):
