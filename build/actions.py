@@ -1,4 +1,5 @@
 from . import models
+from django.db.models import Q
 from .executor import BuildTaskExecutor
 import os
 import logging
@@ -53,10 +54,10 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
 def duplicates_check(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
     if models.Build.objects.filter(
+        Q(status=models.Status.success) | Q(status=models.Status.running),
         request__name=task.build.request.name,
         flow=task.build.flow,
         version=task.build.version,
-        status=models.Status.success,
     ).exclude(
         version=''
     ).exclude(
