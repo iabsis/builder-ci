@@ -62,7 +62,7 @@ class Flow(models.Model):
         pattern = re.compile(self.version_regex)
         m = re.search(pattern, version_content)
         if not m:
-            raise Exception("Regex didn't matched anything")
+            raise ValueError("Regex didn't matched anything")
         return m.group(1)
 
     def get_version(self, version_file):
@@ -72,13 +72,39 @@ class Flow(models.Model):
             pattern = re.compile(self.version_regex)
             m = re.search(pattern, content)
             if not m:
-                raise Exception("Regex didn't matched anything")
+                raise ValueError("Regex didn't matched anything")
             return m.group(1)
+
+
+    def increment_version(self, tag: str) -> str:
+        """
+        Increments the last number in the version part (before the first dash) 
+        by the number after the dash. Supports formats like:
+        - '1.0.9-371-gxxxxxxx' → '1.0.380'
+        - '1-371-gxxxxxxx' → '380'
+        """
+        match = re.match(r'^([\d.]+)-(\d+)-g[0-9a-f]+$', tag)
+        if not match:
+            raise ValueError("Tag is not in a valid format: VERSION-NUM-gHASH")
+
+        version_part, commit_count = match.groups()
+        parts = version_part.split('.')
+
+        if not parts[-1].isdigit():
+            raise ValueError("The last segment of the version must be a number")
+
+        # Increment the last version number by the commit count
+        parts[-1] = str(int(parts[-1]) + int(commit_count))
+
+        # If it's a simple version (e.g., '1'), return just the incremented number
+        new_version = '.'.join(parts) if len(parts) > 1 else parts[-1]
+        return new_version
 
     def gen_version(self, version_file):
         '''Gen version using git describe --tags'''
         new_version = repo.Repo("./").git.describe('--tags')
-        return self.replace_version(version_file, new_version)
+        clean_version = self.incr_git_version(new_version)
+        return self.replace_version(version_file, clean_version)
 
     def replace_version(self, version_file, new_version):
         with open(version_file, 'r') as f:
