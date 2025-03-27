@@ -119,3 +119,12 @@ def build_run(self, build_id):
     build.save()
     send_notification(build)
         
+@app.task
+def auto_build_hourly():
+    for build_request in models.BuildRequest.objects.filter(auto_build=models.AutoBuildMode.HOURLY):
+        build_request(build_request.pk)
+
+@app.task
+def auto_build_nightly():
+    for build_request in models.BuildRequest.objects.filter(auto_build=models.AutoBuildMode.NIGHTLY):
+        build_request(build_request.pk)

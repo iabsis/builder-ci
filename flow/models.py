@@ -3,6 +3,7 @@ from django.db import models
 from . import validator
 from django.forms import ValidationError
 from jinja2 import Environment, meta
+from git import repo
 
 # Create your models here.
 
@@ -57,6 +58,7 @@ class Flow(models.Model):
         return options
 
     def get_version_content(self, version_content):
+        '''Get version from string content'''
         pattern = re.compile(self.version_regex)
         m = re.search(pattern, version_content)
         if not m:
@@ -64,6 +66,7 @@ class Flow(models.Model):
         return m.group(1)
 
     def get_version(self, version_file):
+        '''Get version from file'''
         with open(version_file, 'r') as f:
             content = f.read()
             pattern = re.compile(self.version_regex)
@@ -71,6 +74,11 @@ class Flow(models.Model):
             if not m:
                 raise Exception("Regex didn't matched anything")
             return m.group(1)
+
+    def gen_version(self, version_file):
+        '''Gen version using git describe --tags'''
+        new_version = repo.Repo("./").git.describe('--tags')
+        return self.replace_version(version_file, new_version)
 
     def replace_version(self, version_file, new_version):
         with open(version_file, 'r') as f:
