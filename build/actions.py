@@ -69,6 +69,8 @@ def duplicates_check(task_executor: BuildTaskExecutor, builddir):
         version=''
     ).exclude(
         version__isnull=True
+    ).exclude(
+        pk=task.build.pk
     ).exists():
         task.build.status = models.Status.duplicate
         message = "Same success version found, stopping\n"
