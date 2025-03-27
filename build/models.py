@@ -192,6 +192,7 @@ class Build(models.Model):
                 flow=self.flow
             ).latest('pk')
         except Build.DoesNotExist:
+            print("No success")
             return
         
         return build.finished_at - build.started_at
@@ -199,7 +200,6 @@ class Build(models.Model):
     @property
     def eta_at(self):
         if self.eta_total:
-            print(self.eta_total)
             return self.started_at + self.eta_total
 
     @property
@@ -214,6 +214,11 @@ class Build(models.Model):
                 return 100
             return eta_total
 
+    @property
+    def finished(self):
+        if self.eta_at:
+            return f"{self.eta_at} (ETA) - {self.progress}%"
+        return self.finished_at
 
 class SaveBuild(TemporaryDirectory):
     """
@@ -237,6 +242,7 @@ class SaveBuild(TemporaryDirectory):
                 self.build.status = Status.failed
         if self.build.status == Status.running:
             self.build.status = Status.success
+        self.build.finished_at = timezone.now()
         self.build.save()
         return super().__exit__(exc, value, tb)
     

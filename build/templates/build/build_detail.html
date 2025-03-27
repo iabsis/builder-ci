@@ -37,13 +37,13 @@ Build details
 
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Version</div>
-                            <div class="h5 text-gray-800">
+                            <div id="version" class="h5 text-gray-800">
                                 {{object.version|view_field}}
                             </div>
 
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Status</div>
-                            <div class="h5 text-gray-800">{{object.status|status_badge}}</div>
+                            <div id="status" class="h5 text-gray-800">{{object.status|status_badge}}</div>
 
                         </div>    
                         <div class="col-8">
@@ -51,8 +51,15 @@ Build details
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Started at
                             </div>
-                            <div class="h6 text-gray-800">
+                            <div id="started_at" class="h6 text-gray-800">
                                 <pre>{{object.started_at|naturaltime}}</pre>
+                            </div>
+
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Finished at
+                            </div>
+                            <div id="finished" class="h6 text-gray-800">
+                                <pre>{{object.finished}}</pre>
                             </div>
 
                             {% if object.status != 'failed' %}
@@ -272,6 +279,14 @@ Build details
         return 'badge-secondary'
     }
 
+    function updateBuild(data) {
+        info = data['info']
+        for (const [key, value] of Object.entries(info)) {
+            const idElement = document.getElementById(key);
+            idElement.innerHTML = value
+        }
+    }
+
     function toogleTask(taskId, state) {
         const collapseElement = document.getElementById(`collapse-${taskId}`);
     
@@ -328,8 +343,10 @@ Build details
             toogleTask(data.task, 'hide');
         } else if (data.action === "add_logs") {
             addLogs(data);
+        } else if (data.action === "update_build") {
+            updateBuild(data);
         }
-        //console.log(data)
+        console.log(data)
     };
 
     taskSocket.onclose = function(e) {

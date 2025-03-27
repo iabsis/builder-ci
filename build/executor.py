@@ -33,7 +33,22 @@ class BuildTaskExecutor:
                 self.task.status = models.Status.success
             self.close_task()
         self.update_task()
+        # self.update_build()
         self.task.save()
+
+    def update_build(self):
+        self.send_socket_msg(
+            {
+                "type": "task",
+                "action": "update_build",
+                "info": {
+                    "status": self.task.build.status,
+                    "version": self.task.build.version,
+                    # "started_at": self.task.build.started_at,
+                    # "finished": self.task.build.finished,
+                },
+            }
+        )
 
     def update_task(self):
         self.send_socket_msg(
