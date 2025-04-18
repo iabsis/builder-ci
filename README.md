@@ -1,147 +1,217 @@
-Builder CI is an automated Build system used to do Continuous Integration of any kind of development project. I made this software as I wish to configure the build pipeline in a much more automated way than any other product does, for example Jenkins. This builder is made to work optionaly with [Redmine](https://www.redmine.org/) thanks to a [Redmine plugin](https://github.com/iabsis/redmine-builder-ci) that will be released soon.
+# Builder CI
 
-![Redmine Screenshot](https://raw.githubusercontent.com/iabsis/builder-ci/master/doc/redmine_screenshot.png)
+Builder CI is an automated build system designed to support Continuous Integration (CI) across various types of development projects. It was created with the goal of simplifying and automating build pipelines in a more efficient way than traditional tools like Jenkins.
+
+It’s designed to optionally integrate with [Redmine](https://www.redmine.org/) via a [dedicated plugin](https://github.com/iabsis/redmine-builder-ci), allowing better visibility into builds directly within project management workflows.
+
+[Redmine Screenshot](https://raw.githubusercontent.com/iabsis/builder-ci/master/doc/redmine_screenshot.png)
+
+---
 
 ## Features
 
-* Automatic detection of the build type (deb, rpm).
-* Exposed REST API interface to trigger builds (it will be secured in a future release).
-* Create Debian or Redhat repository automatically after build.
-* Modular, extend it by creating your own builder plugin.
-* Very lightweight, built with love using python and only a few other modules.
-* Very easy to install and update using just one command (on Debian Buster).
-* Built on top of Mongo and Flask.
-* Can use Docker (optional) for a clean build environment for each execution.
-* Support hooks folder used to prepare your build environment.
-* Build as Code, provide parameters within the builder.yml file inside the project.
+- Automatically detects the build type (e.g., `.deb`, `.rpm`)
+- Exposes a REST API to trigger builds (authentication coming soon)
+- Creates Debian or Red Hat repositories after each build
+- Modular and extensible — build your own plugin if needed
+- Lightweight: built with Python and minimal dependencies
+- Easy to install and update with a single command on Debian Buster
+- Uses MongoDB and Flask at the core
+- Optional Docker support for isolated build environments
+- Supports pre-build setup with a `hooks` directory
+- "Build as Code": configure builds using a `builder.yml` file
 
-## Types of builds supported so far
+---
 
-* Debian/Ubuntu packages (pbuilder).
-* Redhat/Centos packages (rpmbuild).
-* Ionic and Flutter APK (docker).
-* NPM Package.
+## Supported Build Types
 
-## Types of publication
+- Debian/Ubuntu packages (`pbuilder`)
+- Red Hat/CentOS packages (`rpmbuild`)
+- Ionic and Flutter APKs (via Docker)
+- NPM packages
 
-* Create repository on server itself (rpm and deb)
-* Publish file into a Redmine files project.
+---
 
-## To come
+## Publication Options
 
-* Install several workers and distribute builds.
-* Add more build packages.
-* Improve documentation.
-* Any requests ?
+- Host build artifacts as a `.deb` or `.rpm` repository on the server
+- Publish files directly into a Redmine project (as uploads)
 
-## How to install (~2 minutes)
+---
 
-Requirement : run all these commands as root.
+## Upcoming Improvements
 
-~~~ bash
-# Install Mongo (Mandatory)
+- Support for distributed builds using multiple workers
+- Addition of new builder types
+- Extended documentation and integration guides
+
+---
+
+## Installation Guide (Takes ~2 Minutes)
+
+> Note: All commands should be run as `root`.
+
+### Install MongoDB (Required)
+
+```bash
 curl -s https://www.mongodb.org/static/pgp/server-${VERSION}.asc | apt-key add -
-echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" \
-    > /etc/apt/sources.list.d/mongo.list
+echo "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" > /etc/apt/sources.list.d/mongo.list
 apt update && apt install mongodb-server
+
 echo -e "replication:\n   replSetName: \"rs0\"" >> /etc/mongod.conf
 systemctl enable --now mongod
+
 mongo
 rs.initiate({
-   _id: "rs0",
-   members:[
-      {
-         _id: 0,
-         host: "localhost:27017"
-      }
-   ]
+  _id: "rs0",
+  members: [
+    { _id: 0, host: "localhost:27017" }
+  ]
 })
+```
 
-# Install Docker (Optional)
+---
+
+### Install Docker (Optional, Recommended)
+
+```bash
 curl -s https://download.docker.com/linux/debian/gpg | apt-key add -
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian buster stable" \
-    > /etc/apt/sources.list.d/docker.list
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian buster stable" > /etc/apt/sources.list.d/docker.list
 apt update && apt install docker-ce
+```
 
-# Install Builder CI
-echo "deb [trusted=yes] https://projects.iabsis.com/repository/builder-ci/debian buster main" \
-    > /etc/apt/sources.list.d/iabsis.list
-apt update && apt install builder-ci 
+---
 
-# Post your first build
+### Install Builder CI
+
+```bash
+echo "deb [trusted=yes] https://projects.iabsis.com/repository/builder-ci/debian buster main" > /etc/apt/sources.list.d/iabsis.list
+apt update && apt install builder-ci
+```
+
+---
+
+## Trigger Your First Build
+
+```bash
 curl -X 'POST' \
-  'http://<url or ip of your build server>:5000/build' \
+  'http://<your-build-server-ip>:5000/build' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
-  "project": "builder-ci",
-  "sources": {
-    "method": "git",
-    "options": {
-      "url": "https://projects.iabsis.com/git/builder-ci",
-      "branch": "master"
+    "project": "builder-ci",
+    "sources": {
+      "method": "git",
+      "options": {
+        "url": "https://projects.iabsis.com/git/builder-ci",
+        "branch": "master"
+      }
+    },
+    "builder": {
+      "method": "docker",
+      "options": {
+        "image": "builder-bullseye"
+      }
     }
-  },
-  "builder": {
-    "method": "docker",
-    "options": {
-      "image": "builder-bullseye"
-    }
-  }
-}'
+  }'
+```
 
-# Check your build and delete it
+---
+
+## Check or Clean Builds
+
+```bash
 builder-ci list
-find /var/lib/repo && rm -rf /var/lib/repo/builder-ci
-~~~
+rm -rf /var/lib/repo/builder-ci
+```
 
-## Frequently asked questions
+---
 
-### How does it work
+## How It Works
 
-Two services run on a server :
+Builder CI runs two main services:
 
-- API called `builder-ci-api` running on port 5000. Use this to manually trigger a build.
-- Worker called `build-ci-worker`. This service listen to Mongo events and immediately starts a build when required.
+- `builder-ci-api`: A REST API server running on port 5000
+- `build-ci-worker`: Listens for MongoDB events and processes builds automatically
 
-When a new build is added into `queue` table of Mongo, the Worker executes steps in this order.
+**Build Lifecycle:**
 
--> sources -> builder -> publish
+```
+sources → builder → publish
+```
 
-Source step usually calls a git method (new method to come) in order to get the source code to be built.
-Then builder step attempt to define what kind of build to do unless it has been manually defined (in API call or builder.yml).
-Then publish copies the built files either into a local repository or by posting into a specific area, like a Redmine project files.
+1. **sources**: Clones the Git project  
+2. **builder**: Detects or uses the build type from `builder.yml`  
+3. **publish**: Publishes output to a Redmine project or server repository
 
-### Is it ready for production ?
+---
 
-I personnally use this product for my dev company and it manages 99% of our requirements while we are building with various different frameworks (Laravel, Symfony, Ionic, Flutter, NestJS, Angular, React, ...) whilst targetting various Operating System (Android, Debian, Ubuntu, Redhat, Centos, ...).
+## Frequently Asked Questions
 
-In other word I consider it to be stable enough for production use.
+### Is Builder CI stable for production use?
 
-### Is there complete documentation ?
+Yes. It's used in production with frameworks like Laravel, Symfony, Ionic, Flutter, NestJS, Angular, and React across platforms such as Android, Debian, Ubuntu, Red Hat, and CentOS.
 
-Not yet, I'm looking into generating documentation based on methods and their parameter lists. I will also provide guides on how to configure the system and on the integration with Redmine.
+### Is there complete documentation?
 
-### How to trigger a build when code is pushed ?
+Not yet. Work is in progress to auto-generate method documentation and integration guides for Redmine.
 
-Simply copy and adapt `/usr/share/doc/builder-ci/helpers/git-core.py` into `/usr/share/git-core/templates/hooks` and `<git bare>/.git/hooks/`.
+### Can I trigger builds automatically on code push?
 
-### How can I have a visual way to see my build status ?
+Yes. Use the provided Git hook:
 
-Simply install the Redmine module called `Redmine Builder CI`.
+```bash
+/usr/share/doc/builder-ci/helpers/git-core.py
+```
 
-### My build failed, how do I view the logs ?
+Copy it into:
 
-Get the list of builds using the command `builder-ci list` and then view the logs with `builder-ci logs <id_from_list>`.
+```bash
+/usr/share/git-core/templates/hooks
+<your_git_repo>/.git/hooks/
+```
 
-### Why does my build have the status Duplicate ?
+### How do I view build status?
 
-This happens when the build version already exists with a sucess status. You can increment the version and rebuild to complete a new build.
+Install the [Redmine Builder CI Plugin](https://github.com/iabsis/redmine-builder-ci) to visualize build status within Redmine.
 
-### Can I expose Builder-CI API on Internet ?
+### How do I view build logs?
 
-This is not recommended unless you protect the entry points with nginx and authentication. I strongly do not recommend that you expose your server on the internet. Just keep it private and secret.
+```bash
+builder-ci list
+builder-ci logs <build_id>
+```
 
-### Can I use Podman instead of Docker ?
+### Why is my build marked as "Duplicate"?
 
-I have not tried it yet, if you do try please let me know what happened ;-)
+This happens when the same version has already been successfully built. Update the version to trigger a new build.
+
+---
+
+## Security Notice
+
+The current version exposes the Builder CI API without authentication. If deploying in a shared or production environment, it is highly recommended to:
+
+- Use NGINX as a reverse proxy with IP whitelisting and rate limiting
+- Add firewall-level restrictions
+- Avoid exposing the API directly to the public internet
+
+---
+
+## Contributing
+
+We welcome contributions of all kinds — including code, documentation, bug reports, and feature suggestions.
+
+While formal contributing guidelines are coming soon, you can:
+
+- Fork the repository
+- Create a new branch for your changes
+- Open a pull request
+- Share feedback via comments or discussions
+
+---
+
+## License
+
+Builder CI is licensed under the [GPL-3.0 License](LICENSE).
+
