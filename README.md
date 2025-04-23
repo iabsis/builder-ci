@@ -4,7 +4,7 @@ Builder CI is an automated build system designed to support Continuous Integrati
 
 It’s designed to optionally integrate with [Redmine](https://www.redmine.org/) via a [dedicated plugin](https://github.com/iabsis/redmine-builder-ci), allowing better visibility into builds directly within project management workflows.
 
-[Redmine Screenshot](https://raw.githubusercontent.com/iabsis/builder-ci/master/doc/redmine_screenshot.png)
+[Screenshot](https://raw.githubusercontent.com/iabsis/builder-ci/master/doc/builder-ci.png)
 
 ---
 
