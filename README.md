@@ -101,13 +101,74 @@ python3 manage.py createsuperuser
 
 And login with your super user.
 
+### Create your first build
+
+#### Create your container configuration
+
+The first step consist into declare container configuration. All commands will be run inside this container context for me security. Once build is finished, the container is deleted and temporary files will be lost.
+
+* Open **Configuration** > **Container** > **Create**.
+
+By example, building Debian package only requires three lines
+
+```
+FROM {{distrib}}:{{codename}}
+ENV DEBIAN_FRONTEND "noninteractive"
+RUN apt update && apt-get install -y build-essential devscripts nfs-common apt-utils equivs rsync
+```
+
+As you can see, we configured two variables : distrib and codename. The system will replace automatically this variables based
+on the build request configuration.
+
+* Target tag: will be the tag name of the podman image that will be used locally. You can reuse variable as in Dockerfile.
+* Default options: A json for the key map to get default variable, if your future build request not define it.
+* Options are mandatory: define if build request requires the define the variable, otherwise fallback to default.
+
+Once you save, you can notice the system is not building any container at this stage. Containers will be provisionned automatically during on build request.
+
+#### Create your method contiguration
+
+The method consist into script that will be run inside the container. You can define as many method as you want, and method can be reused several time in flows.
+
+* Open **Configuration** > **Method** > **Create**.
+
+Choose the previously created container and define the script, back to our previous debian build package example. Note that first line must contain Shebang otherwise the system will not know how to run the script. You can put any script in any language.
+
+``` bash
+#!/usr/bin/env bash
+
+set -e
+
+export DEBIAN_FRONTEND="noninteractive"
+dpkg-buildpackage
+```
+
+The  `set -e` line ensure to properly stop on error, but in can be optionnal based on your build rules.
+
+#### Create your flow contiguration
+
+The flow define the order of the method to be run. If you need to handle build duplication, you can add a Version file path, relative to root of your git repository, and a Version regex, used to get the version.
+
+* Open **Configuration** > **Method** > **Create**.
+* Version file: `debian/changelog`
+* Version regex: `[\w-]+\s+\((\d+\.\d+.\d+(.\d+)?(-\w+)?)\)`
+* Version mandatory: Yes
+* Method: your previously create method.
+* Priority: 1
+
+Save and now your flow is fully defined.
+
 ## Frequently Asked Questions
 
 ### Is Builder CI stable for production use?
 
 Yes. It's used in production with frameworks like Laravel, Symfony, Ionic, Flutter, NestJS, Angular, and React across platforms such as Android, Debian, Ubuntu, Red Hat, and CentOS.
 
-## I'm using redmine, can I have build status inside?
+### Can I build docker/podman container from inside container
+
+Yes, contain is run as priviledged mode, you can install podman client and you will be able to run container.
+
+### I'm using redmine, can I have build status inside?
 
 Yes, we did a [Redmine plugin](https://github.com/iabsis/redmine-builder-ci). Once installed, create API key and configure
 
@@ -116,7 +177,7 @@ REDMINE_URL=https://<your redmine host>
 REDMINE_KEY=<your redmine key>
 ```
 
-## Does Builder support SSO
+### Does Builder support SSO
 
 Yes, you can configure SSO like Keycloak by configuring OpenID in configuration.
 
@@ -129,7 +190,7 @@ OPENID_CONFIGURATION_URL="https://<your keycloak url>/realms/<your keycloak real
 ```
 
 
-## Contributing
+### Contributing
 
 We welcome contributions of all kinds — including code, documentation, bug reports, and feature suggestions.
 
@@ -142,6 +203,6 @@ While formal contributing guidelines are coming soon, you can:
 
 ---
 
-## License
+### License
 
 Builder CI is licensed under the [GPL-3.0 License](LICENSE).
