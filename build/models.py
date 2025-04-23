@@ -126,6 +126,7 @@ class Build(models.Model):
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(choices=Status.choices, max_length=10, default=Status.queued)
+    commit_id = models.CharField(max_length=40, blank=True, null=True)
 
     def save(self, notify=True, *args, **kwargs):
         if not self.status:
