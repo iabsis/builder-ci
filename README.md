@@ -158,6 +158,17 @@ The flow define the order of the method to be run. If you need to handle build d
 
 Save and now your flow is fully defined.
 
+### Create now a build request
+
+We are now ready to create a build request.
+
+* Open **Builds** > **Requests** > **Create**.
+* Choose a name that qualify your project.
+* Put the URL of the Git, by example: `https://github.com/streadway/hello-debian`
+* Ref name: `master`
+* Flow: select the previously created flow.
+* Options: `{"distrib": "debian", "codename": "bookworm"}`
+
 ## Frequently Asked Questions
 
 ### Is Builder CI stable for production use?
