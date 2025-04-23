@@ -1,8 +1,10 @@
 flows:
 - deb
 - sonar
+- publish-github
 options:
  distrib: "debian"
  codename: "bookworm"
+ external_git_url: "git@github.com:iabsis/builder-ci.git"
 modes:
 - ON_VERSION
