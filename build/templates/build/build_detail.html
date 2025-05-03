@@ -16,19 +16,16 @@ Build details
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">{{title|title}}</h1>
 
-    <!-- DataTales Example -->
 
     <div class="row">
         <div class="col-6">
-
-        <div 
-            id="info-block"
-            hx-get="{% url 'build_info' object.pk %}" 
-            hx-trigger="load" 
-            hx-swap="outerHTML"
-        >
-        <div>Loading ...</div>
-        </div>
+            <div 
+                id="info-block"
+                hx-get="{% url 'build_info' object.pk %}" 
+                hx-trigger="load, refresh from:body" 
+                hx-swap="innerHTML">
+                <div>Loading ...</div>
+            </div>
         </div>
 
         
@@ -192,11 +189,7 @@ Build details
     }
 
     function updateBuild(data) {
-        info = data['info']
-        for (const [key, value] of Object.entries(info)) {
-            const idElement = document.getElementById(key);
-            idElement.innerHTML = value
-        }
+        htmx.trigger("#info-block", "refresh");
     }
 
     function toogleTask(taskId, state) {
@@ -246,6 +239,7 @@ Build details
 
     taskSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
+        console.log(data)
         if (data.action === "update_task") {
             updateTask(data);
         } else if (data.action === "open_task") {
@@ -258,7 +252,6 @@ Build details
         } else if (data.action === "update_build") {
             updateBuild(data);
         }
-        console.log(data)
     };
 
     taskSocket.onclose = function(e) {

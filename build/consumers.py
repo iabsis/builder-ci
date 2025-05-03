@@ -24,20 +24,6 @@ class LogsConsumer(AsyncWebsocketConsumer):
                 })
             )
 
-        # build = await Build.objects.get(pk=self.build_pk)
-        # await self.send(
-        #     text_data=json.dumps({
-        #         "type": "task",
-        #         "action": "update_build",
-        #         "info": {
-        #             "status": build.status,
-        #             "version": build.version,
-        #             "started_at": build.started_at,
-        #             "finished": build.finished,
-        #         },
-        #     })
-        # )
-
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
