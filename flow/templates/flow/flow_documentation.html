@@ -1,69 +1,58 @@
-{% extends "layouts/base.html" %}
-{% load static %}
-{% load flow %}
-
-{% block content %}
-
-<!-- Begin Page Content -->
+{% extends "layouts/base.html" %} {% load static %} {% load flow %} {% block
+content %}
 <div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">Documentation</h1>
+  <p class="mb-4">
+    Below is a list of all available flows and their variables. Each flow must
+    be configured in the
+    <code>builder.yml</code> file at the root of your Git project. Flows can be
+    combined in a single builder.yml file.
+  </p>
 
-    <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Documentation</h1>
-    <p class="mb-4">Here a list of all available flows and there variables. This flow must
-        be configured into <code>builder.yml</code> file in root of your Git project.
-        Flows can be combined together into one builder.yml file.
-    </p>
-
-    <div class="row">
-        {% for flow in flows %}
-        <div class="col-4">
-            <div class="card shadow mb-4">
-                <div class="card-header">
-                    <h6 class="m-0 font-weight-bold text-primary">{{flow}}</h6>
-                </div>
-                <div class="card-body">
-                        {% for task in flow.task_set.all %}
-                            <div class="card border-left-primary">
-                                <div class="card-body">
-                                    <h5>Step #{{forloop.counter}}: {{task.method.name}}</h5>
-                                    <p class="mb-0">Description: {{task.method.description}}</p>
-                                    <p class="mb-0">Container: {{task.method.container.name}}</p>
-                                    <p class="mb-0">Options: {{task.method.options}}</p>
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="card border-left-danger">
-                                <div class="card-body">
-                                    No method configured for this flow !
-                                </div>
-                            </div>
-                        {% endfor %}
-                        <h6 class="mt-3">Example</h6>
-                        <code>
-                            flows:<br>
-                            - {{flow.name}}<br>
-                            {% if flow.options %}
-                            options:<br>
-                                {% with flow.options|options as options %}
-                                {% for k in options %}
-                                    &nbsp;{{k}}: 'abcd'<br>
-                                {%endfor%}
-                                {% endwith %}
-                            {% endif %}
-                            modes:<br>
-                            {% for mode in modes %}
-                            - {{mode.0}}<br>
-                            {% endfor %}
-                        </code>
-
-                        <div class="mb-4"></div>
-                    </div>
-                </div>
+  <div class="row">
+    {% for flow in flows %}
+    <div class="col-md-4">
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <h6 class="m-0 font-weight-bold text-primary">{{ flow }}</h6>
+        </div>
+        <div class="card-body">
+          {% if flow.task_set.exists %} {% for task in flow.task_set.all %}
+          <div class="card border-left-primary mb-2">
+            <div class="card-body">
+              <h5>Step #{{ forloop.counter }}: {{ task.method.name }}</h5>
+              <p class="mb-0">Description: {{ task.method.description }}</p>
+              <p class="mb-0">Container: {{ task.method.container.name }}</p>
+              <p class="mb-0">Options: {{ task.method.options }}</p>
             </div>
-        {% endfor %}
-    </div>
-        
-</div>
-<!-- /.container-fluid -->
+          </div>
+          {% endfor %} {% else %}
+          <div class="card border-left-danger">
+            <div class="card-body">No method configured for this flow!</div>
+          </div>
+          {% endif %}
 
+          <h6 class="mt-3">Example</h6>
+          <pre><code>flows:
+- {{ flow.name }}
+{% if flow.options %}
+  options:
+    {% with flow.options|options as options %}
+    {% for key in options %}
+    {{ key }}: 'abcd'
+    {% endfor %}
+    {% endwith %}
+{% endif %}
+  modes:
+    {% for mode in modes %}
+    - {{ mode.0 }}
+    {% endfor %}
+</code></pre>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock content %}
