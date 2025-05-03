@@ -11,6 +11,7 @@
     "css-loader": "^7.1.2",
     "datatables.net-bs4": "^2.1.4",
     "expose-loader": "^5.0.0",
+    "htmx.org": "^1.9.12",
     "jquery": "^3.7.1",
     "jquery-easing": "^0.0.1",
     "sass": "^1.77.8",

@@ -214,6 +214,11 @@ While formal contributing guidelines are coming soon, you can:
 
 ---
 
+### Developement
+
+We expect not loading any library from CDN, instead use `npm install` into sbadmin2 folder and export
+the module with webpack. Add the import into index.js and run `npx webpack`.
+
 ### License
 
 Builder CI is licensed under the [GPL-3.0 License](LICENSE).

@@ -1,4 +1,4 @@
-from django.views import View
+from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
@@ -34,3 +34,8 @@ class TriggerBuildRequestView(LoginRequiredMixin, RedirectView):
         if referer:
             return HttpResponseRedirect(referer)
         return super().get(buildrequest, *args)
+
+
+class TriggerBuildInfoPartial(LoginRequiredMixin, DetailView):
+    model = models.Build
+    template_name = 'build/partial/info.html'

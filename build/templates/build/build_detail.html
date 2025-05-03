@@ -21,102 +21,14 @@ Build details
     <div class="row">
         <div class="col-6">
 
-            <div class="card shadow mb-4">
-                <div class= "card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Build information</h6>
-                </div>
-                <div class="card-body">
-
-                    <div class="row">
-
-                        <div class="col-4">
-
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                ID</div>
-                            <div class="h5 text-gray-800">{{object.pk}}</div>
-
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Version</div>
-                            <div id="version" class="h5 text-gray-800">
-                                {{object.version|view_field}}
-                            </div>
-
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Status</div>
-                            <div id="status" class="h5 text-gray-800">{{object.status|status_badge}}</div>
-
-                        </div>    
-                        <div class="col-8">
-
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Started at
-                            </div>
-                            <div id="started_at" class="h6 text-gray-800">
-                                <pre>{{object.started_at|naturaltime}}</pre>
-                            </div>
-
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Finished at
-                            </div>
-                            <div id="finished" class="h6 text-gray-800">
-                                <pre>{{object.finished}}</pre>
-                            </div>
-
-                            {% if object.status != 'failed' %}
-                                {% if object.finished_at %}
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Finished at
-                                </div>
-                                <div class="h6 text-gray-800">
-                                    <pre>{{object.finished_at|naturaltime}}</pre>
-                                </div>
-                                {% else %}
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Eta
-                                </div>
-                                <div class="h6 text-gray-800">
-                                    <pre>{{object.eta_at|naturaltime}}</pre>
-                                </div>
-                                {% endif %}
-                            {% endif %}
-
-                            {% if object.build_duration %}
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Build duration
-                            </div>
-                            <div class="h6 text-gray-800">
-                                <pre>{{object.build_duration}}</pre>
-                            </div>
-                            {% endif %}
-
-
-                            {% if object.status == 'running' and object.progress != None %}
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Progress
-                                </div>
-
-                                <div class="row no-gutters align-items-center mb-3">
-                                    <div class="col-auto">
-                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{object.progress}}%</div>
-                                    </div>
-                                    <div class="col">
-                                        <div class="progress progress-sm mr-2">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: {{object.progress}}%" aria-valuenow="{{object.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif%}
-
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Metadata
-                            </div>
-                            <div class="h6 text-gray-800">
-                                <pre>{{object.meta|view_field}}</pre>   
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div 
+            id="info-block"
+            hx-get="{% url 'build_info' object.pk %}" 
+            hx-trigger="load" 
+            hx-swap="outerHTML"
+        >
+        <div>Loading ...</div>
+        </div>
         </div>
 
         

@@ -43,7 +43,8 @@ import 'codemirror/mode/shell/shell.js';
 import 'codemirror/mode/dockerfile/dockerfile.js';
 import 'codemirror/addon/edit/closebrackets.js';
 
-
+import htmx from "htmx.org";
+window.htmx = htmx;
 
 // Your custom JavaScript code
 $(document).ready(function () {
