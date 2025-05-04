@@ -1,3 +1,27 @@
+builder-ci (2.0.67) bookworm; urgency=medium
+
+  * Remove duplicate keys in docs
+  * Retrieve task status after websocker connect
+  * Adding experimental git describe
+  * New field to auto build
+  * Task for nightly and hourly auto build
+  * Don't build if same build is already running
+  * Drafting update build info with websocket
+  * Don't care about self build
+  * Attempt to keep version in exact same format than tag initial version
+  * Auto push to github
+  * Adding new field hash commit
+  * Rewrite docs
+  * Add screenshot
+  * Fix image
+  * Flow sample
+  * Flow sample
+  * Add missing migration
+  * Async load of build info
+  * Update block at the end of the build
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sun, 04 May 2025 09:56:14 +0200
+
 builder-ci (2.0.66) bookworm; urgency=medium
 
   * Switch to new builder
