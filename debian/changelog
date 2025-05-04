@@ -1,3 +1,9 @@
+builder-ci (2.0.68) bookworm; urgency=medium
+
+  * Fix lazy load of module
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sun, 04 May 2025 12:03:07 +0200
+
 builder-ci (2.0.67) bookworm; urgency=medium
 
   * Remove duplicate keys in docs
