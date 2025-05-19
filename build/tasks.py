@@ -78,7 +78,7 @@ def create_tasks(build_id):
             image_task=image_task
         )
 
-@app.task(bind=True, time_limit=900)
+@app.task(bind=True, time_limit=1800)
 def build_run(self, build_id):
     build = models.Build.objects.get(pk=build_id)
     build.started_at = timezone.now()
