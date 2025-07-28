@@ -118,13 +118,14 @@ def send_matrix_notification(build):
         
         # Run Matrix notification in a separate thread to avoid async context issues
         def send_matrix_in_thread():
-            from notification.matrix import send_message_with_room
-            asyncio.run(send_message_with_room(user.username, matrix_info.room_id, message))
+            from notification.matrix import send_message_with_room_update
+            new_room_id = asyncio.run(send_message_with_room_update(user.username, matrix_info.room_id, message))
             
-            # Update room_id if it was created
-            if not matrix_info.room_id:
-                # We'll need to get the room_id back somehow - let's modify the function
-                pass
+            # Update room_id if a new one was created
+            if new_room_id and new_room_id != matrix_info.room_id:
+                matrix_info.room_id = new_room_id
+                matrix_info.save()
+                logger.info(f"Updated room_id for {user.username}: {new_room_id}")
         
         thread = threading.Thread(target=send_matrix_in_thread)
         thread.start()

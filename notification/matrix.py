@@ -133,6 +133,72 @@ async def send_message_with_room(username: str, room_id: str, message: str):
     finally:
         await client.close()
 
+async def send_message_with_room_update(username: str, room_id: str, message: str):
+    """Send Matrix message and return the room_id (existing or newly created)"""
+    logger.info(f"Sending Matrix message to {username}, room_id: {room_id}")
+    
+    # Create client instance for this session
+    client = AsyncClient(settings.MATRIX_HOME_SERVER, settings.MATRIX_USERNAME, store_path=settings.STORAGE)
+    
+    try:
+        logger.info("Setting Matrix access token...")
+        client.access_token = settings.MATRIX_TOKEN
+        
+        if not settings.MATRIX_TOKEN:
+            logger.error("MATRIX_TOKEN not configured")
+            return None
+            
+        logger.info("Matrix client configured with access token")
+
+        # If no room_id, create one
+        if not room_id:
+            recipient = f"@{username}:{settings.MATRIX_DOMAIN}"
+            logger.info(f"Creating Matrix room for recipient: {recipient}")
+            
+            try:
+                room_response = await client.room_create(
+                    is_direct=True,
+                    invite=[recipient]
+                )
+                
+                if hasattr(room_response, 'room_id'):
+                    room_id = room_response.room_id
+                    logger.info(f"Created room {room_id} for {username}")
+                else:
+                    logger.error(f"Failed to create room: {room_response}")
+                    return None
+            except Exception as e:
+                logger.error(f"Exception during room creation: {e}")
+                return None
+
+        logger.info(f"Sending message to room {room_id}: {message}")
+        
+        try:
+            send_response = await client.room_send(
+                room_id=room_id,
+                message_type="m.room.message",
+                content={
+                    "msgtype": "m.text",
+                    "body": message
+                }
+            )
+            
+            if hasattr(send_response, 'event_id'):
+                logger.info(f"Message sent successfully, event_id: {send_response.event_id}")
+                return room_id  # Return the room_id for database update
+            else:
+                logger.error(f"Failed to send message: {send_response}")
+                return None
+        except Exception as e:
+            logger.error(f"Exception during message send: {e}")
+            return None
+    
+    except Exception as e:
+        logger.error(f"Matrix operation failed: {e}")
+        return None
+    finally:
+        await client.close()
+
 async def send_message_direct(username: str, room_id: str, message: str):
     # Create client instance for this session
     # Use Matrix username as-is (should be @username:domain format)

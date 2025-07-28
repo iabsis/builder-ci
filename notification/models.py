@@ -5,4 +5,4 @@ from django.contrib.auth.models import User
 
 class MatrixInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    room_id = models.CharField(max_length=20, null=True, blank=True)
+    room_id = models.CharField(max_length=255, null=True, blank=True)
