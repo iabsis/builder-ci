@@ -112,6 +112,12 @@ def send_matrix_notification(build):
         if build.flow:
             message += f" using flow '{build.flow.name}'"
         
+        # Add link to build details
+        from django.urls import reverse
+        build_path = reverse('build_view', kwargs={'pk': build.pk})
+        build_url = f"https://{settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost'}{build_path}"
+        message += f"\n\nView details: {build_url}"
+        
         # Pre-create MatrixInfo to avoid database calls in async context
         from notification.models import MatrixInfo
         matrix_info, _ = MatrixInfo.objects.get_or_create(user=user)
