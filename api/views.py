@@ -33,12 +33,13 @@ class BuildRequestViewSet(viewsets.ModelViewSet):
             build_request.modes=request.data.get('modes', "ON_VERSION")
             flows = Flow.objects.filter(name__in=flow_names)
             build_request.flows.set(flows)
-            build_request.requested_by = request.data.get('requested_by'),
+            build_request.requested_by = request.data.get('requested_by')
             build_request.save()
         except Exception as e:
-            return Response({"detail": f"Something wrong happened: {e}."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+            return Response(
+                {"detail": f"Something wrong happened: {e}."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         tasks.build_request.delay(build_request.pk)
 
