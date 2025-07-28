@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'container',
     'flow',
     'build',
+    'notification',
     'secret',
     'sbadmin2',
     'allauth',
@@ -190,8 +191,9 @@ REDMINE_KEY = os.getenv('REDMINE_KEY')
 
 MATRIX_HOME_SERVER = os.getenv('MATRIX_HOME_SERVER')
 MATRIX_USERNAME = os.getenv('MATRIX_USERNAME')
-MATRIX_PASSWORD = os.getenv('MATRIX_PASSWORD')
+MATRIX_TOKEN = os.getenv('MATRIX_TOKEN')
 MATRIX_DOMAIN = os.getenv('MATRIX_DOMAIN')
+STORAGE = os.getenv('MATRIX_STORAGE', '/tmp/matrix_storage')
 
 STATIC_ROOT = 'statics'
 LOGOUT_REDIRECT_URL = '/'

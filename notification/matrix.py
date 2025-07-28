@@ -3,41 +3,177 @@ from django.conf import settings
 from . import models
 from django.contrib.auth.models import User
 from nio import AsyncClient, LoginResponse
-from nio.crypto import OlmDevice
 
 logger = logging.getLogger(__name__)
-client = AsyncClient(settings.MATRIX_HOME_SERVER, settings.MATRIX_USERNAME, store_path=settings.STORAGE)
 
 async def send_message(user: User, message: str):
-    client.olm = OlmDevice(client)
-
-    # if not os.path.exists(CACHE_FILE):
-    #     await client.olm.verify_device()
-    #     await client.olm.save_state()
-
-    response = await client.login(settings.MATRIX_PASSWORD)
-
-    if not isinstance(response, LoginResponse):
-        logger.info("Failed to login on Matrix:", response)
-
-    matrix_user, _ = models.MatrixInfo.objects.get_or_create(user=user)
+    logger.info(f"Attempting to send Matrix message to user: {user.username}")
+    logger.info(f"Matrix config - Server: {settings.MATRIX_HOME_SERVER}, Username: {settings.MATRIX_USERNAME}, Domain: {settings.MATRIX_DOMAIN}")
     
-    if not matrix_user.room_id:
-        recipient = f"@{user.username}:{settings.MATRIX_DOMAIN}"
-        room_response = await client.room_create(
-            is_direct=True,
-            invite=[recipient],
-            preset="trusted_private_chat"
+    # Create client instance for this session
+    logger.info(f"Using Matrix server: {settings.MATRIX_HOME_SERVER}")
+    client = AsyncClient(settings.MATRIX_HOME_SERVER, settings.MATRIX_USERNAME, store_path=settings.STORAGE)
+    
+    try:
+        logger.info("Setting Matrix access token...")
+        # Use access token instead of password login
+        client.access_token = settings.MATRIX_TOKEN
+        
+        if not settings.MATRIX_TOKEN:
+            logger.error("MATRIX_TOKEN not configured")
+            return
+            
+        logger.info("Matrix client configured with access token")
+            
+        matrix_user, _ = models.MatrixInfo.objects.get_or_create(user=user)
+        logger.info(f"MatrixInfo for {user.username}: room_id={matrix_user.room_id}")
+        
+        if not matrix_user.room_id:
+            recipient = f"@{user.username}:{settings.MATRIX_DOMAIN}"
+            logger.info(f"Creating Matrix room for recipient: {recipient}")
+            
+            room_response = await client.room_create(
+                is_direct=True,
+                invite=[recipient]
+            )
+
+            if hasattr(room_response, 'room_id'):
+                matrix_user.room_id = room_response.room_id
+                matrix_user.save()
+                logger.info(f"Created room {room_response.room_id} for {user.username}")
+            else:
+                logger.error(f"Failed to create room: {room_response}")
+                return
+
+        logger.info(f"Sending message to room {matrix_user.room_id}: {message}")
+        
+        send_response = await client.room_send(
+            room_id=matrix_user.room_id,
+            message_type="m.room.message",
+            content={
+                "msgtype": "m.text",
+                "body": message
+            }
         )
+        
+        if hasattr(send_response, 'event_id'):
+            logger.info(f"Message sent successfully, event_id: {send_response.event_id}")
+        else:
+            logger.error(f"Failed to send message: {send_response}")
+    
+    except Exception as e:
+        logger.error(f"Matrix operation failed: {e}")
+    finally:
+        await client.close()
 
-        matrix_user.room_id = room_response.room_id
-        matrix_user.save()
+async def send_message_with_room(username: str, room_id: str, message: str):
+    logger.info(f"Sending Matrix message to {username}, room_id: {room_id}")
+    
+    # Create client instance for this session
+    client = AsyncClient(settings.MATRIX_HOME_SERVER, settings.MATRIX_USERNAME, store_path=settings.STORAGE)
+    
+    try:
+        logger.info("Setting Matrix access token...")
+        # Use access token instead of password login
+        client.access_token = settings.MATRIX_TOKEN
+        
+        if not settings.MATRIX_TOKEN:
+            logger.error("MATRIX_TOKEN not configured")
+            return
+            
+        logger.info("Matrix client configured with access token")
 
-    await client.room_send(
-        room_id=room_response.room_id,
-        message_type="m.room.message",
-        content={
-            "msgtype": "m.text",
-            "body": message
-        }
-    )
+        # If no room_id, create one
+        if not room_id:
+            recipient = f"@{username}:{settings.MATRIX_DOMAIN}"
+            logger.info(f"Creating Matrix room for recipient: {recipient}")
+            
+            try:
+                room_response = await client.room_create(
+                    is_direct=True,
+                    invite=[recipient]
+                )
+                logger.info(f"Room creation response: {room_response}")
+                logger.info(f"Room response type: {type(room_response)}")
+                
+                if hasattr(room_response, 'room_id'):
+                    room_id = room_response.room_id
+                    logger.info(f"Created room {room_id} for {username}")
+                else:
+                    logger.error(f"Failed to create room: {room_response}")
+                    return
+            except Exception as e:
+                logger.error(f"Exception during room creation: {e}")
+                return
+
+        logger.info(f"Sending message to room {room_id}: {message}")
+        
+        try:
+            send_response = await client.room_send(
+                room_id=room_id,
+                message_type="m.room.message",
+                content={
+                    "msgtype": "m.text",
+                    "body": message
+                }
+            )
+            logger.info(f"Send response: {send_response}")
+            logger.info(f"Send response type: {type(send_response)}")
+            
+            if hasattr(send_response, 'event_id'):
+                logger.info(f"Message sent successfully, event_id: {send_response.event_id}")
+            else:
+                logger.error(f"Failed to send message: {send_response}")
+        except Exception as e:
+            logger.error(f"Exception during message send: {e}")
+            return
+    
+    except Exception as e:
+        logger.error(f"Matrix operation failed: {e}")
+    finally:
+        await client.close()
+
+async def send_message_direct(username: str, room_id: str, message: str):
+    # Create client instance for this session
+    # Use Matrix username as-is (should be @username:domain format)
+    client = AsyncClient(settings.MATRIX_HOME_SERVER, settings.MATRIX_USERNAME, store_path=settings.STORAGE)
+    
+    try:
+        logger.info("Setting Matrix access token...")
+        # Use access token instead of password login
+        client.access_token = settings.MATRIX_TOKEN
+        
+        if not settings.MATRIX_TOKEN:
+            logger.error("MATRIX_TOKEN not configured")
+            return
+            
+        logger.info("Matrix client configured with access token")
+
+        # If no room_id, create one
+        if not room_id:
+            recipient = f"@{username}:{settings.MATRIX_DOMAIN}"
+            room_response = await client.room_create(
+                is_direct=True,
+                invite=[recipient]
+            )
+            
+            if hasattr(room_response, 'room_id'):
+                room_id = room_response.room_id
+                logger.info(f"Created room {room_id} for {username}")
+            else:
+                logger.error(f"Failed to create room: {room_response}")
+                return
+
+        await client.room_send(
+            room_id=room_id,
+            message_type="m.room.message",
+            content={
+                "msgtype": "m.text",
+                "body": message
+            }
+        )
+    
+    except Exception as e:
+        logger.error(f"Matrix operation failed: {e}")
+    finally:
+        await client.close()
