@@ -1,3 +1,11 @@
+builder-ci (2.0.71) bookworm; urgency=medium
+
+  * Adding matrix fonction
+  * Notification working
+  * Add URL
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 28 Jul 2025 16:26:18 +0200
+
 builder-ci (2.0.70) bookworm; urgency=medium
 
   * Fix commit by endpoint
