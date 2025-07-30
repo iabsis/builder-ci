@@ -9,7 +9,7 @@ from flow.models import Flow, Task
 from django_celery_results.models import TaskResult
 from django.conf import settings
 from .executor import BuildTaskExecutor
-from .notification import send_notification
+from .notification import send_notification, send_matrix_notification
 
 app = celery.Celery('tasks', broker='redis://localhost')
 app.config_from_object("django.conf:settings", namespace="CELERY")
@@ -118,7 +118,7 @@ def build_run(self, build_id):
     build.finished_at = timezone.now()
     build.save()
     send_notification(build)
-        
+
 @app.task
 def auto_build_hourly():
     for build_request in models.BuildRequest.objects.filter(auto_build=models.AutoBuildMode.HOURLY):

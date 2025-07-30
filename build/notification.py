@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 def send_notification(build):
     try:
         send_redmine_notification(build)
-        send_matrix_notification(build)
     except Exception as e:
         logger.error(f"Received error during notification: {e}")
 

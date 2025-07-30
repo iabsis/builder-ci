@@ -6,7 +6,7 @@ from django.utils import timezone
 from tempfile import TemporaryDirectory
 from django.contrib.postgres.fields import ArrayField
 from django.forms import ValidationError
-from .notification import send_notification
+from .notification import send_notification, send_matrix_notification
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -199,7 +199,6 @@ class Build(models.Model):
                 flow=self.flow
             ).latest('pk')
         except Build.DoesNotExist:
-            print("No success")
             return
         
         return build.finished_at - build.started_at
@@ -251,5 +250,6 @@ class SaveBuild(TemporaryDirectory):
             self.build.status = Status.success
         self.build.finished_at = timezone.now()
         self.build.save()
+        send_matrix_notification(self.build)
         return super().__exit__(exc, value, tb)
     
