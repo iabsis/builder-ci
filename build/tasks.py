@@ -17,7 +17,7 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 logger = logging.getLogger(__name__)
 
 @app.task(bind=True)
-def build_request(self, build_request_id):
+def build_request(bind, build_request_id):
     build_request = models.BuildRequest.objects.get(pk=build_request_id)
     if build_request.flows.exists():
         flows = build_request.flows.all()
@@ -121,10 +121,10 @@ def build_run(self, build_id):
 
 @app.task
 def auto_build_hourly():
-    for build_request in models.BuildRequest.objects.filter(auto_build=models.AutoBuildMode.HOURLY):
-        build_request(build_request.pk)
+    for build_request_obj in models.BuildRequest.objects.filter(auto_build=models.AutoBuildMode.HOURLY):
+        build_request(build_request_obj.pk)
 
 @app.task
 def auto_build_nightly():
-    for build_request in models.BuildRequest.objects.filter(auto_build=models.AutoBuildMode.NIGHTLY):
-        build_request(build_request.pk)
+    for build_request_obj in models.BuildRequest.objects.filter(auto_build=models.AutoBuildMode.NIGHTLY):
+        build_request(build_request_obj.pk)

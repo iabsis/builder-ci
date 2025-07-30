@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,6 +40,7 @@ APPEND_SLASH = True
 
 INSTALLED_APPS = [
     'daphne',
+    'django_celery_beat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -161,6 +163,17 @@ CELERY_CACHE_BACKEND = 'django-cache'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_RESULT_EXTENDED = True
 CELERY_TASK_TRACK_STARTED = True
+
+CELERY_BEAT_SCHEDULE = {
+    'auto_build_hourly': {
+        'task': 'build.tasks.auto_build_hourly',
+        'schedule': crontab(minute=0, hour='*'),
+    },
+    'auto_build_nightly': {
+        'task': 'build.tasks.auto_build_nightly',
+        'schedule': crontab(minute=0, hour=4),
+    }
+}
 
 LOGLEVEL = os.getenv('LOGLEVEL') if os.getenv('LOGLEVEL') == 'True' else "DEBUG"
 
