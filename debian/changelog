@@ -1,3 +1,9 @@
+builder-ci (2.0.73) bookworm; urgency=medium
+
+  * Only notify one time at the end of the build
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Wed, 30 Jul 2025 11:18:03 +0200
+
 builder-ci (2.0.72) bookworm; urgency=medium
 
   * Adding notification in build
