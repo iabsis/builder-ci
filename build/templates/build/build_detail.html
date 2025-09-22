@@ -80,47 +80,43 @@ Build details
                 </span>
             </a>
 
-            <div class="row no-gutters align-items-center">
+            <div class="accordion" id="taskAccordion">
                 {% for task in object.buildtask_set.all %}
-                <div class="col-12">
-                    <div id="accordion">
-                            <div class="card">
-                                <div class="card-header" id="heading-{{task.order}}">
-                                    <h5 class="mb-0">
-                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.order}}" aria-expanded="false"
-                                            aria-controls="collapse-{{task.order}}">
-                                            TASK #{{task.order}} <span id="badge-{{task.order}}">{{task.status|status_badge}}</span>
-                                            {% if task.method %}
-                                                {% if not task.method.stop_on_failure %}
-                                                    (Optional)
-                                                {% endif %}
-                                            {% endif %}
-                                        </button>
-                                        <span class="text-xs">{{task.description}}</span>
-                                    </h5>
-                                </div>
-                        
-                                <div id="collapse-{{task.order}}" class="collapse {% if task.status == 'failed' %}show{% endif %}" aria-labelledby="heading-{{task.order}}" data-parent="#accordion">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Options</div>
-                                                <div class="mb-0 text-gray-800">{{task.options}}</div>
-                                            </div>
-                                            <div class="col-12 mr-2 mt-3">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Task log</div>
-                                                <pre id="logs-{{task.order}}" class="task-logs">{{task.logs|linebreaks}}</pre>
-                                            </div>
-                                        </div>
-                                        
+                    <div class="card">
+                        <div class="card-header" id="heading-{{task.order}}">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" data-toggle="collapse" data-target="#collapse-{{task.order}}" aria-expanded="false"
+                                    aria-controls="collapse-{{task.order}}">
+                                    TASK #{{task.order}} <span id="badge-{{task.order}}">{{task.status|status_badge}}</span>
+                                    {% if task.method %}
+                                        {% if not task.method.stop_on_failure %}
+                                            (Optional)
+                                        {% endif %}
+                                    {% endif %}
+                                </button>
+                                <span class="text-xs">{{task.description}}</span>
+                            </h5>
+                        </div>
+
+                        <div id="collapse-{{task.order}}" class="collapse {% if task.status == 'failed' %}show{% endif %}" aria-labelledby="heading-{{task.order}}" data-parent="#taskAccordion">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Options</div>
+                                        <div class="mb-0 text-gray-800">{{task.options}}</div>
+                                    </div>
+                                    <div class="col-12 mr-2 mt-3">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            Task log</div>
+                                        <pre id="logs-{{task.order}}" class="task-logs">{{task.logs|linebreaks}}</pre>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
-                    {% empty %}
+                {% empty %}
                     <p>No task executed</p>
                 {% endfor %}
             </div>
@@ -183,7 +179,7 @@ Build details
             return 'badge-primary'
         }
         if (status == 'running') {
-            return 'badge-primary'
+            return 'badge-secondary'
         }
         return 'badge-secondary'
     }
@@ -192,19 +188,34 @@ Build details
         htmx.trigger("#info-block", "refresh");
     }
 
+    // Simple debouncing for rapid toggle calls
+    const toggleTimers = {};
+
     function toogleTask(taskId, state) {
-        const collapseElement = document.getElementById(`collapse-${taskId}`);
-    
-        if (collapseElement) {
-            const collapseInstance = new Bootstrap.Collapse(collapseElement, {
-                toggle: false
-            });
-            if (state === "show") {
-                collapseElement.classList.add("show");
-            } else {
-                collapseInstance.hide();
-            }
+        // Clear existing timer for this task
+        if (toggleTimers[taskId]) {
+            clearTimeout(toggleTimers[taskId]);
         }
+
+        // Debounce with a short delay
+        toggleTimers[taskId] = setTimeout(() => {
+            const collapseElement = document.getElementById(`collapse-${taskId}`);
+
+            if (collapseElement) {
+                const $element = $(collapseElement);
+                const isCurrentlyVisible = $element.hasClass('show');
+
+                // Only toggle if the state is actually different
+                if ((state === "show" && !isCurrentlyVisible) || (state === "hide" && isCurrentlyVisible)) {
+                    if (state === "show") {
+                        $element.collapse('show');
+                    } else {
+                        $element.collapse('hide');
+                    }
+                }
+            }
+            delete toggleTimers[taskId];
+        }, 100); // 100ms debounce delay
     }
 
     function updateTask(task) {
