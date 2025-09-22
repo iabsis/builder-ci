@@ -53,3 +53,15 @@ class BuildRequestListView(GenericViewList):
         if search:
             queryset = queryset.filter(name__icontains=search)
         return queryset
+
+
+class BuildListView(GenericViewList):
+    model = models.Build
+    show_filter = False
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(request__name__icontains=search)
+        return queryset

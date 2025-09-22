@@ -1,70 +1,121 @@
-{% extends "table.html" %}
+{% extends "layouts/base.html" %}
+{% load static %}
 {% load build %}
 {% load humanize %}
 
-{% block thead %}
-<tr>
-    <th>Id</th>
-    <th>Request</th>
-    <th>Flow</th>
-    <th>Version</th>
-    <th>Status</th>
-    <th>Created at</th>
-    <th>Started at</th>
-    <th>Finished at</th>
-    <th>Progress</th>
-    <th></th>
-</tr>
-{% endblock thead %}   
+{% block title %}
+Builds
+{% endblock title %}
 
-{% block tbody %}
-    {% for obj in object_list %}
-    <tr>
-        <td>
-            {% if view_url %}
-                <a href="{% url view_url obj.pk %}">
-                    {{ obj.pk }}
-                </a>
-            {% else %}
-                {{ obj.pk }}
-            {% endif %}
-        </td>
-        <td>
-            <a href="{% url 'request' %}?name={{ obj.request.name }}">
-                {{ obj.request }}</td>
-            </a>
-        <td>
-            <a href="{% url 'flow_update' obj.flow.pk %}">
-                {{ obj.flow }}
-            </a>
-        </td>
-        <td>{{ obj.version }}</td>
-        <td>{{ obj.status|status_badge }}</td>
-        <td>{{ obj.created_at|naturaltime }}</td>
-        <td>{{ obj.started_at|naturaltime }}</td>
-        <td>{{ obj.finished_at }}</td>
-        <td>
-            {% if obj.status == 'running' and obj.progress != None %}
-            <div class="row no-gutters align-items-center mb-3">
-                <div class="col">
-                    <div class="progress progress-sm mr-2">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: {{obj.progress}}%" aria-valuenow="{{obj.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Builds</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <!-- Search Field and Create Button on same line -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <form method="get" class="form-inline">
+                        <div class="form-group mr-2">
+                            <input type="text" name="search" class="form-control" placeholder="Search by request name..." value="{{ request.GET.search }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary mr-2">Search</button>
+                        {% if request.GET.search %}
+                        <a href="?" class="btn btn-secondary">Clear</a>
+                        {% endif %}
+                    </form>
+                </div>
+                <div class="col-md-6 text-right">
+                    {% if create_url %}
+                    <a href="{% url create_url %}" class="btn btn-success btn-icon-split">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-plus-circle"></i>
+                        </span>
+                        <span class="text">Create</span>
+                    </a>
+                    {% endif %}
                 </div>
             </div>
-            {% endif %}
-        </td>
-        <td>
-            {% include 'includes/actions.html' %}
-            <a href="{% url 'build_run' obj.pk %}" class="btn btn-primary btn-icon-split mb-1">
-                <span class="icon text-white-50">
-                    <i class="fas fa-refresh"></i>
-                </span>
-                <span class="text">
-                    Run again
-                </span>
-            </a>
-        </td>
-    </tr>
-    {% endfor %}
-{% endblock tbody %}
+
+            <table class="table table-hover" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Request</th>
+                        <th>Flow</th>
+                        <th>Version</th>
+                        <th>Status</th>
+                        <th>Created at</th>
+                        <th>Started at</th>
+                        <th>Finished at</th>
+                        <th>Progress</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in object_list %}
+                    <tr>
+                        <td>
+                            {% if view_url %}
+                                <a href="{% url view_url obj.pk %}">
+                                    {{ obj.pk }}
+                                </a>
+                            {% else %}
+                                {{ obj.pk }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'request' %}?search={{ obj.request.name }}">
+                                {{ obj.request }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'flow_update' obj.flow.pk %}">
+                                {{ obj.flow }}
+                            </a>
+                        </td>
+                        <td>{{ obj.version }}</td>
+                        <td>{{ obj.status|status_badge }}</td>
+                        <td>{{ obj.created_at|naturaltime }}</td>
+                        <td>{{ obj.started_at|naturaltime }}</td>
+                        <td>{{ obj.finished_at }}</td>
+                        <td>
+                            {% if obj.status == 'running' and obj.progress != None %}
+                            <div class="row no-gutters align-items-center mb-3">
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: {{obj.progress}}%" aria-valuenow="{{obj.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% include 'includes/actions.html' %}
+                            <a href="{% url 'build_run' obj.pk %}" class="btn btn-primary btn-icon-split mb-1">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-refresh"></i>
+                                </span>
+                                <span class="text">
+                                    Run again
+                                </span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'includes/pagination.html' %}
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+{% endblock content %}

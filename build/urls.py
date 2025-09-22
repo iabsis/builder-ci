@@ -4,7 +4,8 @@ from sbadmin2.crud import generate_crud_urls
 
 urlpatterns = [
     *generate_crud_urls('', 'build', models.Build, create=False,
-                        update=False, view=True, show_filter=False),
+                        update=False, view=True, show_filter=False, list=False),
+    path('', views.BuildListView.as_view(), name="build"),
     *generate_crud_urls('request', 'request', models.BuildRequest, view=True, list=False),
     path('request/', views.BuildRequestListView.as_view(), name="request"),
     path('partial/info/<int:pk>/',
