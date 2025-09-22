@@ -136,23 +136,27 @@ async def send_message_with_room(username: str, room_id: str, message: str):
 async def send_message_with_room_update(username: str, room_id: str, message: str):
     """Send Matrix message and return the room_id (existing or newly created)"""
     logger.info(f"Sending Matrix message to {username}, room_id: {room_id}")
-    
+
     # Create client instance for this session
     client = AsyncClient(settings.MATRIX_HOME_SERVER, settings.MATRIX_USERNAME, store_path=settings.STORAGE)
-    
+
     try:
         logger.info("Setting Matrix access token...")
         client.access_token = settings.MATRIX_TOKEN
-        
+
         if not settings.MATRIX_TOKEN:
             logger.error("MATRIX_TOKEN not configured")
             return None
-            
+
         logger.info("Matrix client configured with access token")
 
         # If no room_id, create one
         if not room_id:
-            recipient = f"@{username}:{settings.MATRIX_DOMAIN}"
+            # Handle both username format and full Matrix ID format
+            if username.startswith('@') and ':' in username:
+                recipient = username  # Already in @username:domain format
+            else:
+                recipient = f"@{username}:{settings.MATRIX_DOMAIN}"
             logger.info(f"Creating Matrix room for recipient: {recipient}")
             
             try:

@@ -1,0 +1,111 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+User Profile
+{% endblock title %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">User Profile</h1>
+    <p class="mb-4">Configure your Matrix notification settings.</p>
+
+    <!-- Profile Form -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Matrix Notification Settings</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="form-group">
+                            <label for="{{ form.matrix_account.id_for_label }}" class="form-label">
+                                {{ form.matrix_account.label }}
+                            </label>
+                            {{ form.matrix_account }}
+                            {% if form.matrix_account.help_text %}
+                                <small class="form-text text-muted">{{ form.matrix_account.help_text }}</small>
+                            {% endif %}
+                            {% if form.matrix_account.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.matrix_account.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="form-group form-check">
+                            {{ form.matrix_notifications_enabled }}
+                            <label class="form-check-label" for="{{ form.matrix_notifications_enabled.id_for_label }}">
+                                {{ form.matrix_notifications_enabled.label }}
+                            </label>
+                            {% if form.matrix_notifications_enabled.help_text %}
+                                <small class="form-text text-muted d-block">{{ form.matrix_notifications_enabled.help_text }}</small>
+                            {% endif %}
+                            {% if form.matrix_notifications_enabled.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.matrix_notifications_enabled.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i>
+                    Save Profile
+                </button>
+                <a href="{% url 'build' %}" class="btn btn-secondary ml-2">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Information Card -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-info">
+                <i class="fas fa-info-circle mr-2"></i>
+                About Matrix Notifications
+            </h6>
+        </div>
+        <div class="card-body">
+            <p class="mb-3">Matrix is an open network for secure, decentralized communication. By configuring your Matrix account, you'll receive build notifications directly in your Matrix client.</p>
+
+            <h6 class="font-weight-bold">How to find your Matrix ID:</h6>
+            <ul class="mb-3">
+                <li>Open your Matrix client (Element, FluffyChat, etc.)</li>
+                <li>Go to your user settings or profile</li>
+                <li>Look for your Matrix ID in the format <code>@username:server.domain</code></li>
+                <li>Example: <code>@john:matrix.org</code> or <code>@alice:example.com</code></li>
+            </ul>
+
+            <div class="alert alert-info">
+                <i class="fas fa-lightbulb mr-2"></i>
+                <strong>Tip:</strong> You need to enable notifications to receive build status updates. Your Matrix ID must be valid and accessible for the system to send messages.
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+{% endblock content %}

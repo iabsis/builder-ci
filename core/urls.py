@@ -17,12 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from sbadmin2.views import ProfileUpdateView
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='build')),
     path('admin/', admin.site.urls),
     # path('accounts/', include("sbadmin2.urls")),
     path('accounts/', include('allauth.urls')),
+    path('profile/', ProfileUpdateView.as_view(), name='profile'),
     path('container/', include("container.urls")),
     path('flow/', include("flow.urls")),
     path('build/', include("build.urls")),

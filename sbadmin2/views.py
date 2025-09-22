@@ -215,3 +215,25 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LogoutView):
     template_name = 'logout.html'
+
+class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = 'profile_simple.html'
+    success_message = "Profile updated successfully"
+    form_class = None
+
+    def get_object(self):
+        from notification.models import UserMatrixProfile
+        profile, created = UserMatrixProfile.objects.get_or_create(user=self.request.user)
+        return profile
+
+    def get_form_class(self):
+        from notification.forms import UserMatrixProfileForm
+        return UserMatrixProfileForm
+
+    def get_success_url(self):
+        return reverse_lazy('profile')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'User Profile'
+        return context
