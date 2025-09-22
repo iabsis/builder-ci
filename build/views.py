@@ -6,6 +6,8 @@ from django.contrib import messages
 from . import models, tasks
 from django.http import HttpResponseRedirect
 from sbadmin2.permission import DynamicPermissionMixin
+from sbadmin2.views import GenericViewList
+from django.db.models import Q
 
 # Create your views here.
 
@@ -39,3 +41,15 @@ class TriggerBuildRequestView(LoginRequiredMixin, RedirectView):
 class TriggerBuildInfoPartial(LoginRequiredMixin, DetailView):
     model = models.Build
     template_name = 'build/partial/info.html'
+
+
+class BuildRequestListView(GenericViewList):
+    model = models.BuildRequest
+    show_filter = False
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+        return queryset

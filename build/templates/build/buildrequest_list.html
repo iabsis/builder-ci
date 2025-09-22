@@ -1,45 +1,95 @@
-{% extends "table.html" %}
+{% extends "layouts/base.html" %}
+{% load static %}
 {% load build %}
 {% load humanize %}
 
-{% block thead %}
-    <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Git</th>
-        <th>Modes</th>
-        <th>Build count</th>
-        <th>Updated at</th>
-        <th></th>
-    </tr>
-{% endblock thead %}
-{% block tbody %}
-    {% for obj in object_list %}
-    <tr>
-        
-        <td>{{ obj.pk }}</td>
-        <td>{{ obj.name }}</td>
-        <td>
-            {{ obj.url }}<br>
-            {% if obj.is_tag %}tag{% else %}branch{% endif %}: {{ obj.branch }}</td>
-        <td>{{ obj.modes|view_field|safe }}</td>
-        <td>
-            <a href="{% url 'build' %}?request={{obj.pk}}">
-                {{ obj.build_set.count }}
-            </a>
-        </td>
-        <td>{{ obj.updated_at|naturaltime }}</td>
-        <td>
-            {% include 'includes/actions.html' %}
-            <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split mb-1">
-                <span class="icon text-white-50">
-                    <i class="fas fa-play"></i>
-                </span>
-                <span class="text">
-                    Trigger build
-                </span>
-            </a>
-        </td>
-    </tr>
-    {% endfor %}
-{% endblock tbody %}
+{% block title %}
+Build Requests
+{% endblock title %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Build Requests</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <!-- Search Field and Create Button on same line -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <form method="get" class="form-inline">
+                        <div class="form-group mr-2">
+                            <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ request.GET.search }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary mr-2">Search</button>
+                        {% if request.GET.search %}
+                        <a href="?" class="btn btn-secondary">Clear</a>
+                        {% endif %}
+                    </form>
+                </div>
+                <div class="col-md-6 text-right">
+                    {% if create_url %}
+                    <a href="{% url create_url %}" class="btn btn-success btn-icon-split">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-plus-circle"></i>
+                        </span>
+                        <span class="text">Create</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <table class="table table-hover" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Git</th>
+                        <th>Modes</th>
+                        <th>Build count</th>
+                        <th>Updated at</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in object_list %}
+                    <tr>
+                        <td>{{ obj.pk }}</td>
+                        <td>{{ obj.name }}</td>
+                        <td>
+                            {{ obj.url }}<br>
+                            {% if obj.is_tag %}tag{% else %}branch{% endif %}: {{ obj.branch }}</td>
+                        <td>{{ obj.modes|view_field|safe }}</td>
+                        <td>
+                            <a href="{% url 'build' %}?request={{obj.pk}}">
+                                {{ obj.build_set.count }}
+                            </a>
+                        </td>
+                        <td>{{ obj.updated_at|naturaltime }}</td>
+                        <td>
+                            {% include 'includes/actions.html' %}
+                            <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split mb-1">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-play"></i>
+                                </span>
+                                <span class="text">
+                                    Trigger build
+                                </span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'includes/pagination.html' %}
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+{% endblock content %}
