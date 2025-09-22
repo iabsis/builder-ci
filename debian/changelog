@@ -1,3 +1,12 @@
+builder-ci (2.0.75) bookworm; urgency=medium
+
+  * Improve build page
+  * New profile page to configure matrix account
+  * Add simple search in request
+  * Add search in build page
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 22 Sep 2025 11:51:07 +0200
+
 builder-ci (2.0.74) bookworm; urgency=medium
 
   * New beat service for automated build
