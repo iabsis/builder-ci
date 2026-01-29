@@ -1,3 +1,9 @@
+builder-ci (2.0.77) bookworm; urgency=medium
+
+  * Fix lenght for comment
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 29 Jan 2026 11:47:28 +0100
+
 builder-ci (2.0.76) bookworm; urgency=medium
 
   * Remove Django secret key
