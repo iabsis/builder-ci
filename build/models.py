@@ -80,7 +80,7 @@ class Status(models.TextChoices):
 class BuildTask(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    description = models.CharField(max_length=50, null=True, blank=True)
+    description = models.CharField(max_length=100, null=True, blank=True)
     build = models.ForeignKey('Build', on_delete=models.CASCADE)
     flow = models.ForeignKey('flow.Flow', on_delete=models.CASCADE, null=True)
     method = models.ForeignKey('flow.Method', on_delete=models.CASCADE, null=True)
