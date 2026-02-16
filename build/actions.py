@@ -24,6 +24,7 @@ def clone_repository(task_executor: BuildTaskExecutor, builddir):
 def fetch_version(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
     exception = None
+
     try:
         version_file = os.path.join(builddir, "sources", task.build.flow.version_file)
         if models.BuildRequestMode.ON_VERSION in task.build.request.modes and not task.build.request.is_tag:
@@ -42,6 +43,12 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
             task.build.version = task.build.flow.gen_version(version_file)
             task.build.save()
             task_executor.add_logs(f"Generated version: {task.build.version}")
+
+        else:
+            message = f"Not building since in unknown situation, {task.build.request.modes} while {task.build.request.is_tag}"
+            task.logs = message
+            task.save()
+            raise Exception(message)
 
     except Exception as e:
         exception = e
