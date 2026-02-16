@@ -12,12 +12,28 @@ Homepage: <insert the upstream URL, if relevant>
 #Vcs-Browser: https://salsa.debian.org/debian/builder-ci
 #Vcs-Git: https://salsa.debian.org/debian/builder-ci.git
 
-Package: builder-ci
+Package: builder-common
 Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
-  python3,
-  git
-Description: <insert up to 60 chars description>
- <Insert long description, indented with spaces.>
+ python3,
+ git
+Description: Builder CI - Common files
+ Shared files for builder-ci and builder-agent.
+
+Package: builder-ci
+Architecture: all
+Depends:
+ ${misc:Depends},
+ builder-common (= ${binary:Version})
+Description: Builder CI - Web server
+ Django web server (daphne) for Builder CI.
+
+Package: builder-agent
+Architecture: all
+Depends:
+ ${misc:Depends},
+ builder-common (= ${binary:Version})
+Description: Builder CI - Agent
+ Celery worker and beat scheduler for Builder CI.
