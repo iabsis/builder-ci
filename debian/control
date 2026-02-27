@@ -18,6 +18,7 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends},
  python3,
+ python3-pip,
  git
 Description: Builder CI - Common files
  Shared files for builder-ci and builder-agent.
