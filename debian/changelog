@@ -1,3 +1,11 @@
+builder-ci (3.0.2) bookworm; urgency=medium
+
+  * Add missing dependancy
+  * Don't clean deb
+  * Fix service inside build
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 27 Feb 2026 11:32:27 +0100
+
 builder-ci (3.0.1) bookworm; urgency=medium
 
   * Add redis password capability
