@@ -1,3 +1,9 @@
+builder-ci (3.0.3) bookworm; urgency=medium
+
+  * Fix celery backend
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Fri, 27 Feb 2026 11:44:51 +0100
+
 builder-ci (3.0.2) bookworm; urgency=medium
 
   * Add missing dependancy
