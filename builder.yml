@@ -5,6 +5,7 @@ flows:
 options:
  distrib: "debian"
  codename: "bookworm"
+ disable_clean: "true"
  external_git_url: "git@github.com:iabsis/builder-ci.git"
 modes:
 - ON_VERSION
