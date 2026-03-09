@@ -1,3 +1,9 @@
+builder-ci (3.0.5) bookworm; urgency=medium
+
+  * Build will be ignored instea of failed when tag is required but no tag passed
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 09 Mar 2026 12:11:02 +0100
+
 builder-ci (3.0.4) bookworm; urgency=medium
 
   * Add edit button
