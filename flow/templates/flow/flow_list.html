@@ -30,22 +30,29 @@
 
             {% include 'includes/filter.html' %}
 
-            <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-hover" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            {% for field in field_list %}
-                            <th>{{ field|field_name_to_label }}</th>
-                            {% endfor %}
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Version file</th>
+                            <th>Version mandatory</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for obj in object_list %}
                         <tr>
-                            {% for field in field_list %}
-                            <td>{{ obj|get_field_value:field|linebreaks }}</td>
-                            {% endfor %}
+                            <td>{{ obj.name }}</td>
+                            <td>{{ obj.description }}</td>
+                            <td>{{ obj.version_file }}</td>
+                            <td>
+                                {% if obj.version_mandatory %}
+                                    <span class="badge badge-success">Yes</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">No</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if update_url %}
                                 <a href="{% url update_url obj.pk %}" class="btn btn-primary btn-icon-split mb-1">
@@ -81,8 +88,7 @@
                         </tr>
                         {% endfor %}
                     </tbody>
-                </table>
-            </div>
+            </table>
             {% include 'includes/pagination.html' %}
         </div>
     </div>
