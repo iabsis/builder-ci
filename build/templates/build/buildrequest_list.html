@@ -69,7 +69,7 @@ Build Requests
                                 {{ obj.build_set.count }}
                             </a>
                         </td>
-                        <td>{{ obj.updated_at|naturaltime }}</td>
+                        <td>{{ obj.updated_at|date:"Y-m-d H:i" }}<br><small class="text-muted">{{ obj.updated_at|naturaltime }}</small></td>
                         <td>
                             {% include 'includes/actions.html' %}
                             <a href="{% url 'buildrequest_trigger' obj.pk %}" class="btn btn-success btn-icon-split mb-1">
