@@ -1,6 +1,7 @@
 from . import models
 from django.db.models import Q
 from .executor import BuildTaskExecutor
+from .exceptions import IgnoredException
 import os
 import logging
 from .notification import send_notification
@@ -48,7 +49,7 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
             message = f"Not building since in unknown situation, {task.build.request.modes} while {task.build.request.is_tag}"
             task.logs = message
             task.save()
-            raise Exception(message)
+            raise IgnoredException(message)
 
     except Exception as e:
         exception = e

@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 from django.contrib.postgres.fields import ArrayField
 from django.forms import ValidationError
 from .notification import send_notification, send_matrix_notification
+from .exceptions import IgnoredException
 
 # Create your models here.
 class BuildRequestMode(models.TextChoices):
@@ -245,7 +246,10 @@ class SaveBuild(TemporaryDirectory):
         self.build.refresh_from_db()
         if exc is not None:
             if self.build.status == Status.running:
-                self.build.status = Status.failed
+                if isinstance(value, IgnoredException):
+                    self.build.status = Status.ignored
+                else:
+                    self.build.status = Status.failed
         if self.build.status == Status.running:
             self.build.status = Status.success
         self.build.finished_at = timezone.now()
