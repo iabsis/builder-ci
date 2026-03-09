@@ -82,9 +82,9 @@ Builds
                         </td>
                         <td>{{ obj.version }}</td>
                         <td>{{ obj.status|status_badge }}</td>
-                        <td>{{ obj.created_at|naturaltime }}</td>
-                        <td>{{ obj.started_at|naturaltime }}</td>
-                        <td>{{ obj.finished_at }}</td>
+                        <td>{{ obj.created_at|date:"Y-m-d H:i" }}<br><small class="text-muted">{{ obj.created_at|naturaltime }}</small></td>
+                        <td>{% if obj.started_at %}{{ obj.started_at|date:"Y-m-d H:i" }}<br><small class="text-muted">{{ obj.started_at|naturaltime }}</small>{% endif %}</td>
+                        <td>{% if obj.finished_at %}{{ obj.finished_at|date:"Y-m-d H:i" }}<br><small class="text-muted">{{ obj.finished_at|naturaltime }}</small>{% endif %}</td>
                         <td>
                             {% if obj.status == 'running' and obj.progress != None %}
                             <div class="row no-gutters align-items-center mb-3">
