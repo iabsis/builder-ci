@@ -1,3 +1,15 @@
+builder-ci (3.0.4) bookworm; urgency=medium
+
+  * Add edit button
+  * Improve display date
+  * Add replace all option
+  * Improve Method page
+  * Improve container list
+  * Improve UI
+  * Improve date display
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Mon, 09 Mar 2026 11:36:24 +0100
+
 builder-ci (3.0.3) bookworm; urgency=medium
 
   * Fix celery backend
