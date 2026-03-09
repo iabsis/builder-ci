@@ -46,6 +46,7 @@ class Flow(models.Model):
     version_file = models.CharField(max_length=100, null=True, blank=True)
     version_regex = models.CharField(max_length=150, null=True, blank=True, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
     version_mandatory = models.BooleanField(default=True, help_text="Define if build failes if version is not found")
+    replace_all = models.BooleanField(default=False, help_text="Replace all occurrences of the version pattern instead of just the first one")
 
     @property
     def options(self):
@@ -123,12 +124,13 @@ class Flow(models.Model):
 
         def replace_group_1(match):
             return match.group(0).replace(match.group(1), new_version)
-    
-        updated_content = re.sub(pattern, replace_group_1, content, count=1)
+
+        count = 0 if self.replace_all else 1
+        updated_content = re.sub(pattern, replace_group_1, content, count=count)
 
         with open(version_file, 'w') as f:
             f.write(updated_content)
-        
+
         return self.get_version(version_file)
 
     def __str__(self):
