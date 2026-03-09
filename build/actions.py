@@ -45,11 +45,11 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
             task.build.save()
             task_executor.add_logs(f"Generated version: {task.build.version}")
 
-        else:
-            message = f"Not building since in unknown situation, {task.build.request.modes} while {task.build.request.is_tag}"
-            task.logs = message
-            task.save()
-            raise IgnoredException(message)
+        # else:
+        #     message = f"Not building since in unknown situation, {task.build.request.modes} while {task.build.request.is_tag}"
+        #     task.logs = message
+        #     task.save()
+        #     raise IgnoredException(message)
 
     except Exception as e:
         exception = e
