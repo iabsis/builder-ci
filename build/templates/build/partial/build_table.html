@@ -48,7 +48,17 @@
                 <div class="row no-gutters align-items-center mb-3">
                     <div class="col">
                         <div class="progress progress-sm mr-2">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: {{obj.progress}}%" aria-valuenow="{{obj.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-info build-progress"
+                                 role="progressbar"
+                                 style="width: {{obj.progress}}%"
+                                 aria-valuenow="{{obj.progress}}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 data-build-id="{{obj.pk}}"
+                                 data-started-at="{{obj.started_at.isoformat}}"
+                                 data-eta-at="{{obj.eta_at.isoformat}}"
+                                 data-eta-total-seconds="{{obj.eta_total.total_seconds}}">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -70,3 +80,38 @@
     </tbody>
 </table>
 {% include 'build/partial/pagination_htmx.html' %}
+
+<script>
+// Fonction pour mettre à jour les barres de progression
+function updateProgressBars() {
+    const progressBars = document.querySelectorAll('.build-progress');
+    const now = new Date();
+
+    progressBars.forEach(bar => {
+        const startedAt = new Date(bar.dataset.startedAt);
+        const etaAt = new Date(bar.dataset.etaAt);
+        const etaTotalSeconds = parseFloat(bar.dataset.etaTotalSeconds);
+
+        if (etaTotalSeconds > 0) {
+            // Calculer le temps écoulé en secondes
+            const timeElapsed = (now - startedAt) / 1000;
+
+            // Calculer le pourcentage de progression
+            let progress = Math.round((timeElapsed / etaTotalSeconds) * 100);
+
+            // Limiter entre 0 et 100
+            progress = Math.max(0, Math.min(100, progress));
+
+            // Mettre à jour la barre de progression
+            bar.style.width = progress + '%';
+            bar.setAttribute('aria-valuenow', progress);
+        }
+    });
+}
+
+// Mettre à jour toutes les secondes
+setInterval(updateProgressBars, 1000);
+
+// Mettre à jour immédiatement au chargement
+updateProgressBars();
+</script>

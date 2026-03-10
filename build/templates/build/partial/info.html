@@ -76,11 +76,21 @@
 
                     <div class="row no-gutters align-items-center mb-3">
                         <div class="col-auto">
-                            <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{object.progress}}%</div>
+                            <div id="progress-percentage-{{object.pk}}" class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{object.progress}}%</div>
                         </div>
                         <div class="col">
                             <div class="progress progress-sm mr-2">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: {{object.progress}}%" aria-valuenow="{{object.progress}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                <div class="progress-bar bg-info build-progress"
+                                     role="progressbar"
+                                     style="width: {{object.progress}}%"
+                                     aria-valuenow="{{object.progress}}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100"
+                                     data-build-id="{{object.pk}}"
+                                     data-started-at="{{object.started_at.isoformat}}"
+                                     data-eta-at="{{object.eta_at.isoformat}}"
+                                     data-eta-total-seconds="{{object.eta_total.total_seconds}}">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -96,3 +106,47 @@
         </div>
     </div>
 </div>
+
+<script>
+// Fonction pour mettre à jour les barres de progression dans la vue détail
+function updateProgressBarsDetail() {
+    const progressBars = document.querySelectorAll('.build-progress');
+    const now = new Date();
+
+    progressBars.forEach(bar => {
+        const buildId = bar.dataset.buildId;
+        const startedAt = new Date(bar.dataset.startedAt);
+        const etaAt = new Date(bar.dataset.etaAt);
+        const etaTotalSeconds = parseFloat(bar.dataset.etaTotalSeconds);
+
+        if (etaTotalSeconds > 0) {
+            // Calculer le temps écoulé en secondes
+            const timeElapsed = (now - startedAt) / 1000;
+
+            // Calculer le pourcentage de progression
+            let progress = Math.round((timeElapsed / etaTotalSeconds) * 100);
+
+            // Limiter entre 0 et 100
+            progress = Math.max(0, Math.min(100, progress));
+
+            // Mettre à jour la barre de progression
+            bar.style.width = progress + '%';
+            bar.setAttribute('aria-valuenow', progress);
+
+            // Mettre à jour le texte du pourcentage
+            const percentageElement = document.getElementById(`progress-percentage-${buildId}`);
+            if (percentageElement) {
+                percentageElement.textContent = progress + '%';
+            }
+        }
+    });
+}
+
+// Mettre à jour toutes les secondes
+if (!window.progressDetailInterval) {
+    window.progressDetailInterval = setInterval(updateProgressBarsDetail, 1000);
+}
+
+// Mettre à jour immédiatement au chargement
+updateProgressBarsDetail();
+</script>
