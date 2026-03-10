@@ -1,3 +1,10 @@
+builder-ci (3.0.7) bookworm; urgency=medium
+
+  * Now build list with partial
+  * Add disable notification and fix partial
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 10 Mar 2026 09:52:04 +0100
+
 builder-ci (3.0.6) bookworm; urgency=medium
 
   * Catch incomplete situation
