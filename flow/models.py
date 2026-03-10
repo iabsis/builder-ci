@@ -47,6 +47,7 @@ class Flow(models.Model):
     version_regex = models.CharField(max_length=150, null=True, blank=True, help_text="Define regex with one capturing group.", validators=[validator.validate_regex_pattern])
     version_mandatory = models.BooleanField(default=True, help_text="Define if build failes if version is not found")
     replace_all = models.BooleanField(default=False, help_text="Replace all occurrences of the version pattern instead of just the first one")
+    disable_notification = models.BooleanField(default=False, help_text="Disable Redmine and Matrix notifications for this flow")
 
     @property
     def options(self):

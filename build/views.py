@@ -1,5 +1,6 @@
 from django.views.generic import DetailView
 from django.views.generic import RedirectView
+from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
@@ -67,14 +68,20 @@ class BuildListView(GenericViewList):
         return queryset
 
 
-class BuildTablePartial(GenericViewList):
+class BuildTablePartial(LoginRequiredMixin, ListView):
     model = models.Build
-    show_filter = False
     template_name = 'build/partial/build_table.html'
+    paginate_by = 10
+    context_object_name = 'object_list'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = models.Build.objects.all().order_by('-created_at')
         search = self.request.GET.get('search')
         if search:
             queryset = queryset.filter(request__name__icontains=search)
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['view_url'] = 'build_view'
+        return context

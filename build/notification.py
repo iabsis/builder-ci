@@ -8,10 +8,14 @@ from asgiref.sync import async_to_sync
 logger = logging.getLogger(__name__)
 
 def send_notification(build):
-    try:
-        send_redmine_notification(build)
-    except Exception as e:
-        logger.error(f"Received error during notification: {e}")
+    # Check if notifications are disabled for this flow
+    if build.flow.disable_notification:
+        logger.debug(f"Notifications disabled for flow {build.flow.name}, skipping")
+    else:
+        try:
+            send_redmine_notification(build)
+        except Exception as e:
+            logger.error(f"Received error during notification: {e}")
 
     try:
         send_websocket_update(build)
@@ -90,6 +94,11 @@ def send_redmine_notification(build):
         response.raise_for_status()
 
 def send_matrix_notification(build):
+    # Check if notifications are disabled for this flow
+    if build.flow.disable_notification:
+        logger.debug(f"Notifications disabled for flow {build.flow.name}, skipping Matrix notification")
+        return
+
     if not build.request.requested_by:
         logger.debug(f"No requested_by user for build {build.name}, skipping Matrix notification")
         return
