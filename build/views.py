@@ -65,3 +65,16 @@ class BuildListView(GenericViewList):
         if search:
             queryset = queryset.filter(request__name__icontains=search)
         return queryset
+
+
+class BuildTablePartial(GenericViewList):
+    model = models.Build
+    show_filter = False
+    template_name = 'build/partial/build_table.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.GET.get('search')
+        if search:
+            queryset = queryset.filter(request__name__icontains=search)
+        return queryset

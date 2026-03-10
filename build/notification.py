@@ -2,6 +2,8 @@ from . import models
 import logging
 from django.conf import settings
 import requests
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 logger = logging.getLogger(__name__)
 
@@ -10,6 +12,22 @@ def send_notification(build):
         send_redmine_notification(build)
     except Exception as e:
         logger.error(f"Received error during notification: {e}")
+
+    try:
+        send_websocket_update(build)
+    except Exception as e:
+        logger.error(f"Received error during websocket update: {e}")
+
+
+def send_websocket_update(build):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "builds_updates",
+        {
+            "type": "build_update",
+            "build_id": build.pk,
+        }
+    )
 
 def send_redmine_notification(build):
     # TODO : make configurable notification

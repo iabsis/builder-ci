@@ -10,6 +10,8 @@ urlpatterns = [
     path('request/', views.BuildRequestListView.as_view(), name="request"),
     path('partial/info/<int:pk>/',
          views.TriggerBuildInfoPartial.as_view(), name="build_info"),
+    path('partial/table/',
+         views.BuildTablePartial.as_view(), name="build_table"),
     path('request/trigger/<int:pk>/',
          views.TriggerBuildRequestView.as_view(), name="buildrequest_trigger"),
     path('run/<int:pk>/', views.RunBuildView.as_view(), name="build_run"),
