@@ -15,4 +15,5 @@ urlpatterns = [
     path('request/trigger/<int:pk>/',
          views.TriggerBuildRequestView.as_view(), name="buildrequest_trigger"),
     path('run/<int:pk>/', views.RunBuildView.as_view(), name="build_run"),
+    path('stop/<int:pk>/', views.StopBuildView.as_view(), name="build_stop"),
 ]

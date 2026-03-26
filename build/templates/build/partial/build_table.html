@@ -74,6 +74,17 @@
                         Run again
                     </span>
                 </a>
+                {% if obj.status == 'running' %}
+                <a href="{% url 'build_stop' obj.pk %}" class="btn btn-danger btn-icon-split mb-1"
+                   onclick="return confirm('Stop this build?')">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-stop"></i>
+                    </span>
+                    <span class="text">
+                        Stop
+                    </span>
+                </a>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

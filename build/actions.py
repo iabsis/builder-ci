@@ -136,6 +136,7 @@ def build_action(task_executor: BuildTaskExecutor, builddir):
             working_dir='/build/sources/',
             user='0',
             detach=True,
+            labels={"builder_ci_build_id": str(task.build.pk)},
         )
 
         task.logs = ''

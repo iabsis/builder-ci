@@ -80,6 +80,18 @@ Build details
                 </span>
             </a>
 
+            {% if object.status == 'running' %}
+            <a href="{% url 'build_stop' object.pk %}" class="btn btn-danger btn-icon-split mb-4"
+               onclick="return confirm('Stop this build?')">
+                <span class="icon text-white-50">
+                    <i class="fas fa-stop"></i>
+                </span>
+                <span class="text">
+                    Stop
+                </span>
+            </a>
+            {% endif %}
+
             <div class="accordion" id="taskAccordion">
                 {% for task in object.buildtask_set.all %}
                     <div class="card">

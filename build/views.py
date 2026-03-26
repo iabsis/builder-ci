@@ -9,6 +9,10 @@ from django.http import HttpResponseRedirect
 from sbadmin2.permission import DynamicPermissionMixin
 from sbadmin2.views import GenericViewList
 from django.db.models import Q
+from django.utils import timezone
+from celery import current_app
+from podman import PodmanClient
+from django.conf import settings
 
 # Create your views here.
 
@@ -24,6 +28,37 @@ class RunBuildView(LoginRequiredMixin, RedirectView):
         if referer:
             return HttpResponseRedirect(referer)
         return super().get(request, *args)
+
+class StopBuildView(LoginRequiredMixin, RedirectView):
+    pattern_name = 'build'
+
+    def get(self, request, *args, **kwargs):
+        build = get_object_or_404(models.Build, pk=kwargs['pk'])
+        if build.status == models.Status.running:
+            # Stop any running Podman containers for this build
+            try:
+                with PodmanClient(base_url=settings.PODMAN_URL) as client:
+                    for c in client.containers.list(filters={"label": f"builder_ci_build_id={build.pk}"}):
+                        c.stop(timeout=2)
+                        c.remove()
+            except Exception:
+                pass
+
+            # Revoke the Celery task
+            if build.celery_task:
+                current_app.control.revoke(
+                    build.celery_task.task_id, terminate=True, signal='SIGTERM')
+
+            build.status = models.Status.failed
+            build.finished_at = timezone.now()
+            build.save()
+            messages.success(self.request, f"Build {build.name} stopped")
+
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return HttpResponseRedirect(referer)
+        return super().get(request, *args)
+
 
 class TriggerBuildRequestView(LoginRequiredMixin, RedirectView):
     pattern_name = 'request'
