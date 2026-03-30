@@ -1,4 +1,14 @@
+import re
+
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+
+
+validate_extended_slug = RegexValidator(
+    re.compile(r'^[-a-zA-Z0-9_{}]+\Z'),
+    'Enter a valid "slug" consisting of letters, numbers, underscores, hyphens, or curly braces.',
+    'invalid',
+)
 
 
 def validate_dict(value):
