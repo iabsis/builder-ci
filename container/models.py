@@ -11,7 +11,7 @@ class Variable(models.Model):
 
 class Container(models.Model):
 
-    name = models.SlugField(max_length=40, help_text="Define the Dockerfile content, use {{var}} for automatic replacement for key defined in options.")
+    name = models.CharField(max_length=40, validators=[validator.validate_extended_slug], help_text="Define the Dockerfile content, use {{var}} for automatic replacement for key defined in options.")
     dockerfile = models.TextField(blank=True, validators=[validator.validate_dockerfile], help_text="Define the Dockerfile content, use {{var}} for automatic replacement for key defined in options.")
     target_tag = models.CharField(max_length=50, default='builder-{{image}}-{{tag}}')
     default_options = models.JSONField(default=dict, null=True, blank=True)

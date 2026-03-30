@@ -28,7 +28,7 @@ class AutoBuildMode(models.TextChoices):
     HOURLY = 'HOURLY', 'Once per hour'
 
 class BuildRequest(models.Model):
-    name = models.CharField(max_length=150, validators=[validations.validate_extended_slug])
+    name = models.SlugField(max_length=150)
     fetch_method = models.CharField(choices=SourceFetchMode.choices, max_length=50, default=SourceFetchMode.GIT)
     url = models.CharField(max_length=150)
     refname = models.CharField(max_length=50)
