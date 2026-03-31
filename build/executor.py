@@ -1,6 +1,7 @@
 import logging
 import traceback
 from . import models
+from .exceptions import IgnoredException
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -19,15 +20,21 @@ class BuildTaskExecutor:
         return self
 
     def __exit__(self, exc, value, tb):
-        # self.task.refresh_from_db()
         if exc is not None:
-            formated_traceback = ''.join(
-                    traceback.format_exception(exc, value, tb))
-            if self.task.status == models.Status.running:
-                self.task.status = models.Status.failed
-            if not self.task.logs:
-                self.task.logs = formated_traceback
-                self.add_logs(formated_traceback)
+            if isinstance(value, IgnoredException):
+                if self.task.status == models.Status.running:
+                    self.task.status = models.Status.ignored
+                if not self.task.logs:
+                    self.task.logs = str(value)
+                    self.add_logs(str(value))
+            else:
+                formated_traceback = ''.join(
+                        traceback.format_exception(exc, value, tb))
+                if self.task.status == models.Status.running:
+                    self.task.status = models.Status.failed
+                if not self.task.logs:
+                    self.task.logs = formated_traceback
+                    self.add_logs(formated_traceback)
         else:
             if self.task.status == models.Status.running:
                 self.task.status = models.Status.success

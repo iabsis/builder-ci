@@ -184,7 +184,7 @@ Build details
         if (status == 'failed') {
             return 'badge-danger'
         }
-        if (status == 'warning') {
+        if (status == 'warning' || status == 'duplicate' || status == 'ignored') {
             return 'badge-warning'
         }
         if (status == 'queued') {

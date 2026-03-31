@@ -24,7 +24,7 @@ def clone_repository(task_executor: BuildTaskExecutor, builddir):
 
 def fetch_version(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
-    exception = None
+    matched = False
 
     try:
         version_file = os.path.join(builddir, "sources", task.build.flow.version_file)
@@ -33,40 +33,44 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
             task.build.version = task.build.flow.get_version(version_file)
             task.build.save()
             task_executor.add_logs(f"Got version: {task.build.version}")
+            matched = True
 
         if models.BuildRequestMode.ON_TAG in task.build.request.modes and task.build.request.is_tag:
             task_executor.add_logs(f"Regex to use (replace): {task.build.flow.version_regex}")
-            task.build.version = task.build.flow.replace_version(version_file, task.build.request.branch)
+            task.build.flow.replace_version(version_file, task.build.request.branch)
+            task.build.version = task.build.request.branch
             task.build.save()
+            matched = True
 
         if models.BuildRequestMode.ON_COMMIT in task.build.request.modes and not task.build.request.is_tag:
             task_executor.add_logs(f"Regex to use (replace): {task.build.flow.version_regex}")
             task.build.version = task.build.flow.gen_version(version_file)
             task.build.save()
             task_executor.add_logs(f"Generated version: {task.build.version}")
+            matched = True
 
-        else:
-            message = f"Not building since in unknown situation, {task.build.request.modes} while {task.build.request.is_tag}"
+        if not matched:
+            message = f"Not building since in unknown situation, {task.build.request.modes} while is_tag={task.build.request.is_tag}"
             task.logs = message
             task.save()
             raise IgnoredException(message)
 
+
+    except IgnoredException:
+        raise
     except Exception as e:
-        if isinstance(exception, IgnoredException):
-            raise exception
-        exception = e
-        
-    if not task.build.version and task.build.flow.version_mandatory:
-        message = f"Version is missing while flow requires a version, {exception}"
-        task.logs = message
-        task.save()
-        raise Exception(message)
-        
-    if not task.build.version and not task.build.flow.version_mandatory:
-        task.status = models.Status.ignored
-        message = f"Version is missing but flow DOESN'T require a version: {exception}"
-        task.logs = message
-        task.save()
+        if not task.build.version and task.build.flow.version_mandatory:
+            message = f"Version is missing while flow requires a version, {e}"
+            task.logs = message
+            task.save()
+            raise IgnoredException(message)
+
+        if not task.build.version and not task.build.flow.version_mandatory:
+            task.status = models.Status.ignored
+            message = f"Version is missing but flow DOESN'T require a version: {e}"
+            task.logs = message
+            task.save()
+            raise IgnoredException(message)
 
 def duplicates_check(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task

@@ -14,7 +14,7 @@ def status_badge(status):
         color = 'danger'
     if status == Status.success:
         color = 'success'
-    if status in [Status.warning, Status.duplicate]:
+    if status in [Status.warning, Status.duplicate, Status.ignored]:
         color = 'warning'
     if status == Status.queued:
         color = 'primary'

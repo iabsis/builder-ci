@@ -132,7 +132,7 @@ class Flow(models.Model):
         with open(version_file, 'w') as f:
             f.write(updated_content)
 
-        return self.get_version(version_file)
+        # return self.get_version(version_file)
 
     def __str__(self):
         return self.name

@@ -12,3 +12,4 @@ build-folder/
 old/
 .env
 sbadmin2/node_modules/
+celerybeat-schedule
