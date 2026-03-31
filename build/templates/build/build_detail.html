@@ -121,7 +121,7 @@ Build details
                                     <div class="col-12 mr-2 mt-3">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Task log</div>
-                                        <pre id="logs-{{task.order}}" class="task-logs">{{task.logs|linebreaks}}</pre>
+                                        <pre id="logs-{{task.order}}" class="task-logs">{{task.logs}}</pre>
                                     </div>
                                 </div>
 
@@ -243,12 +243,14 @@ Build details
         logsElement.innerHTML = ''
     }
 
+    const ansi_up = new AnsiUp();
+
     function addLogs(task) {
         const logsElement = document.getElementById(`logs-${task.task}`);
-        logsElement.innerHTML += task.log
+        logsElement.innerHTML += ansi_up.ansi_to_html(task.log);
         scrollToBottom(logsElement);
     }
-    
+
     const buildPk = {{object.pk}};
 
     const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
@@ -280,6 +282,13 @@ Build details
     taskSocket.onclose = function(e) {
         console.error('Logs socket closed unexpectedly');
     };
+
+    // Convert existing ANSI codes in pre-loaded logs
+    document.querySelectorAll('.task-logs').forEach(function(el) {
+        if (el.textContent) {
+            el.innerHTML = ansi_up.ansi_to_html(el.textContent);
+        }
+    });
 
 </script>
 {% endblock %}

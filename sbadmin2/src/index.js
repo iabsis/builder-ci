@@ -46,6 +46,9 @@ import 'codemirror/addon/edit/closebrackets.js';
 import htmx from "htmx.org";
 window.htmx = htmx;
 
+import { AnsiUp } from "ansi_up";
+window.AnsiUp = AnsiUp;
+
 // Your custom JavaScript code
 $(document).ready(function () {
   console.log("Libs are ready!");
