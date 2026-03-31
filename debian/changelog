@@ -1,3 +1,13 @@
+builder-ci (3.0.9) bookworm; urgency=medium
+
+  * Stop button
+  * Fix name validation for Container
+  * Fix name on Container config
+  * Add Ansi for better logs rendering
+  * Tasks can now put build as ignored
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 31 Mar 2026 17:42:42 +0200
+
 builder-ci (3.0.8) bookworm; urgency=medium
 
   * Add build progress
