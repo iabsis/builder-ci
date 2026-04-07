@@ -1,3 +1,9 @@
+builder-ci (3.0.10) bookworm; urgency=medium
+
+  * Fix skip version check
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 07 Apr 2026 13:46:09 +0200
+
 builder-ci (3.0.9) bookworm; urgency=medium
 
   * Stop button
