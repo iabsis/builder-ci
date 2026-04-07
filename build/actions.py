@@ -66,11 +66,10 @@ def fetch_version(task_executor: BuildTaskExecutor, builddir):
             raise IgnoredException(message)
 
         if not task.build.version and not task.build.flow.version_mandatory:
-            task.status = models.Status.ignored
-            message = f"Version is missing but flow DOESN'T require a version: {e}"
+            message = f"Version is missing but flow doesn't require a version, skipping: {e}"
+            task_executor.add_logs(message)
             task.logs = message
             task.save()
-            raise IgnoredException(message)
 
 def duplicates_check(task_executor: BuildTaskExecutor, builddir):
     task = task_executor.task
