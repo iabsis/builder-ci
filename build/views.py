@@ -8,7 +8,7 @@ from . import models, tasks
 from django.http import HttpResponseRedirect
 from sbadmin2.permission import DynamicPermissionMixin
 from sbadmin2.views import GenericViewList
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils import timezone
 from celery import current_app
 from podman import PodmanClient
@@ -110,7 +110,7 @@ class BuildTablePartial(LoginRequiredMixin, ListView):
     context_object_name = 'object_list'
 
     def get_queryset(self):
-        queryset = models.Build.objects.all().order_by('-created_at')
+        queryset = models.Build.objects.all().order_by(F('started_at').desc(nulls_first=True), '-created_at')
         search = self.request.GET.get('search')
         if search:
             queryset = queryset.filter(request__name__icontains=search)
